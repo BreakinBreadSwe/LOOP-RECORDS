@@ -1,0 +1,37 @@
+{
+  "assetId": "324597fd4b1dd8ca148c6dac2fe5f7da",
+  "at": "2026-11-04T04:40:38.026Z",
+  "catno": "LOOP 008",
+  "images": [
+    {
+      "assetId": "324597fd4b1dd8ca148c6dac2fe5f7da",
+      "at": "2026-11-04T04:39:59.435Z",
+      "h": 600,
+      "url": "/_blob/324597fd4b1dd8ca148c6dac2fe5f7da",
+      "w": 598
+    },
+    {
+      "assetId": "c81f8b104bc0d4ed7ce3e9f78f2b0ca8",
+      "at": "2026-11-04T04:40:10.686Z",
+      "h": 599,
+      "url": "/_blob/c81f8b104bc0d4ed7ce3e9f78f2b0ca8",
+      "w": 600
+    },
+    {
+      "assetId": "6cd1d60556ab0b96fafc320d28e532f2",
+      "at": "2026-11-04T04:40:23.411Z",
+      "h": 600,
+      "url": "/_blob/6cd1d60556ab0b96fafc320d28e532f2",
+      "w": 598
+    },
+    {
+      "assetId": "2ac44cda97ac13267c69d74eac471b3f",
+      "at": "2026-11-04T04:40:38.024Z",
+      "h": 233,
+      "url": "/_blob/2ac44cda97ac13267c69d74eac471b3f",
+      "w": 600
+    }
+  ],
+  "title": "More Love EP",
+  "url": "/_blob/324597fd4b1dd8ca148c6dac2fe5f7da"
+}

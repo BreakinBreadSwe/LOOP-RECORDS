@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { buildBundle, groupDocs, slugify, SCHEMA } from "../lib/bundle.js";
+import { loadSiteCatalog } from "../lib/catalog.js";
+import { fileURLToPath } from "node:url";
 
-const catalog = JSON.parse(readFileSync(new URL("../data/catalog.json", import.meta.url), "utf8"));
+const catalog = loadSiteCatalog(fileURLToPath(new URL("..", import.meta.url)), { checkFiles: true });
 const site = "https://loop.example";
 
 test("every release, person and track makes it into the bundle", () => {

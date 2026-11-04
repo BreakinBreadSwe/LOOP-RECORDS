@@ -5,3 +5,7 @@ node_modules/
 public/index.html
 public/runtime.js
 public/catalog.json
+dist/
+data/discogs-art/
+__pycache__/
+.DS_Store

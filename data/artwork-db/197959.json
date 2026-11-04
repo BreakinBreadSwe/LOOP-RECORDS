@@ -1,0 +1,24 @@
+{
+  "assetId": "e4de039bb98f54baaa84859962010055",
+  "at": "2026-11-04T04:28:47.718Z",
+  "catno": "LOOP 003",
+  "images": [
+    {
+      "assetId": "e4de039bb98f54baaa84859962010055",
+      "at": "2026-11-04T04:27:58.193Z",
+      "url": "/_blob/e4de039bb98f54baaa84859962010055"
+    },
+    {
+      "assetId": "0951e181f1e42b38038d9e90b6db7a6b",
+      "at": "2026-11-04T04:28:26.278Z",
+      "url": "/_blob/0951e181f1e42b38038d9e90b6db7a6b"
+    },
+    {
+      "assetId": "42806de82df608c26f4642511555e283",
+      "at": "2026-11-04T04:28:47.718Z",
+      "url": "/_blob/42806de82df608c26f4642511555e283"
+    }
+  ],
+  "title": "Essential / System Drive",
+  "url": "/_blob/e4de039bb98f54baaa84859962010055"
+}

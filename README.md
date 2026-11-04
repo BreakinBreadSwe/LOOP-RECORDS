@@ -54,6 +54,9 @@ Until step 4 is done the button answers "Breakin Bread isn't connected yet", and
 npm install
 npm test            # bundle tests
 npm run build       # builds public/index.html, public/runtime.js, public/catalog.json
+python3 scripts/build_catalog.py     # rebuild data/catalog.json from data/discogs + data/youtube.json
+python3 scripts/make_seed.py         # regenerate supabase/seed.sql
+python3 scripts/build_claude_app.py  # rebuild the Claude-hosted version into dist/
 npx vercel dev      # site + API locally (needs .env)
 ```
 
