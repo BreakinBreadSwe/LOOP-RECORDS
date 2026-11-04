@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/build.mjs",
+  "outputDirectory": "public",
+  "functions": {
+    "api/breakin-bread/push.js": { "includeFiles": "data/catalog.json" }
+  },
+  "headers": [
+    { "source": "/art/(.*)", "headers": [{ "key": "cache-control", "value": "public, max-age=31536000, immutable" }] }
+  ]
+}

@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.local
+.vercel/
+public/index.html
+public/runtime.js
+public/catalog.json

@@ -1,0 +1,746 @@
+<title>Loop Records Catalog</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Loop Records, Stockholm 1993 to 1998. Every release, every credit, every video.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a record-shop index. Sticky search bar, crate grid of sleeves, detail views read like a label's run-out sheet. */
+:root{
+  --bg:#eceef1; --surface:#f8f9fb; --ink:#12141a; --muted:#545b6a; --line:#cfd4dc;
+  --loop:#ff4400; --loop-ink:#12141a; --loop-text:#b83000; --blue:#1f16b2; --tint:#ffe1d4; --scrim:rgba(18,20,26,.72); --scrim-ink:#ffffff; --ok:#17713a; --warn:#8a5a00; --bad:#b3261e; --plump:#8a2f74; --related:#4d6b2f; --focus:#1f16b2;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d0f15; --surface:#161a23; --ink:#e9ebf1; --muted:#9aa2b3; --line:#2a303d;
+  --loop:#ff5a1f; --loop-ink:#0d0f15; --loop-text:#ff8552; --blue:#8f88ff; --tint:#3b2016; --scrim:rgba(0,0,0,.7); --scrim-ink:#ffffff; --ok:#6fd38f; --warn:#f0b851; --bad:#ff8f86; --plump:#e08ccc; --related:#a7c97f; --focus:#8f88ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d0f15; --surface:#161a23; --ink:#e9ebf1; --muted:#9aa2b3; --line:#2a303d;
+  --loop:#ff5a1f; --loop-ink:#0d0f15; --loop-text:#ff8552; --blue:#8f88ff; --tint:#3b2016; --scrim:rgba(0,0,0,.7); --scrim-ink:#ffffff; --ok:#6fd38f; --warn:#f0b851; --bad:#ff8f86; --plump:#e08ccc; --related:#a7c97f; --focus:#8f88ff; color-scheme:dark}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:var(--ink);font-weight:600;text-decoration:none;border-radius:4px;transition:color .15s,background-color .15s}
+a:hover{color:var(--loop-text)}
+.plink{display:inline-block;padding:1px 10px;margin:1px 0;border-radius:999px;background:var(--tint);color:var(--ink);font-weight:600;line-height:1.6}
+.plink:hover{background:var(--loop);color:var(--loop-ink)}
+.btn.primary:hover{color:var(--loop-ink)}
+nav.views a[aria-current="page"]:hover,.subnav a[aria-current="page"]:hover{color:var(--bg)}
+.artline .plink{font-size:20px;padding:2px 14px}
+.back{display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;font:600 14px/1 var(--body);padding:9px 14px 9px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.back::before{content:"";width:7px;height:7px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin-left:3px}
+.back:hover{border-color:var(--loop);color:var(--loop-text)}
+.people li a{font-weight:500}
+.credits a:not(.plink){font-weight:600}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:20;background:var(--surface);padding:8px 12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:12px}
+.bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.brand{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--ink)}
+.brand svg{width:80px;height:auto;overflow:visible}
+.brand .rec{font:900 31px/1 var(--display);margin-right:6px;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
+.brand .era{font:500 12px/1.2 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.theme{display:flex;align-items:center;gap:6px;font:600 13px var(--body)}
+.theme select{font:14px var(--body);padding:7px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.pastebox{margin-top:12px;padding:12px;border:2px dashed var(--loop);border-radius:10px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.pastebox label{font-weight:600}
+.pastebox textarea{font:15px var(--body);padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);resize:none;width:100%}
+.search{flex:1 1 280px;display:flex;min-width:0}
+.search input{flex:1;min-width:0;font:16px var(--body);padding:10px 14px;border:2px solid var(--ink);border-radius:999px;background:var(--surface);color:var(--ink)}
+nav.views{display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:480px){nav.views a{font-size:13px;padding:8px 11px}}
+nav.views a,.chip{font:600 14px/1 var(--body);padding:9px 14px;white-space:nowrap;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--surface);cursor:pointer}
+nav.views a[aria-current="page"],.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+
+main{padding-block:24px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1;letter-spacing:.01em}
+h1{font-size:clamp(40px,7vw,76px);font-weight:900;text-transform:uppercase;margin:0 0 8px}
+h2{font-size:30px;font-weight:800;text-transform:uppercase;margin:36px 0 12px}
+h3{font-size:20px;font-weight:800;margin:0}
+.lede{max-width:65ch;color:var(--muted);margin:0 0 20px}
+.count{font:500 13px var(--mono);color:var(--muted);margin:0 0 14px}
+.eyebrow{font:500 12px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:22px 18px;list-style:none;padding:0;margin:0}
+.grid a.card{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--ink)}
+.sleeve{aspect-ratio:1;width:100%;max-width:100%;border-radius:3px;overflow:hidden;background:var(--surface);box-shadow:0 1px 0 var(--line),0 8px 20px -14px rgba(0,0,0,.5);transition:transform .15s}
+.sleeve img,.sleeve svg{display:block;width:100%;height:100%;object-fit:contain;background:var(--surface)}
+a.card:hover .sleeve:not(.multi){transform:translateY(-3px) rotate(-.6deg)}
+.cat{font:500 12px var(--mono);letter-spacing:.04em;color:var(--muted);display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--loop);flex:none}
+.dot.plump{background:var(--plump)}.dot.related{background:var(--related)}
+.card .t{font-weight:600;line-height:1.25}
+.card .a{color:var(--muted);font-size:14px;line-height:1.3}
+
+.people{list-style:none;padding:0;margin:0;columns:3 260px;column-gap:28px}
+.people li{break-inside:avoid;padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+.people .meta{font:12px var(--mono);color:var(--muted);white-space:nowrap}
+
+.detail{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:760px){.detail{grid-template-columns:minmax(0,1fr)}}
+.detail .sleeve{box-shadow:0 1px 0 var(--line),0 24px 40px -24px rgba(0,0,0,.6)}
+.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:16px 0 0}
+.facts dt{font:500 12px/1.9 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.facts dd{margin:0}
+.artline{font-size:22px;font-weight:500;margin:0 0 4px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:8px 0 0}
+.tags li{font:12px var(--mono);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.tracks{list-style:none;padding:0;margin:0;border-top:2px solid var(--ink)}
+.tracks li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tracks .pos{font:500 14px var(--mono);color:var(--muted)}
+.tracks .dur{font:14px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+.tracks .tc{grid-column:2/4;font-size:14px;color:var(--muted)}
+.credits{display:grid;grid-template-columns:minmax(0,1fr);gap:0;border-top:2px solid var(--ink)}
+.credits div{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+@media (max-width:520px){.credits div{grid-template-columns:minmax(0,1fr);gap:2px}}
+.credits .role{color:var(--muted);font-size:14px}
+.videos{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.videos a{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);text-decoration:none;color:var(--ink)}
+.videos a:hover{border-color:var(--loop)}
+.play{flex:none;width:30px;height:30px;border-radius:50%;background:var(--loop);display:grid;place-items:center}
+.play::after{content:"";border-left:10px solid var(--loop-ink);border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:3px}
+.videos small{display:block;color:var(--muted);font:11px var(--mono)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{font:600 14px var(--body);padding:9px 14px;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--loop);border-color:var(--loop);color:var(--loop-ink)}
+.note{font-size:14px;color:var(--muted);max-width:65ch}
+.status{font:13px var(--mono);color:var(--muted);min-height:1.4em}
+.roles{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.roles li{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+pre.code{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font:13px/1.5 var(--mono)}
+footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:13px}
+h2.galh{font-size:22px;margin:20px 0 8px}
+.gallery{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.gallery li{display:flex;flex-direction:column;gap:6px}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;border:1px solid var(--line);background:var(--surface)}
+.gbtns{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
+.subnav a{font:600 14px/1 var(--body);padding:9px 14px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--surface)}
+.subnav a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.form{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px 16px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:0 0 24px}
+.form h2{margin:0}
+.form .full{grid-column:1/-1}.form .wide{grid-column:span 2}
+@media (max-width:520px){.form .wide{grid-column:1/-1}}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0;font:600 13px var(--body)}
+.field input,.field select,.field textarea,.sel,.tbl input,.tbl select,.inline input{font:15px var(--body);padding:8px 10px;border:1px solid var(--muted);border-radius:6px;background:var(--bg);color:var(--ink);min-width:0;width:100%}
+.sel{width:auto}
+fieldset{border:1px solid var(--line);border-radius:8px;padding:12px;margin:0;min-width:0}
+legend{font-weight:600;padding:0 6px}
+.itemrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,.7fr) minmax(0,.7fr) auto;gap:10px;align-items:end;margin-bottom:10px}
+#items .itemrow{grid-template-columns:minmax(0,3fr) minmax(0,1fr) auto}
+@media (max-width:620px){.itemrow,#items .itemrow{grid-template-columns:minmax(0,1fr)}}
+.tblwrap{overflow-x:auto;margin:0 0 20px}
+table.tbl{border-collapse:collapse;width:100%;font-size:14px}
+.tbl caption{text-align:left;font:800 22px var(--display);text-transform:uppercase;padding:0 0 8px}
+.tbl th,.tbl td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl thead th{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:2px solid var(--ink)}
+.tbl tbody th{font-weight:600}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl .acts{white-space:nowrap}.tbl .acts .btn{margin:0 4px 4px 0}
+.muted{color:var(--muted);font-size:13px}
+.pill{display:inline-block;font:600 12px/1.4 var(--body);padding:1px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--ok)}.pill.warn{color:var(--warn)}.pill.bad{color:var(--bad)}.pill.neutral{color:var(--muted)}
+.btn.small{padding:6px 11px;font-size:13px}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:progress}
+.evcard{border-top:2px solid var(--ink);padding-top:4px;margin-bottom:28px}
+.evcard h2{margin:8px 0}
+.door{margin-top:12px}
+.inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
+.inline label{font-weight:600}.inline input{width:12em}
+.countrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0}
+.countrow .count{margin:0}
+.mosaic{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+@media (min-width:640px){.mosaic{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (min-width:1000px){.mosaic{grid-template-columns:repeat(7,minmax(0,1fr))}}
+.mosaic a{display:block;aspect-ratio:1;overflow:hidden;background:var(--surface)}
+.mosaic img,.mosaic svg{display:block;width:100%;height:100%;object-fit:contain;background:var(--surface);transition:transform .15s}
+.mosaic a:hover img,.mosaic a:hover svg{transform:scale(1.04)}
+.mosaic a:focus-visible{outline-offset:-3px}
+.slideshow{display:flex;flex-direction:column;gap:10px;border-radius:4px}
+.slideshow .sleeve{touch-action:pan-y;user-select:none}
+.slidectl{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.slcount{font:500 13px var(--mono);color:var(--muted)}
+.navbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.navbtn::before{content:"";width:9px;height:9px;border-left:2px solid currentColor;border-bottom:2px solid currentColor}
+.navbtn.prev::before{transform:translateX(2px) rotate(45deg)}
+.navbtn.next::before{transform:translateX(-2px) rotate(-135deg)}
+.navbtn:hover{border-color:var(--loop);color:var(--loop-text)}
+.dots{display:flex;justify-content:center;gap:6px}
+.dots span{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots span.on{background:var(--loop)}
+#artGallery .gbtns{margin-top:10px}
+[hidden]{display:none!important}
+@media (max-width:640px){header.top{position:static}}
+.sleeve.multi{position:relative}
+.track{display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.track::-webkit-scrollbar{display:none}
+.track img{flex:0 0 100%;width:100%;height:100%;object-fit:contain;background:var(--surface);scroll-snap-align:start;scroll-snap-stop:always;user-select:none;-webkit-user-drag:none}
+.badge{position:absolute;right:8px;bottom:8px;font:600 11px/1 var(--mono);padding:4px 7px;border-radius:999px;background:var(--scrim);color:var(--scrim-ink);pointer-events:none}
+.fade{position:relative;display:block;width:100%;height:100%;perspective:700px}
+.fade img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--surface);opacity:0;backface-visibility:hidden}
+.fade img.on{opacity:1;z-index:1}
+.mosaic li{overflow:hidden}
+.fxsel{font:600 14px var(--body);padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:11em}
+.countrow .ctls{display:flex;gap:6px}
+.editor{margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.editor h2{margin:0}
+.edwrap{display:flex;justify-content:center;background:var(--bg);border-radius:8px;padding:8px}
+#edCanvas{max-width:100%;height:auto;touch-action:none;cursor:move;border-radius:2px}
+.ytgrid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:18px}
+.ytbox{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:10px;overflow:hidden;background:#000}
+.ytbox iframe,.ytplay{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ytplay{padding:0;cursor:pointer;background:#000}
+.ytplay img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9;transition:opacity .15s}
+.ytplay:hover img{opacity:1}
+.bigplay{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--loop);display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.bigplay::after{content:"";border-left:20px solid var(--loop-ink);border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
+.yttitle{margin:8px 0 0;font-weight:600;line-height:1.35}
+.yttitle small{display:block;font:12px var(--mono);color:var(--muted);margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap">
+  <div class="bar">
+    <a class="brand" href="#" aria-label="Loop Records, home">
+      <svg viewBox="5 7 160 50" aria-hidden="true"><use href="#logo" x="0" y="0" width="184" height="64"/></svg>
+      <span class="rec" aria-hidden="true">Records</span>
+      <span class="era">Stockholm<br>1993–1998</span>
+    </a>
+    <form class="search" role="search" id="searchForm">
+      <label class="sr" for="q">Search releases, artists, credits and tracks</label>
+      <input id="q" type="search" autocomplete="off" placeholder="Search artist, title, catno, credit, track">
+    </form>
+    <nav class="views" aria-label="Views">
+      <a href="#" id="navReleases">Releases</a>
+      <a href="#people" id="navPeople">People</a>
+      <a href="#about" id="navAbout">About</a>
+      <a href="#admin" id="navAdmin" hidden>Back office</a>
+    </nav>
+    <div class="theme"><label for="theme">Theme</label>
+      <select id="theme"><option value="system">Match device</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+  </div>
+</div></header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="logo" viewBox="0 0 184 64">
+    <path d="M6 8h12v38h22v10H6z" fill="currentColor"/>
+    <circle cx="64" cy="32" r="21" fill="none" stroke="currentColor" stroke-width="10"/>
+    <circle cx="94" cy="32" r="21" fill="none" stroke="currentColor" stroke-width="10"/>
+    <path d="M124 8h22c11 0 18 7 18 16s-7 16-18 16h-10v16h-12zM136 18v12h9c4 0 7-2 7-6s-3-6-7-6z" fill="currentColor" fill-rule="evenodd"/>
+  </symbol>
+</defs></svg>
+
+<main id="main" class="wrap" tabindex="-1"></main>
+<datalist id="peopleList"></datalist>
+<p class="sr" aria-live="polite" id="live"></p>
+<footer><div class="wrap">Catalog data from Discogs, label 179847, retrieved 3 Nov 2026. <span id="vidNote">Videos link out to YouTube.</span> A generated Loop sleeve shows until each real cover is added.</div></footer>
+
+<script id="catalog" type="application/json">__CATALOG__</script>
+<script>
+(function(){
+const C = JSON.parse(document.getElementById("catalog").textContent);
+const R = C.releases, P = C.people;
+const byId = new Map(R.map(r=>[String(r.id),r]));
+const byKey = new Map(P.map(p=>[p.key,p]));
+const art = {}, artImgs = {}; // release id -> main cover url / all images
+const STANDALONE = !!window.__STANDALONE__;
+R.forEach(r=>{ if(r.images&&r.images.length){ artImgs[r.id]=r.images.map(u=>({url:u})); art[r.id]=r.images[0]; } });
+let assetsNS = null, dbNS = null, canEditArt = false;
+let filter = "all";
+let mosaic = false; try{ mosaic = localStorage.getItem("loop-mosaic")==="1"; }catch(e){}
+const CHIP = {all:"All", loop:"Loop", plump:"Plumphouse", related:"Licensed"};
+const main = document.getElementById("main"), live = document.getElementById("live"), q = document.getElementById("q");
+const GROUP = {loop:"Loop Records", plump:"Plumphouse Records", related:"Licensed and appearances"};
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const artistLine = r => r.artists.map(a=>a.name).join(" & ") || "Various";
+const yt = id => "https://www.youtube.com/watch?v=" + id;
+
+// search index
+R.forEach(r=>{
+  r._s = norm([r.catno, r.catnos.join(" "), r.title, artistLine(r), r.year, r.format, r.styles.join(" "), r.genres.join(" "),
+    r.credits.map(c=>c.name+" "+c.role).join(" "),
+    r.tracks.map(t=>t.title+" "+t.artists.map(a=>a.name).join(" ")+" "+t.credits.map(c=>c.name+" "+c.role).join(" ")).join(" ")].join(" "));
+});
+P.forEach(p=>{ p._s = norm(p.name+" "+p.aliases.join(" ")+" "+[...new Set(p.credits.map(c=>c.role))].join(" ")); });
+
+function hue(r){ const m=(r.catno||"").match(/\d+/); const n=m?+m[0]:r.id%97; return r.group==="plump"? (300+n*7)%360 : r.group==="related"? (90+n*11)%360 : (240+(n*5)%16); }
+function placeholder(r,bare){
+  const h=hue(r), rings=[];
+  const seed=(r.id%7)+3;
+  const lp = r.group==="loop", ring = i => lp ? (i%2?"hsl(40 60% 94%)":"hsl(16 100% 52%)") : `hsl(${h} 90% ${i%2?82:62}%)`;
+  for(let i=0;i<seed;i++) rings.push(`<circle cx="${150+((i%2)?18:-18)}" cy="140" r="${26+i*16}" fill="none" stroke="${ring(i)}" stroke-width="${i%3?3:9}" opacity="${.9-i*.07}"/>`);
+  const logo = `<g transform="translate(18 252) scale(.42)" color="hsl(${h} 30% 96%)"><use href="#logo"/></g>`;
+  const words = bare ? "" : `<text x="282" y="272" text-anchor="end" fill="hsl(${h} 30% 96%)" font-family="IBM Plex Mono,monospace" font-size="15">${esc(r.catno||"")}</text>
+    <text x="18" y="34" fill="hsl(${h} 30% 96%)" font-family="Big Shoulders Display,Impact,sans-serif" font-weight="800" font-size="22">${esc((r.title||"").toUpperCase().slice(0,26))}</text>`;
+  const a11y = bare ? `aria-hidden="true"` : `role="img" aria-label="Placeholder sleeve for ${esc(r.catno)}, ${esc(r.title)}. Real artwork not added yet."`;
+  return `<svg viewBox="0 0 300 300" ${a11y}><rect width="300" height="300" fill="${r.group==="loop"?`hsl(${h} 72% 24%)`:`hsl(${h} 60% 14%)`}"/>${rings.join("")}${logo}${words}</svg>`;
+}
+function imgUrls(r){ const a=artImgs[r.id]; if(a&&a.length) return a.map(x=>x.url); return r.artwork?[r.artwork]:[]; }
+function sleeve(r, swipe){
+  const u = imgUrls(r), alt=`Cover of ${esc(r.title)} by ${esc(artistLine(r))}`;
+  if(swipe && u.length>1) return `<div class="sleeve multi"><div class="track">${u.map((x,i)=>`<img src="${esc(x)}" alt="${i?"":alt+", 1 of "+u.length+" images"}" loading="lazy" draggable="false">`).join("")}</div><span class="badge" aria-hidden="true">1/${u.length}</span></div>`;
+  return `<div class="sleeve">${u.length?`<img src="${esc(u[0])}" alt="${alt}">`:placeholder(r)}</div>`;
+}
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const FX = {random:"Random", fade:"Fade", flipx:"Flip sideways", flipy:"Flip up and down", page:"Page turn"};
+let fxMode="random"; try{ fxMode=localStorage.getItem("loop-fx")||"random"; if(!FX[fxMode]) fxMode="random"; }catch(e){}
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function runFx(f, from, to, type){
+  f._busy=true;
+  const done=()=>{ from.classList.remove("on"); to.classList.add("on"); from.style.zIndex=to.style.zIndex=""; f._busy=false; };
+  if(type==="fade"){
+    to.style.zIndex=2; to.classList.add("on");
+    to.animate([{opacity:0},{opacity:1}],{duration:1000,easing:"ease-in-out"}).onfinish=done;
+  } else if(type==="flipx"||type==="flipy"){
+    const ax = type==="flipx" ? "rotateY" : "rotateX", dir = Math.random()<.5?1:-1;
+    from.style.zIndex=2;
+    from.animate([{transform:`${ax}(0deg)`,transformOrigin:"50% 50%"},{transform:`${ax}(${90*dir}deg)`,transformOrigin:"50% 50%"}],{duration:380,easing:"ease-in"}).onfinish=()=>{
+      from.classList.remove("on"); to.style.zIndex=2; to.classList.add("on");
+      to.animate([{transform:`${ax}(${-90*dir}deg)`,transformOrigin:"50% 50%"},{transform:`${ax}(0deg)`,transformOrigin:"50% 50%"}],{duration:380,easing:"ease-out"}).onfinish=done; };
+  } else { // page turn: the current sleeve turns away on its left edge and reveals the next one underneath
+    to.classList.add("on"); to.style.zIndex=1; from.style.zIndex=2;
+    from.animate([{transform:"perspective(900px) rotateY(0deg)",transformOrigin:"0% 50%",filter:"brightness(1)"},{transform:"perspective(900px) rotateY(-100deg)",filter:"brightness(.55)",offset:.6},{transform:"perspective(900px) rotateY(-180deg)",filter:"brightness(.4)"}],
+      {duration:1100,easing:"cubic-bezier(.45,.05,.35,1)"}).onfinish=done;
+  }
+}
+setInterval(()=>{ if(!mosaic||reducedMotion.matches||document.hidden) return; const now=performance.now();
+  document.querySelectorAll(".mosaic .fade").forEach(f=>{
+    if(!f._next){ f._next = now + rnd(1200,6500); return; }
+    if(f._busy || now<f._next) return;
+    const ims=f.children, i=+f.dataset.i, j=(i+1)%ims.length; f.dataset.i=j;
+    const kinds=["fade","flipx","flipy","page"]; const type = fxMode==="random" ? kinds[Math.floor(Math.random()*kinds.length)] : fxMode;
+    runFx(f, ims[i], ims[j], type);
+    f._next = now + rnd(3000,8500);
+  }); }, 250);
+document.addEventListener("scroll", e=>{ const t=e.target; if(!t.classList||!t.classList.contains("track")) return;
+  const k=Math.round(t.scrollLeft/Math.max(1,t.clientWidth));
+  if(t.id==="slTrack"){ const r=byId.get(location.hash.slice(9)); if(r) setSlide(r,k); return; }
+  const b=t.parentNode.querySelector(".badge"); if(b) b.textContent=(k+1)+"/"+t.children.length; }, true);
+function setNav(v){ for(const [id,val] of [["navReleases","releases"],["navPeople","people"],["navAbout","about"],["navAdmin","admin"]]){ const a=document.getElementById(id); v===val?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current"); } }
+function announce(t){ live.textContent=""; setTimeout(()=>live.textContent=t,30); }
+let quiet=false;
+function focusMain(){ if(quiet) return; const h=main.querySelector("h1"); if(h){h.setAttribute("tabindex","-1"); h.focus({preventScroll:true});} window.scrollTo(0,0); }
+
+function viewReleases(fromSearch){
+  setNav("releases");
+  const term = norm(q.value.trim());
+  const list = R.filter(r=>(filter==="all"||r.group===filter) && (!term || term.split(/\s+/).every(w=>r._s.includes(w))));
+  const ppl = term ? P.filter(p=>term.split(/\s+/).every(w=>p._s.includes(w))).slice(0,12) : [];
+  const chips = ["all","loop","plump","related"].map(g=>`<button type="button" class="chip" data-f="${g}" aria-pressed="${filter===g}"${g==="related"?' aria-label="Licensed and appearances"':""}>${CHIP[g]}</button>`).join("");
+  main.innerHTML = `
+    <h1>${term?"Search":"Loop Records"}</h1>
+    ${term?"":`<p class="lede">Underground techno and experimental house from Stockholm. Loop started in 1993 as a Sunday club night whose flyer was a 7-inch record, then became a label. Every release, every credit, every video we could find.</p>`}
+    <div class="filters" role="group" aria-label="Filter by label">${chips}</div>
+    ${ppl.length?`<h2>People</h2><ul class="people">${ppl.map(personRow).join("")}</ul><h2>Releases</h2>`:""}
+    <div class="countrow"><p class="count" id="cnt">${list.length} ${list.length===1?"release":"releases"}${term?` matching “${esc(q.value.trim())}”`:""}</p>
+      <span class="ctls">${mosaic && list.some(r=>imgUrls(r).length>1)?`<label class="sr" for="fxSel">Slideshow transition</label><select id="fxSel" class="fxsel">${Object.entries(FX).map(([k,l])=>`<option value="${k}"${k===fxMode?" selected":""}>${l}</option>`).join("")}</select>`:""}
+      <button type="button" class="chip" id="mosaicBtn" aria-pressed="${mosaic}">Mosaic</button></span></div>
+    ${mosaic?`<ul class="mosaic">${list.map(tile).join("")}</ul>`:`<ul class="grid">${list.map(card).join("")}</ul>`}
+    ${!list.length?`<p class="note">Nothing matches. Try an artist name, a catalog number like LOOP 029, or a role like mastered.</p>`:""}`;
+  main.querySelectorAll(".chip[data-f]").forEach(b=>b.onclick=()=>{filter=b.dataset.f; viewReleases(true); main.querySelector(`.chip[data-f="${filter}"]`).focus();});
+  document.getElementById("mosaicBtn").onclick=()=>{ mosaic=!mosaic; try{ localStorage.setItem("loop-mosaic",mosaic?"1":"0"); }catch(e){} viewReleases(false); document.getElementById("mosaicBtn").focus(); announce(mosaic?"Mosaic of covers":"Covers with details"); };
+  const fs=document.getElementById("fxSel");
+  if(fs) fs.onchange=()=>{ fxMode=fs.value; try{ localStorage.setItem("loop-fx",fxMode); }catch(e){} announce("Transition: "+FX[fxMode]); };
+  if(fromSearch) announce(`${list.length} releases${ppl.length?` and ${ppl.length} people`:""}`);
+}
+function tile(r){
+  const u = imgUrls(r);
+  const inner = u.length>1 ? `<span class="fade" data-i="0">${u.map((x,i)=>`<img src="${esc(x)}" alt="" loading="lazy"${i?"":' class="on"'}>`).join("")}</span>`
+    : u.length ? `<img src="${esc(u[0])}" alt="" loading="lazy">` : placeholder(r,true);
+  return `<li><a href="#release-${r.id}" aria-label="${esc(r.catno)}, ${esc(artistLine(r))}, ${esc(r.title)}${u.length>1?", "+u.length+" images":""}">${inner}</a></li>`;
+}
+function card(r){
+  return `<li><a class="card" href="#release-${r.id}">${sleeve(r,true)}
+    <span class="cat"><span class="dot ${r.group}" aria-hidden="true"></span>${esc(r.catno)} · ${r.year||"year unknown"}</span>
+    <span class="t">${esc(r.title)}</span><span class="a">${esc(artistLine(r))}</span></a></li>`;
+}
+function personRow(p){ return `<li><a href="#artist-${p.key}">${esc(p.name)}</a><span class="meta">${p.releases.length} rel${p.videos.length?` · ${p.videos.length} vid`:""}</span></li>`; }
+function plink(x){ return byKey.has(x.key)?`<a class="plink" href="#artist-${x.key}">${esc(x.name)}</a>`:esc(x.name); }
+
+function playAll(vs, who){ if(STANDALONE) return ""; const ids=[...new Set(vs.map(v=>v.id))].slice(0,50); if(ids.length<2) return "";
+  return `<div class="btnrow" style="margin:0 0 12px"><a class="btn primary" href="https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}" target="_blank" rel="noopener">Play all ${ids.length} on YouTube</a></div>`; }
+function videoList(vs){
+  if(STANDALONE) return `<ul class="ytgrid">${vs.map(v=>{ const rel=v.release&&byId.get(String(v.release));
+    return `<li><div class="ytbox"><button type="button" class="ytplay" data-yt="${esc(v.id)}" data-title="${esc(v.title||"Video")}" aria-label="Play ${esc(v.title||"video")}">
+      <img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt="" loading="lazy"><span class="bigplay" aria-hidden="true"></span></button></div>
+      <p class="yttitle">${esc(v.title||"Untitled video")}${rel?`<small>${esc(rel.catno)}</small>`:""}</p></li>`; }).join("")}</ul>`;
+  return `<ul class="videos">${vs.map(v=>{ const rel=v.release&&byId.get(String(v.release));
+    return `<li><a href="${yt(v.id)}" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span>${esc(v.title||"Untitled video")}<small>${rel?esc(rel.catno)+" · ":""}${esc(v.source)} · opens YouTube</small></span></a></li>`;}).join("")}</ul>`;
+}
+
+function viewRelease(r){
+  setNav("releases");
+  const grouped = {};
+  r.credits.forEach(c=>{ (grouped[c.role]=grouped[c.role]||[]).push(c); });
+  const variants = r.variants.length?`<dt>Variants</dt><dd>${r.variants.map(v=>`<a href="https://www.discogs.com/release/${v}" target="_blank" rel="noopener">${v}</a>`).join(", ")} (white label, promo or test pressing)</dd>`:"";
+  main.innerHTML = `
+    <a class="back" href="#">All releases</a>
+    <div class="detail">
+      <div><div id="slides">${sleeve(r)}</div>
+        <div class="btnrow">
+          ${r.discogsImage?`<a class="btn" href="${esc(r.discogsImage)}" target="_blank" rel="noopener">Cover on Discogs</a>`:""}
+          <a class="btn" href="${r.discogs}" target="_blank" rel="noopener">Discogs page</a>
+          <span id="artTools" style="display:contents"></span>
+        </div>
+        <div id="artGallery"></div>
+        <section class="editor" id="editorBox" hidden aria-label="Image editor"></section>
+        <p class="status" id="artStatus" role="status">${artMsg.id===r.id?esc(artMsg.text):""}</p>
+        <div class="pastebox" id="pasteBox" hidden>
+          <label for="pasteArea">Press Command V to add an image to ${esc(r.catno)}, ${esc(r.title)}</label>
+          <textarea id="pasteArea" rows="2" aria-describedby="pasteHelp"></textarea>
+          <span class="note" id="pasteHelp">Copy the image first: on Discogs, open the cover and choose Copy Image.</span>
+          <button type="button" class="btn" id="pasteCancel">Cancel</button>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow"><span class="dot ${r.group}" aria-hidden="true" style="display:inline-block;margin-right:6px"></span>${GROUP[r.group]} · ${esc(r.catno)}</p>
+        <h1>${esc(r.title)}</h1>
+        <p class="artline">${r.artists.length?r.artists.map(plink).join(" &amp; "):"Various artists"}</p>
+        <dl class="facts">
+          <dt>Year</dt><dd>${r.year||"Unknown"}${r.released&&r.released!=String(r.year)?` (released ${esc(r.released)})`:""}</dd>
+          <dt>Format</dt><dd>${esc(r.format||"")}</dd>
+          <dt>Country</dt><dd>${esc(r.country||"Unknown")}</dd>
+          <dt>Labels</dt><dd>${r.labels.map(l=>esc(l.name)+" "+esc(l.catno)).join("; ")}</dd>
+          ${variants}
+        </dl>
+        ${r.styles.length?`<ul class="tags" aria-label="Styles">${[...r.genres,...r.styles].map(s=>`<li>${esc(s)}</li>`).join("")}</ul>`:""}
+        <h2>Tracklist</h2>
+        <ol class="tracks">${r.tracks.map(t=>`<li><span class="pos">${esc(t.pos)}</span><span>${t.artists.length?t.artists.map(plink).join(", ")+" – ":""}${esc(t.title)}</span><span class="dur">${esc(t.dur)}</span>
+          ${t.credits.length?`<span class="tc">${t.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</span>`:""}</li>`).join("")}</ol>
+        <h2>Credits</h2>
+        ${Object.keys(grouped).length?`<div class="credits">${Object.entries(grouped).map(([role,cs])=>`<div><span class="role">${esc(role)}</span><span>${cs.map(plink).join(", ")}</span></div>`).join("")}</div>`:`<p class="note">Discogs lists no release-level credits for this one. Track credits, if any, are in the tracklist above.</p>`}
+        <h2>Videos <span class="eyebrow">${r.videos.length}</span></h2>
+        ${r.videos.length?playAll(r.videos)+videoList(r.videos):`<p class="note">No videos found yet for this release.</p>`}
+      </div>
+    </div>`;
+  renderSlides(r); renderArtTools(r);
+  focusMain();
+}
+
+function viewPerson(p){
+  setNav("people");
+  const roles = {}; p.credits.forEach(c=>roles[c.role]=(roles[c.role]||0)+1);
+  const rels = p.releases.map(id=>byId.get(String(id))).filter(Boolean);
+  main.innerHTML = `
+    <a class="back" href="#people">All people</a>
+    <p class="eyebrow">${p.releases.length} ${p.releases.length===1?"release":"releases"} on the label</p>
+    <h1>${esc(p.name)}</h1>
+    ${p.aliases.length?`<p class="note">Also credited as ${p.aliases.map(esc).join(", ")}</p>`:""}
+    <ul class="roles" aria-label="Roles">${Object.entries(roles).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<li>${esc(r)} × ${n}</li>`).join("")}</ul>
+    <div class="btnrow">${p.discogs?`<a class="btn" href="${p.discogs}" target="_blank" rel="noopener">Discogs profile</a>`:""}
+      <a class="btn" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.name)}" target="_blank" rel="noopener">Search YouTube</a></div>
+    <h2>Releases</h2>
+    <ul class="grid">${rels.map(card).join("")}</ul>
+    <h2>Credits in detail</h2>
+    <div class="credits">${p.credits.map(c=>{const r=byId.get(String(c.release)); return `<div><span class="role">${esc(c.role)}${c.track?` (track ${esc(c.track)})`:""}</span><span><a href="#release-${r.id}">${esc(r.catno)} ${esc(r.title)}</a></span></div>`;}).join("")}</div>
+    <h2>Videos <span class="eyebrow">${p.videos.length}</span></h2>
+    ${p.videos.length?playAll(p.videos)+videoList(p.videos):`<p class="note">No videos found yet. The YouTube search button above runs a fresh search.</p>`}`;
+  focusMain();
+}
+
+function viewPeople(){
+  setNav("people");
+  const main_ = P.filter(p=>p.credits.some(c=>c.role==="Main artist"));
+  const others = P.filter(p=>!main_.includes(p));
+  main.innerHTML = `<h1>People</h1>
+    <p class="lede">${P.length} artists, producers, remixers, engineers and designers credited across the catalog. Every name links to everything they did on Loop.</p>
+    <h2>Artists</h2><ul class="people">${main_.map(personRow).join("")}</ul>
+    <h2>Producers, engineers and everyone else</h2><ul class="people">${others.map(personRow).join("")}</ul>`;
+  focusMain();
+}
+
+function viewAbout(){
+  setNav("about");
+  main.innerHTML = `<h1>About Loop Records</h1>
+    <p class="lede">${esc("Underground techno label from Stockholm. It began in 1993 as a club night founded by Joachim Hövel and Vito Ingrosso, whose flyer was pressed as a 7-inch record. Local DJs liked it, and the label followed. Sublabels: Plumphouse Records, Loop Music and Wrong Steps Records.")}</p>
+    <dl class="facts"><dt>Releases</dt><dd>${R.length} (${R.filter(r=>r.group==="loop").length} Loop, ${R.filter(r=>r.group==="plump").length} Plumphouse, ${R.filter(r=>r.group==="related").length} licensed or appearances)</dd>
+      <dt>People</dt><dd>${P.length} credited</dd>
+      <dt>Videos</dt><dd>${new Set([...R.flatMap(r=>r.videos.map(v=>v.id)),...P.flatMap(p=>p.videos.map(v=>v.id))]).size} unique</dd></dl>
+    <h2>Artwork</h2>
+    <p class="note">Releases without a real cover show a generated Loop sleeve. To add one, copy the cover image from Discogs, open the release here and press Command V, or use the Paste cover button. It replaces the placeholder for everyone.</p>`;
+  focusMain();
+}
+
+let artMsg={id:null,text:""};
+function setArtMsg(r,text){ artMsg={id:r.id,text}; const st=document.getElementById("artStatus"); if(st) st.textContent=text; }
+function imgsOf(r){ return (artImgs[r.id]||[]).map(x=>({...x})); }
+async function writeImgs(r, imgs){
+  if(!imgs.length) return dbNS.doc("artwork/"+r.id).delete();
+  return dbNS.doc("artwork/"+r.id).set({catno:r.catno, title:r.title, images:imgs, url:imgs[0].url, assetId:imgs[0].assetId||null, at:new Date().toISOString()});
+}
+const slideAt = {};
+function renderSlides(r){
+  const box=document.getElementById("slides"); if(!box) return;
+  const imgs=imgsOf(r), n=imgs.length;
+  const k=Math.min(slideAt[r.id]||0, Math.max(0,n-1)); slideAt[r.id]=k;
+  if(n<=1){ box.innerHTML=sleeve(r); renderSlideCtl(r); return; }
+  box.innerHTML=`<section class="slideshow" aria-roledescription="carousel" aria-label="Artwork for ${esc(r.title)}, ${n} images" tabindex="0">
+    <div class="sleeve multi"><div class="track" id="slTrack">${imgs.map((x,i)=>`<img src="${esc(x.url)}" alt="${i===0?"Main cover":"Image "+(i+1)} of ${esc(r.title)}" draggable="false">`).join("")}</div></div>
+    <div class="slidectl">
+      <button type="button" class="navbtn prev" id="slPrev" aria-label="Previous image"></button>
+      <span class="slcount" id="slCount" aria-live="polite">Image ${k+1} of ${n}</span>
+      <button type="button" class="navbtn next" id="slNext" aria-label="Next image"></button>
+    </div>
+    <div class="dots" aria-hidden="true">${imgs.map((_,d)=>`<span class="${d===k?"on":""}"></span>`).join("")}</div>
+  </section>`;
+  const tr=document.getElementById("slTrack");
+  requestAnimationFrame(()=>{ tr.scrollLeft=k*tr.clientWidth; });
+  const go=d=>{ const to=(slideAt[r.id]+d+n)%n; tr.scrollTo({left:to*tr.clientWidth, behavior:reducedMotion.matches?"auto":"smooth"}); setSlide(r,to); };
+  document.getElementById("slPrev").onclick=()=>go(-1);
+  document.getElementById("slNext").onclick=()=>go(1);
+  box.querySelector(".slideshow").onkeydown=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); go(-1); } if(e.key==="ArrowRight"){ e.preventDefault(); go(1); } };
+  renderSlideCtl(r);
+}
+function setSlide(r,k){
+  const n=imgsOf(r).length; k=Math.max(0,Math.min(n-1,k)); if(slideAt[r.id]===k) return; slideAt[r.id]=k;
+  const c=document.getElementById("slCount"); if(c) c.textContent=`Image ${k+1} of ${n}`;
+  document.querySelectorAll(".slideshow .dots span").forEach((d,i)=>d.classList.toggle("on",i===k));
+  renderSlideCtl(r);
+}
+function renderSlideCtl(r){
+  const gal=document.getElementById("artGallery"); if(!gal) return;
+  const n=imgsOf(r).length, k=slideAt[r.id]||0;
+  if(!(assetsNS&&dbNS) || !n){ gal.innerHTML=""; return; }
+  gal.innerHTML=`<div class="gbtns"><span class="eyebrow">${n>1?`Image ${k+1} of ${n}`:"1 image"}${k?"":" · main cover"}</span>
+    ${n>1?`<button type="button" class="btn small" id="mvUp" data-mv="-1" ${k===0?"disabled":""}>Move earlier</button>
+    <button type="button" class="btn small" id="mvDown" data-mv="1" ${k===n-1?"disabled":""}>Move later</button>`:""}
+    ${k?`<button type="button" class="btn small" data-main="${k}">Make this the main cover</button>`:""}
+    <button type="button" class="btn small" data-edit="${k}" aria-controls="editorBox">Edit image</button>
+    <button type="button" class="btn small danger" data-rm="${k}">Remove this image</button></div>`;
+  gal.onclick = async e=>{
+    const m=e.target.closest("[data-main]"), d=e.target.closest("[data-rm]"), mv=e.target.closest("[data-mv]"), ed=e.target.closest("[data-edit]");
+    if(ed){ openEditor(r, +ed.dataset.edit); return; }
+    try{
+      if(mv && !mv.disabled){ const dir=+mv.dataset.mv, list=imgsOf(r), to=k+dir; if(to<0||to>=list.length) return;
+        [list[k],list[to]]=[list[to],list[k]]; slideAt[r.id]=to; await writeImgs(r,list);
+        const msg="Moved to position "+(to+1)+" of "+list.length+(to===0?", now the main cover":"")+".";
+        setArtMsg(r,msg); announce(msg);
+        setTimeout(()=>{ const b=document.getElementById(dir<0?(to===0?"mvDown":"mvUp"):(to===list.length-1?"mvUp":"mvDown")); if(b) b.focus({preventScroll:true}); },120); }
+      if(m){ const i=+m.dataset.main, list=imgsOf(r); const [x]=list.splice(i,1); list.unshift(x); slideAt[r.id]=0; await writeImgs(r,list); setArtMsg(r,"Image "+(i+1)+" is now the main cover."); announce("Main cover changed"); }
+      if(d){ if(d.dataset.armed!=="1"){ d.dataset.armed="1"; d.textContent="Confirm remove"; setTimeout(()=>{ if(d.isConnected){ d.dataset.armed=""; d.textContent="Remove this image"; } },5000); return; }
+        const i=+d.dataset.rm, list=imgsOf(r); const [x]=list.splice(i,1); slideAt[r.id]=Math.max(0,i-1); await writeImgs(r,list); if(x&&x.assetId) assetsNS.delete(x.assetId).catch(()=>{});
+        setArtMsg(r, list.length?"Image removed. "+list.length+" left.":"Image removed. The placeholder is back."); announce("Image removed"); }
+    }catch(err){ setArtMsg(r,"Couldn't change the artwork: "+(err&&err.message||err)); }
+  };
+}
+function renderArtTools(r){
+  const box = document.getElementById("artTools"); if(!box) return;
+  const imgs = imgsOf(r);
+  if(!assetsNS || !dbNS){ box.innerHTML = ""; return; }
+  box.innerHTML = `<button type="button" class="btn primary" id="pasteBtn" aria-controls="pasteBox">${imgs.length?"Paste another image":"Paste cover"}</button>`;
+  const pb=document.getElementById("pasteBox"), pa=document.getElementById("pasteArea");
+  document.getElementById("pasteBtn").onclick=async()=>{
+    // Read the clipboard straight away where the browser allows it; otherwise open the paste box.
+    try{
+      if(navigator.clipboard && navigator.clipboard.read){
+        const items = await navigator.clipboard.read();
+        for(const it of items){ const t=it.types.find(x=>x.startsWith("image/")); if(t){ saveCover(r, await it.getType(t)); return; } }
+      }
+    }catch(e){}
+    pb.hidden=false; pa.value=""; pa.focus();
+  };
+  document.getElementById("pasteCancel").onclick=()=>{ pb.hidden=true; document.getElementById("pasteBtn").focus(); };
+  pa.oninput=()=>{ if(pa.value.trim()){ pa.value=""; setArtMsg(r,"That paste was text, not an image. On Discogs, open the image and choose Copy Image, then paste again."); } };
+}
+// ---------- image editor ----------
+let ED=null;
+function openEditor(r,k){
+  const host=document.getElementById("editorBox"); if(!host) return;
+  const item=imgsOf(r)[k]; if(!item) return;
+  host.hidden=false;
+  host.innerHTML=`<h2 class="galh">Edit image ${k+1}</h2>
+    <p class="note" id="edHelp">Drag the box to move it and the corner to resize it. With the crop area selected, arrow keys move it and Shift with arrows resizes it.</p>
+    <div class="edwrap"><canvas id="edCanvas" tabindex="0" role="img" aria-describedby="edHelp edInfo" aria-label="Crop area"></canvas></div>
+    <p class="status" id="edInfo" aria-live="polite">Loading image…</p>
+    <div class="btnrow">
+      <label class="theme" for="edShape">Shape</label>
+      <select id="edShape" class="sel"><option value="free">Keep its own shape</option><option value="square">Square</option></select>
+      <button type="button" class="btn small" data-ed="centre">Centre square</button>
+      <button type="button" class="btn small" data-ed="trim">Trim borders</button>
+      <button type="button" class="btn small" data-ed="rotate">Rotate 90°</button>
+      <button type="button" class="btn small" data-ed="reset">Reset</button>
+    </div>
+    <div class="btnrow"><button type="button" class="btn primary" data-ed="save">Save image</button><button type="button" class="btn" data-ed="cancel">Cancel</button></div>`;
+  const cv=host.querySelector("#edCanvas"), info=host.querySelector("#edInfo"), shapeSel=host.querySelector("#edShape");
+  const im=new Image(); im.decoding="async";
+  im.onload=()=>{
+    const src=document.createElement("canvas"); src.width=im.naturalWidth; src.height=im.naturalHeight; src.getContext("2d").drawImage(im,0,0);
+    ED={r,k,src,crop:{x:0,y:0,w:src.width,h:src.height},shape:Math.abs(src.width-src.height)<=2?"square":"free"};
+    shapeSel.value=ED.shape; layout(); draw(); say(); cv.focus({preventScroll:true});
+  };
+  im.onerror=()=>{ info.textContent="Couldn't open this image for editing. Try pasting it again."; };
+  im.src=item.url;
+  const layout=()=>{ const W=Math.min(host.clientWidth||340,640); const s=W/Math.max(ED.src.width,ED.src.height); cv.width=Math.round(ED.src.width*s); cv.height=Math.round(ED.src.height*s); ED.s=s; };
+  const clamp=()=>{ const c=ED.crop, S=ED.src, min=24;
+    c.w=Math.max(min,Math.min(c.w,S.width)); c.h=Math.max(min,Math.min(c.h,S.height));
+    if(ED.shape==="square"){ const m=Math.min(c.w,c.h,S.width,S.height); c.w=c.h=m; }
+    c.x=Math.max(0,Math.min(c.x,S.width-c.w)); c.y=Math.max(0,Math.min(c.y,S.height-c.h)); };
+  const draw=()=>{ const g=cv.getContext("2d"), s=ED.s, c=ED.crop;
+    g.clearRect(0,0,cv.width,cv.height); g.drawImage(ED.src,0,0,cv.width,cv.height);
+    g.fillStyle="rgba(0,0,0,.55)"; g.beginPath(); g.rect(0,0,cv.width,cv.height); g.rect(c.x*s,c.y*s,c.w*s,c.h*s); g.fill("evenodd");
+    g.strokeStyle="#ff4400"; g.lineWidth=2; g.strokeRect(c.x*s+1,c.y*s+1,c.w*s-2,c.h*s-2);
+    g.fillStyle="#ff4400"; g.beginPath(); g.arc((c.x+c.w)*s,(c.y+c.h)*s,9,0,Math.PI*2); g.fill(); };
+  const say=()=>{ const c=ED.crop, full=c.w===ED.src.width&&c.h===ED.src.height;
+    info.textContent = full ? `Whole image, ${ED.src.width} by ${ED.src.height} pixels.` : `Crop ${Math.round(c.w)} by ${Math.round(c.h)} pixels${Math.round(c.w)===Math.round(c.h)?", square":""}, from ${ED.src.width} by ${ED.src.height}.`; };
+  const centre=()=>{ const S=ED.src, m=Math.min(S.width,S.height); ED.shape="square"; shapeSel.value="square"; ED.crop={x:(S.width-m)/2,y:(S.height-m)/2,w:m,h:m}; };
+  const trim=()=>{ const S=ED.src, g=S.getContext("2d"), W=S.width, H=S.height, d=g.getImageData(0,0,W,H).data;
+    const px=(x,y)=>{ const i=(y*W+x)*4; return [d[i],d[i+1],d[i+2]]; };
+    const cs=[px(1,1),px(W-2,1),px(1,H-2),px(W-2,H-2)], bg=[0,1,2].map(i=>cs.reduce((a,c)=>a+c[i],0)/4);
+    const diff=(x,y)=>{ const p=px(x,y); return Math.abs(p[0]-bg[0])+Math.abs(p[1]-bg[1])+Math.abs(p[2]-bg[2])>60; };
+    const rowHas=y=>{ let n=0; for(let x=0;x<W;x+=2) if(diff(x,y)) n++; return n>W*0.01; };
+    const colHas=x=>{ let n=0; for(let y=0;y<H;y+=2) if(diff(x,y)) n++; return n>H*0.01; };
+    let t=0,b=H-1,l=0,rr=W-1; while(t<b&&!rowHas(t)) t++; while(b>t&&!rowHas(b)) b--; while(l<rr&&!colHas(l)) l++; while(rr>l&&!colHas(rr)) rr--;
+    if(rr-l<24||b-t<24){ return false; }
+    ED.shape="free"; shapeSel.value="free"; ED.crop={x:l,y:t,w:rr-l+1,h:b-t+1}; return true; };
+  const rotate=()=>{ const S=ED.src, n=document.createElement("canvas"); n.width=S.height; n.height=S.width; const g=n.getContext("2d"); g.translate(n.width,0); g.rotate(Math.PI/2); g.drawImage(S,0,0); ED.src=n; ED.crop={x:0,y:0,w:n.width,h:n.height}; if(ED.shape==="square") clamp(); layout(); };
+  const update=()=>{ clamp(); draw(); say(); };
+  shapeSel.onchange=()=>{ if(!ED) return; ED.shape=shapeSel.value; if(ED.shape==="square") centre(); update(); };
+  host.onclick=async e=>{ const b=e.target.closest("[data-ed]"); if(!b||!ED) return; const a=b.dataset.ed;
+    if(a==="centre"){ centre(); update(); }
+    if(a==="trim"){ if(trim()) update(); else info.textContent="No plain border found to trim."; }
+    if(a==="rotate"){ rotate(); update(); }
+    if(a==="reset"){ ED.crop={x:0,y:0,w:ED.src.width,h:ED.src.height}; if(ED.shape==="square") centre(); update(); }
+    if(a==="cancel"){ closeEditor(); }
+    if(a==="save"){ b.disabled=true; info.textContent="Saving…"; try{ await saveEdit(); }catch(err){ info.textContent="Couldn't save: "+(err&&err.message||err); b.disabled=false; } }
+  };
+  // drag to move, drag the corner to resize (mouse and touch)
+  let drag=null;
+  const pos=e=>{ const b=cv.getBoundingClientRect(); return {x:(e.clientX-b.left)/ED.s*(cv.width/b.width), y:(e.clientY-b.top)/ED.s*(cv.height/b.height)}; };
+  cv.onpointerdown=e=>{ if(!ED) return; const p=pos(e), c=ED.crop, hr=18/ED.s;
+    if(Math.hypot(p.x-(c.x+c.w),p.y-(c.y+c.h))<hr) drag={mode:"size",p,c:{...c}};
+    else if(p.x>=c.x&&p.x<=c.x+c.w&&p.y>=c.y&&p.y<=c.y+c.h) drag={mode:"move",p,c:{...c}};
+    else drag=null;
+    if(drag){ cv.setPointerCapture(e.pointerId); e.preventDefault(); } };
+  cv.onpointermove=e=>{ if(!drag) return; const p=pos(e), dx=p.x-drag.p.x, dy=p.y-drag.p.y, c=ED.crop;
+    if(drag.mode==="move"){ c.x=drag.c.x+dx; c.y=drag.c.y+dy; }
+    else { c.w=drag.c.w+dx; c.h=drag.c.h+dy; if(ED.shape==="square"){ const m=Math.max(c.w,c.h); c.w=c.h=m; } }
+    clamp(); draw(); };
+  cv.onpointerup=cv.onpointercancel=()=>{ if(drag){ drag=null; say(); } };
+  cv.onkeydown=e=>{ if(!ED) return; const step=(e.altKey?1:10)/ED.s, c=ED.crop, k=e.key; const map={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}; if(!map[k]) return; e.preventDefault();
+    const [dx,dy]=map[k]; if(e.shiftKey){ c.w+=dx*step; c.h+=(ED.shape==="square"?dx:dy)*step; } else { c.x+=dx*step; c.y+=dy*step; } update(); };
+  host.scrollIntoView({block:"nearest"});
+}
+function closeEditor(){ const host=document.getElementById("editorBox"); if(host){ host.hidden=true; host.innerHTML=""; } ED=null; const b=document.querySelector("[data-edit]"); if(b) b.focus({preventScroll:true}); }
+async function saveEdit(){
+  const {r,k,src,crop}=ED; const c={x:Math.round(crop.x),y:Math.round(crop.y),w:Math.round(crop.w),h:Math.round(crop.h)};
+  const sc=Math.min(1,1600/Math.max(c.w,c.h)); const out=document.createElement("canvas"); out.width=Math.round(c.w*sc); out.height=Math.round(c.h*sc);
+  const g=out.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,out.width,out.height); g.drawImage(src,c.x,c.y,c.w,c.h,0,0,out.width,out.height);
+  const blob=await new Promise((res,rej)=>out.toBlob(b=>b?res(b):rej(new Error("could not encode")),"image/jpeg",0.92));
+  const up=await assetsNS.upload(blob);
+  const list=imgsOf(r), old=list[k];
+  list[k]={assetId:up.id,url:up.url,at:new Date().toISOString(),w:out.width,h:out.height};
+  slideAt[r.id]=k; ED=null;
+  await writeImgs(r,list);
+  if(old&&old.assetId) assetsNS.delete(old.assetId).catch(()=>{});
+  const host=document.getElementById("editorBox"); if(host){ host.hidden=true; host.innerHTML=""; }
+  const msg=`Image ${k+1} saved, ${out.width} by ${out.height} pixels${out.width===out.height?", square":""}.`;
+  setArtMsg(r,msg); announce(msg);
+}
+async function shrink(blob){
+  try{ const bmp=await createImageBitmap(blob); const k=Math.min(1,1200/Math.max(bmp.width,bmp.height));
+    const c=document.createElement("canvas"); c.width=Math.round(bmp.width*k); c.height=Math.round(bmp.height*k);
+    const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(bmp,0,0,c.width,c.height);
+    const out = await new Promise(res=>c.toBlob(b=>res(b||blob),"image/jpeg",0.9)); out._w=c.width; out._h=c.height; return out; }catch(e){ return blob; }
+}
+let saving=false;
+async function saveCover(r, blob){
+  if(saving) return; saving=true;
+  setArtMsg(r,"Saving image for "+r.catno+"…"); announce("Saving image");
+  try{
+    const img = await shrink(blob);
+    const up = await assetsNS.upload(img);
+    const list = imgsOf(r); list.push({assetId:up.id, url:up.url, at:new Date().toISOString(), w:img._w||null, h:img._h||null});
+    slideAt[r.id]=list.length-1;
+    await writeImgs(r, list);
+    const pb=document.getElementById("pasteBox"); if(pb) pb.hidden=true;
+    const msg = list.length===1 ? "Cover saved for "+r.catno+", "+r.title+"." : "Image "+list.length+" added to "+r.catno+". Paste again to add more.";
+    setArtMsg(r,msg); announce(list.length===1?"Cover saved":"Image "+list.length+" added");
+  }catch(err){
+    const code = err&&err.code;
+    setArtMsg(r, code==="too_large"?"That image is too large. Try copying a smaller version.":
+      code==="not_granted"?"Saving covers needs edit access to this app.":
+      "Couldn't save the cover: "+(err&&err.message||err)+". Try copying the image again.");
+  } finally { saving=false; }
+}
+document.addEventListener("paste", e=>{
+  const h=location.hash; if(!h.startsWith("#release-") || !assetsNS || !dbNS) return;
+  const r=byId.get(h.slice(9)); if(!r) return;
+  const t=e.target; const inField = t && t.closest && t.closest("input,textarea,select,[contenteditable]") && t.id!=="pasteArea";
+  if(inField) return;
+  const items=[...((e.clipboardData&&e.clipboardData.items)||[])];
+  const it=items.find(i=>i.kind==="file" && i.type.startsWith("image/"));
+  if(it){ e.preventDefault(); saveCover(r, it.getAsFile()); return; }
+  if(t && t.id==="pasteArea"){ e.preventDefault(); setArtMsg(r,"There's no image on the clipboard. On Discogs, open the cover and choose Copy Image, then paste again."); }
+});
+
+/*__ADMIN__*/
+// Remember the scroll position of each page, so going back returns to the same spot.
+const scrollMem = {}; let lastKey = location.hash || "#";
+function route(){
+  const key = location.hash || "#", prev = lastKey, moved = key !== prev;
+  if(moved) scrollMem[prev] = window.scrollY;
+  lastKey = key;
+  const h = location.hash.slice(1);
+  if(h.startsWith("release-") && byId.has(h.slice(8))) viewRelease(byId.get(h.slice(8)));
+  else if(h.startsWith("artist-") && byKey.has(h.slice(7))) viewPerson(byKey.get(h.slice(7)));
+  else if(h==="admin"||h.startsWith("admin-")) viewAdmin(h);
+  else if(h==="people") viewPeople();
+  else if(h==="about") viewAbout();
+  else viewReleases(false);
+  if(moved && scrollMem[key]!=null){
+    const y = scrollMem[key];
+    const back = main.querySelector(`a[href="${prev.replace(/"/g,"")}"]`);
+    if(back) back.focus({preventScroll:true});
+    window.scrollTo(0, y);
+    requestAnimationFrame(()=>window.scrollTo(0, y));
+  }
+}
+let t; q.addEventListener("input",()=>{ clearTimeout(t); t=setTimeout(()=>{ if(location.hash&&location.hash!=="#"){ history.replaceState(null,"",location.pathname+location.search); } viewReleases(true); },160); });
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault(); viewReleases(true); const c=document.getElementById("cnt"); if(c){c.tabIndex=-1;c.focus();}});
+window.addEventListener("hashchange",route);
+document.addEventListener("click", e=>{ const b=e.target.closest(".ytplay"); if(!b) return;
+  const f=document.createElement("iframe");
+  f.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.yt)}?autoplay=1&rel=0&playsinline=1`;
+  f.title=b.dataset.title; f.allow="autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen=true; f.loading="lazy";
+  b.replaceWith(f); f.focus(); });
+const themeSel=document.getElementById("theme");
+function applyTheme(v){ if(v==="light"||v==="dark") document.documentElement.setAttribute("data-theme",v); else document.documentElement.removeAttribute("data-theme"); }
+let savedTheme="system"; try{ savedTheme=localStorage.getItem("loop-theme")||"system"; }catch(e){}
+themeSel.value=savedTheme; if(savedTheme!=="system") applyTheme(savedTheme);
+themeSel.onchange=()=>{ applyTheme(themeSel.value); try{ localStorage.setItem("loop-theme",themeSel.value); }catch(e){} announce("Theme set to "+themeSel.options[themeSel.selectedIndex].text); };
+document.getElementById("peopleList").innerHTML=P.map(p=>`<option value="${esc(p.name)}">`).join("");
+quiet=true; route(); quiet=false;
+
+// runtime: shared artwork overrides
+(async()=>{
+  if(!window.claude||!claude.use) return;
+  try{
+    const [db, assets] = await Promise.all([claude.use("db"), claude.use("assets")]);
+    dbNS = db; assetsNS = assets;
+    if(!db) return;
+    initAdmin(db);
+    db.collection("artwork").onSnapshot(snap=>{
+      for(const k in art) delete art[k]; for(const k in artImgs) delete artImgs[k];
+      snap.docs.forEach(d=>{ const v=d.exists&&d.data(); if(!v) return;
+        const imgs = Array.isArray(v.images) ? v.images.filter(x=>x&&x.url) : (v.url?[{url:v.url,assetId:v.assetId,at:v.at}]:[]);
+        if(imgs.length){ artImgs[d.id]=imgs.map(x=>({...x})); art[d.id]=imgs[0].url; } });
+      const y = window.scrollY, f = document.activeElement && document.activeElement.id;
+      if(location.hash.startsWith("#admin")) return;
+      quiet=true; route(); quiet=false; window.scrollTo(0,y); if(f&&document.getElementById(f)) document.getElementById(f).focus();
+    }, ()=>{});
+    const cur = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(cur){ renderSlides(cur); renderArtTools(cur); }
+  }catch(e){}
+})();
+})();
+</script>
