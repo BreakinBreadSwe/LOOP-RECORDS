@@ -2,9 +2,8 @@
 const S = {products:{}, orders:{}, events:{}, sync:{}, rights:{}, settings:{}};
 let staff = false, dlNS = null, loaded = {};
 const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-export","Export"]];
-// Partner sync stays hidden until the server turns it on (env PARTNER_SYNC=on).
-const PARTNER = !!(window.LOOP_CONFIG && window.LOOP_CONFIG.partnerSync);
-if (PARTNER) ADMIN.push(["admin-bb","Breakin Bread"]);
+// The back office (staff only) may name Breakin Bread; the public site never does.
+ADMIN.push(["admin-bb","Breakin Bread"]);
 const TYPES = {digital_release:"Digital release", digital_track:"Digital track", vinyl:"Vinyl", cd:"CD", cassette:"Cassette", merch:"Merch", ticket:"Ticket", bundle:"Bundle"};
 const VAT = {digital_release:25,digital_track:25,vinyl:25,cd:25,cassette:25,merch:25,ticket:6,bundle:25};
 const PHYS = new Set(["vinyl","cd","cassette","merch","bundle","ticket"]);
@@ -13,7 +12,7 @@ const PAIDLIKE = new Set(["paid","packed","shipped","delivered"]);
 const SSTAT = {enquiry:"Enquiry",quoted:"Quoted",negotiating:"Negotiating",licensed:"Licensed",invoiced:"Invoiced",paid:"Paid",declined:"Declined"};
 const MEDIA = {film:"Film",tv:"TV",advert:"Advert",game:"Game",online:"Online",trailer:"Trailer",other:"Other"};
 const CHANNELS = {loop:"Loop web shop", event_door:"Event door", mail:"Mail order", discogs:"Discogs marketplace", bandcamp:"Bandcamp", other:"Other"};
-if (PARTNER) CHANNELS.breakinbread = "Breakin Bread";
+CHANNELS.breakinbread = "Breakin Bread";
 const PSTAT = {draft:"Draft", live:"Live", sold_out:"Sold out", archived:"Archived"};
 const ESTAT = {draft:"Draft", on_sale:"On sale", sold_out:"Sold out", done:"Done", cancelled:"Cancelled"};
 const ROLES = ["Artist","Producer","Remixer","Songwriter","Label","Publisher","Other"];

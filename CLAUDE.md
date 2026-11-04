@@ -8,7 +8,7 @@ Gordon is blind and uses a screen reader, mostly on an Android phone. Everything
 
 ## Rules that stand
 
-* Do not mention Breakin' Bread anywhere in the app or site for now. The data model is shaped so it can sync with the Breakin' Bread platform later (Gordon's 360 music platform, Supabase + Vercel). The sync code exists but is switched off: the back-office section, the "Breakin Bread" order channel and `/api/breakin-bread/push` only appear when the server has `PARTNER_SYNC=on`. Keep it off until Gordon says otherwise.
+* Do not mention Breakin' Bread anywhere on the public site. The back office (staff only) may: Gordon asked for a push to breakinbread.com there, so it has a "Breakin Bread" section with "Send everything to Breakin Bread" and a dry run, plus a Breakin Bread order channel. The push (`/api/breakin-bread/push`) needs `BREAKINBREAD_IMPORT_URL` and `BREAKINBREAD_IMPORT_SECRET`; until they are set it says Breakin Bread isn't connected yet. The receiving end is bb-native PR #1 (`/api/admin/label-import`).
 * Respect every credit: every person on every release and track is searchable and links to their own page.
 * Pasted artwork keeps its own shape. Never crop a sticker or insert in display; use `object-fit: contain`.
 * Loop's colours, sampled from the 1993 flyer 7-inch: orange `#FF4400`, royal blue `#1F16B2`, cream. Orange is the accent, blue marks focus.

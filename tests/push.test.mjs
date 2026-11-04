@@ -25,7 +25,7 @@ before(async () => {
   });
   await new Promise(r => server.listen(0, r));
   base = `http://127.0.0.1:${server.address().port}`;
-  Object.assign(process.env, { PARTNER_SYNC: "on", SUPABASE_URL: base, SUPABASE_SERVICE_ROLE_KEY: "service", PUBLIC_SITE_URL: "https://loop.example" });
+  Object.assign(process.env, { SUPABASE_URL: base, SUPABASE_SERVICE_ROLE_KEY: "service", PUBLIC_SITE_URL: "https://loop.example" });
 });
 after(() => server.close());
 
@@ -37,12 +37,6 @@ async function call(token, body, env = {}) {
   await handler({ method: "POST", headers: token ? { authorization: `Bearer ${token}` } : {}, body }, res);
   return out;
 }
-
-test("stays switched off until PARTNER_SYNC=on", async () => {
-  const r = await call("good", {}, { PARTNER_SYNC: "" });
-  assert.equal(r.status, 404);
-  process.env.PARTNER_SYNC = "on";
-});
 
 test("refuses anyone who isn't staff", async () => {
   assert.equal((await call(null, {})).status, 401);

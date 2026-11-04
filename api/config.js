@@ -4,8 +4,6 @@ export default function handler(req, res) {
   const cfg = {
     supabaseUrl: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "",
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
-    // Partner sync (the Breakin Bread button) is off and invisible until PARTNER_SYNC=on.
-    partnerSync: process.env.PARTNER_SYNC === "on",
   };
   res.setHeader("content-type", "application/javascript; charset=utf-8");
   res.setHeader("cache-control", "public, max-age=300");

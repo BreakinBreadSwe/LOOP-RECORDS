@@ -21,7 +21,6 @@ async function record(sb, user, status, counts, extra = {}) {
 }
 
 export default async function handler(req, res) {
-  if (process.env.PARTNER_SYNC !== "on") return res.status(404).json({ ok: false, error: "Not found" });
   if (req.method !== "POST") { res.setHeader("allow", "POST"); return res.status(405).json({ ok: false, error: "Use POST" }); }
   const sb = adminClient();
   if (!sb) return res.status(500).json({ ok: false, error: "Server is missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY." });
