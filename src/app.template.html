@@ -48,9 +48,9 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 .brand .mark{display:block;flex:none;background:currentColor;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .brand .mk-spiral{width:38px;height:40px;color:var(--logo-spiral,var(--loop));transition:color .8s;-webkit-mask-image:url("__LOGO_SPIRAL__");mask-image:url("__LOGO_SPIRAL__")}
 .brand .mk-word{width:203px;height:18px;color:var(--logo-word,var(--ink));transition:color .8s;-webkit-mask-image:url("__LOGO_WORD__");mask-image:url("__LOGO_WORD__")}
-@media (max-width:520px){.brand{gap:6px}.brand .mk-spiral{width:26px;height:28px}.brand .mk-word{width:clamp(88px,calc(100vw - 280px),136px);height:12px}}
+@media (max-width:640px){.brand{order:1;flex:1 1 100%;gap:10px;max-width:420px}.brand .mk-spiral{width:auto;height:auto;flex:0 0 15%;aspect-ratio:38/40}.brand .words{flex:1;width:auto;gap:5px}.brand .mk-word{width:100%;height:auto;aspect-ratio:203/18}}
 @media (forced-colors:active){.brand .mark{background:CanvasText}}
-.brand .era{display:block;width:100%;height:auto;aspect-ratio:16/1;color:var(--muted);overflow:visible}
+.brand .era{display:block;width:100%;height:auto;aspect-ratio:20/1;color:var(--muted);overflow:visible}
 .brand .era text{font:500 10px var(--mono);fill:currentColor;text-transform:uppercase}
 .theme{display:flex;align-items:center;gap:6px;font:600 13px var(--body)}
 .tools{display:flex;flex-wrap:nowrap;align-items:center;gap:2px;margin-left:auto}
@@ -63,6 +63,7 @@ nav.views{display:flex;flex-wrap:nowrap;gap:2px}
 @media (max-width:520px){.ico{width:30px;height:30px}.ico svg{width:20px;height:20px}.tools,nav.views{gap:0}.bar{gap:10px 6px}}
 .search{order:3;flex:1 1 100%}
 @media (min-width:900px){.search{order:2;flex:1 1 220px}.tools{order:3;margin-left:0}}
+@media (max-width:640px){.search{order:2;flex:1 1 0}.search input{padding:8px 12px}.tools{order:3;margin-left:0}}
 .pastebox{margin-top:12px;padding:12px;border:2px dashed var(--loop);border-radius:10px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
 .pastebox label{font-weight:600}
 .pastebox textarea{font:15px var(--body);padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);resize:none;width:100%}
@@ -228,7 +229,9 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 .dots span.on{background:var(--loop)}
 #artGallery .gbtns{margin-top:10px}
 [hidden]{display:none!important}
-@media (max-width:640px){header.top{position:static}}
+header.top{transition:transform .25s ease}
+@media (max-width:640px){header.top{padding-block:10px}header.top.away{transform:translateY(-110%)}}
+@media (prefers-reduced-motion:reduce){header.top{transition:none}}
 .sleeve.multi{position:relative}
 .track{display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .track::-webkit-scrollbar{display:none}
@@ -263,11 +266,11 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
     <a class="brand" href="#" aria-label="Loop Records, Stockholm 1993 to 1998, home">
       <span class="mark mk-spiral" aria-hidden="true"></span>
       <span class="words"><span class="mark mk-word" aria-hidden="true"></span>
-      <svg class="era" viewBox="0 0 160 10" aria-hidden="true" focusable="false"><text x="0" y="9" textLength="160" lengthAdjust="spacing">STOCKHOLM 1993–1998</text></svg></span>
+      <svg class="era" viewBox="0 0 200 10" aria-hidden="true" focusable="false"><text x="0" y="9" textLength="200" lengthAdjust="spacing">STOCKHOLM 1993–1998</text></svg></span>
     </a>
     <form class="search" role="search" id="searchForm">
       <label class="sr" for="q">Search releases, artists, credits and tracks</label>
-      <input id="q" type="search" autocomplete="off" placeholder="Search artist, title, catno, credit, track">
+      <input id="q" type="search" autocomplete="off" placeholder="Search">
     </form>
     <div class="tools">
     <nav class="views" aria-label="Views">
@@ -995,6 +998,14 @@ document.addEventListener("click", e=>{ const b=e.target.closest(".ytplay"); if(
   f.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.yt)}?autoplay=1&rel=0&playsinline=1`;
   f.title=b.dataset.title; f.allow="autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen=true; f.loading="lazy";
   b.replaceWith(f); f.focus(); });
+// On phones the header stays at the top: it slides up while you scroll down and comes back
+// as soon as you scroll up, reach the top, or focus anything in it (keyboard, screen reader).
+(function(){ const hd=document.querySelector("header.top"); let lastY=scrollY;
+  addEventListener("scroll",()=>{ const y=scrollY, d=y-lastY;
+    if(y<80 || d<-6) hd.classList.remove("away"); else if(d>6 && innerWidth<=640 && !hd.contains(document.activeElement)) hd.classList.add("away");
+    lastY=y; },{passive:true});
+  hd.addEventListener("focusin",()=>hd.classList.remove("away"));
+  addEventListener("hashchange",()=>hd.classList.remove("away")); })();
 const themeBtn=document.getElementById("theme");
 const THEMES={system:["Match device",'<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/>'],
   light:["Light",'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>'],
