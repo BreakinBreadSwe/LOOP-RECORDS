@@ -190,7 +190,8 @@ body.pwopen{overflow:hidden}
 #vu span{position:relative;width:6px;border-radius:3px;background:color-mix(in srgb,var(--muted) 25%,transparent);overflow:hidden}
 #vu span::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--loop) 0 70%,#ffd400 85%,#ff1a1a 100%);clip-path:inset(calc((1 - var(--v,0)) * 100%) 0 0 0)}
 #vu span::after{content:"";position:absolute;left:0;right:0;height:2px;bottom:calc(var(--p,0) * 100%);background:var(--ink)}
-body.docked{padding-bottom:84px}
+body.docked{padding-bottom:calc(var(--dockh,84px) + 12px)}
+#dock .dline{display:contents}
 #dock .dart{grid-area:art;width:48px;height:48px;border-radius:4px;overflow:hidden;background:var(--bg);display:block}
 #dock .dart img,#dock .dart svg{width:100%;height:100%;object-fit:contain;display:block}
 #dock .dmeta{grid-area:meta;min-width:0;display:flex;flex-direction:column;gap:1px;text-decoration:none;color:var(--ink)}
@@ -204,8 +205,14 @@ body.docked{padding-bottom:84px}
 #dock .dwave:focus-within{outline:3px solid var(--focus);outline-offset:2px}
 #dock .dtime{grid-area:time;font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
 #dock .dvol{grid-area:vol}
-@media (max-width:700px){#dock{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"art meta ctl" "wave wave wave" "time time vol";gap:4px 10px}
-  #dock .dtime{justify-self:start}body.docked{padding-bottom:150px}#dock .dwave{height:34px}}
+/* Phones: two rows. Sleeve, title and buttons on top; time, waveform and sound underneath. */
+@media (max-width:700px){#dock{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"art meta ctl" "line line line";gap:2px 10px;padding-top:6px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
+  #dock .dline{grid-area:line;display:flex;align-items:center;gap:10px;min-width:0}
+  #dock .dline .dwave{flex:1;height:28px}
+  #dock .dtime{font-size:11px}
+  #dock .dart{width:44px;height:44px}
+  #dock .dctl .dplay{width:40px;height:40px}
+  #dock .dvol{width:32px;height:32px}}
 h2.galh{font-size:22px;margin:20px 0 8px}
 .gallery{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
 .gallery li{display:flex;flex-direction:column;gap:6px}
@@ -460,9 +467,9 @@ a.vthumb{text-decoration:none}
   <div class="dctl"><button type="button" class="ico" id="dPrev" aria-label="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5v14"/><path d="M19 5.5v13L9 12z" fill="currentColor" stroke="none"/></svg></button>
     <button type="button" class="ico dplay" id="dPlay" aria-label="Play"></button>
     <button type="button" class="ico" id="dNext" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 5v14"/><path d="M5 5.5v13L15 12z" fill="currentColor" stroke="none"/></svg></button></div>
+  <div class="dline"><span class="dtime" id="dTime" aria-hidden="true">0:00 / 0:00</span>
   <div class="dwave"><canvas id="dWave" aria-hidden="true"></canvas><input type="range" id="dSeek" min="0" max="1000" value="0" aria-label="Position in the track" aria-valuetext="0 seconds"></div>
-  <span class="dtime" id="dTime" aria-hidden="true">0:00 / 0:00</span>
-  <button type="button" class="ico dvol" id="dMute" aria-label="Mute"></button>
+  <button type="button" class="ico dvol" id="dMute" aria-label="Mute"></button></div>
 </section>
 <section id="pwin" aria-labelledby="pwTitle" hidden>
   <div class="pwhead"><button type="button" class="ico" id="pwClose" aria-label="Close the player window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9l7 7 7-7"/></svg></button><span class="eyebrow">Now playing</span></div>
