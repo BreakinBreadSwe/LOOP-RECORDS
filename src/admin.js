@@ -55,8 +55,8 @@ function viewAdmin(h){
   setNav("admin");
   if(!staff){
     const note = !adminChecked ? "Connecting to the back office…"
-      : adminEmail ? `You're signed in as ${esc(adminEmail)}, but this account isn't label staff yet. Ask Gordon to add you, then reload this page.`
-      : "The back office is for label staff. Use Staff sign in at the top of the page.";
+      : adminEmail ? `You're signed in as ${esc(adminEmail)}. The back office is only for Loop Records staff.`
+      : "The back office is only for Loop Records staff. Staff sign in with Sign in at the top of the page.";
     main.innerHTML=`<h1>Back office</h1><p class="note" role="status">${note}</p>`; focusMain(); return; }
   const sec = ADMIN.some(a=>a[0]===h) ? h : "admin";
   main.innerHTML = `${sec==="admin"?"":`<a class="back" href="#admin">Back office</a>`}
@@ -468,6 +468,7 @@ function mountRights(box, r){
 
 // Staff part of a release page: rights and splits right under the release.
 function renderReleaseStaff(r){
+  main.querySelectorAll(".staffonly").forEach(x=>{ x.hidden=!staff; });
   const box=document.getElementById("staffRelease"); if(!box) return;
   if(!staff){ box.innerHTML=""; box.hidden=true; return; }
   box.hidden=false;

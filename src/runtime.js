@@ -137,16 +137,16 @@
   };
   window.LoopBackend = { client: sb, token: token, isStaff: isStaff, ready: ready, audio: audio };
 
-  // ---- staff sign-in (magic link) ----
+  // ---- sign in or sign up (magic link): staff, artists and customers ----
   function el(tag, attrs, html) { var e = document.createElement(tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; }
   function mountAuth() {
     var nav = document.getElementById("navAdmin"); if (!nav || !nav.parentNode) return;
     var btn = el("button", { type: "button", id: "staffBtn", "class": "staffbtn" });
     nav.parentNode.appendChild(btn);
     var dlg = el("dialog", { id: "staffDlg", "aria-labelledby": "staffTitle" },
-      '<h2 id="staffTitle">Staff sign in</h2>' +
+      '<h2 id="staffTitle">Sign in or sign up</h2>' +
       '<form id="staffForm" class="staffform">' +
-      '<p>We email you a sign-in link. Only label staff get the back office.</p>' +
+      '<p>Type your email and we send you a link. New here? The same link creates your account.</p>' +
       '<label for="staffEmail">Email</label><input id="staffEmail" name="email" type="email" autocomplete="email" required>' +
       '<div class="btnrow"><button class="btn primary" type="submit">Email me a link</button><button class="btn" type="button" data-close>Close</button></div></form>' +
       '<form id="codeForm" class="staffform" hidden>' +
@@ -162,7 +162,8 @@
     var f1 = document.getElementById("staffForm"), f2 = document.getElementById("codeForm"), msg = document.getElementById("staffMsg"), sentTo = "";
     function showStep(n) { f1.hidden = n !== 1; f2.hidden = n !== 2; msg.textContent = ""; }
     ready.then(function (s) {
-      btn.textContent = s ? "Sign out" : "Staff sign in";
+      btn.textContent = s ? "Sign out" : "Sign in";
+      if (!s) btn.setAttribute("aria-label", "Sign in or sign up"); else btn.removeAttribute("aria-label");
       btn.onclick = function () { if (s) { sb.auth.signOut(); } else { showStep(1); dlg.showModal(); document.getElementById("staffEmail").focus(); } };
     });
     dlg.querySelectorAll("[data-close]").forEach(function (b) { b.onclick = function () { dlg.close(); }; });
@@ -175,7 +176,7 @@
       if (r.error) { msg.textContent = "Couldn't send the email: " + r.error.message; return; }
       sentTo = email; showStep(2);
       var sent = document.getElementById("sentMsg");
-      sent.textContent = "Email sent to " + email + ". Open it in this same browser and tap Sign in. The email is called Your sign-in link and comes from Supabase Auth for now.";
+      sent.textContent = "Email sent to " + email + ". Open it in this same browser and tap the link in it. The email is called Your sign-in link and comes from Supabase Auth for now.";
       sent.focus();
     };
   }
