@@ -167,6 +167,8 @@
       '<div class="btnrow"><button class="btn primary" type="submit">Email me a link</button><button class="btn" type="button" data-close>Close</button></div></form>' +
       '<form id="codeForm" class="staffform" hidden>' +
       '<p id="sentMsg" tabindex="-1"></p>' +
+      '<label for="staffCode">Or type the code from the email</label><input id="staffCode" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="10">' +
+      '<div class="btnrow"><button class="btn primary" type="submit">Sign in with the code</button></div>' +
       '<div class="btnrow"><button class="btn" type="button" id="staffAgain">Use another email</button><button class="btn primary" type="button" data-close>Close</button></div></form>' +
       '<p class="staffmsg" id="staffMsg" role="status" aria-live="polite"></p>');
     document.body.appendChild(dlg);
@@ -197,8 +199,21 @@
       if (r.error) { msg.textContent = "Couldn't send the email: " + r.error.message; return; }
       sentTo = email; showStep(2);
       var sent = document.getElementById("sentMsg");
-      sent.textContent = "Email sent to " + email + ". Open it in this same browser and tap the link in it. The email is called Your sign-in link and comes from Supabase Auth for now.";
+      sent.textContent = "Email sent to " + email + ". Tap the button or link in it. If the email shows a code, you can type it here instead.";
       sent.focus();
+    };
+    wireCode();
+  }
+  function wireCode() {
+    var f2 = document.getElementById("codeForm"); if (!f2) return;
+    f2.onsubmit = async function (e) {
+      e.preventDefault();
+      var msg = document.getElementById("staffMsg"), code = document.getElementById("staffCode").value.replace(/\D/g, ""), email = document.getElementById("staffEmail").value.trim();
+      if (!code) { msg.textContent = "Type the code from the email first."; document.getElementById("staffCode").focus(); return; }
+      msg.textContent = "Checking the code…";
+      var r = await sb.auth.verifyOtp({ email: email, token: code, type: "email" });
+      if (r.error) { msg.textContent = "That code didn't work. It may have run out, or a newer email has a newer code. " + r.error.message; return; }
+      msg.textContent = "Signed in."; location.hash = "#admin";
     };
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountAuth); else mountAuth();

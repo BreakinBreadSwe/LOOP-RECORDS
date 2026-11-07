@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>Sign in to Loop Records</title></head>
+<body style="margin:0;padding:0;background:#f4efe6;font-family:Helvetica,Arial,sans-serif;color:#111111">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4efe6">
+<tr><td align="center" style="padding:28px 16px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:14px;overflow:hidden">
+<tr><td style="background:#111111;padding:22px 28px">
+  <img src="{{ .SiteURL }}/brand/loop-email-logo.png" width="260" alt="Loop Records, Stockholm 1993 to 1998" style="display:block;border:0;width:260px;max-width:100%;height:auto;color:#ffffff;font-size:20px;font-weight:bold">
+</td></tr>
+<tr><td style="padding:28px">
+  <h1 style="margin:0 0 14px;font-size:26px;line-height:1.2;color:#111111">Sign in to Loop Records</h1>
+  <p style="margin:0 0 22px;font-size:17px;line-height:1.5">Hi! Tap the button to sign in. It works once and runs out in an hour. New here? The same button creates your account.</p>
+  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:999px;background:#FF4400">
+    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:15px 30px;font-size:18px;font-weight:bold;color:#000000;text-decoration:none;border-radius:999px">Sign in to Loop Records</a>
+  </td></tr></table>
+  <p style="margin:24px 0 6px;font-size:15px;line-height:1.5">Or type this code on the site:</p>
+  <p style="margin:0 0 24px;font-size:28px;font-weight:bold;letter-spacing:6px;font-family:Menlo,Consolas,monospace;color:#1F16B2">{{ .Token }}</p>
+  <p style="margin:0;font-size:14px;line-height:1.5;color:#555555">If you didn't ask to sign in, you can ignore this email. Nothing happens without the button.</p>
+</td></tr>
+<tr><td style="padding:16px 28px;border-top:1px solid #eeeeee;font-size:13px;color:#777777">Loop Records &middot; Stockholm &middot; <a href="{{ .SiteURL }}" style="color:#1F16B2">{{ .SiteURL }}</a></td></tr>
+</table>
+</td></tr></table>
+</body></html>
