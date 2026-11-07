@@ -129,8 +129,18 @@ main > .pagetitle + .roles,main > .pagetitle + .note{margin-top:0}
 /* Release page: from tablet width the artwork column (with All releases) stays in place while the
    tracklist, credits and videos scroll beside it. */
 .detail{display:grid;grid-template-columns:minmax(0,clamp(340px,38vw,560px)) minmax(0,1fr);gap:32px;align-items:start}
-@media (min-width:761px){.detail .relside{position:sticky;top:calc(var(--hdrh,80px) + 12px);max-height:calc(100vh - var(--hdrh,80px) - var(--dockh,0px) - 24px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px}}
-@media (max-width:760px){.detail{grid-template-columns:minmax(0,1fr)}}
+.detail .relside{position:sticky;top:calc(var(--hdrh,80px) + 12px);max-height:calc(100vh - var(--hdrh,80px) - var(--dockh,0px) - 24px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px;transition:top .25s}
+body:has(header.top.away) .detail .relside{top:8px;max-height:calc(100vh - var(--dockh,0px) - 16px)}
+/* Phones too: two columns, the artwork and All releases stay put, the text scrolls beside them. */
+@media (max-width:760px){.detail{grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:14px}
+  .detail > div:last-child{min-width:0;overflow-wrap:anywhere}
+  .detail h1{font-size:clamp(24px,7vw,34px)}
+  .detail .relside .back{margin-bottom:10px;padding:7px 10px 7px 8px;font-size:13px}
+  .detail .relside .btnrow{gap:6px}
+  .detail .relside .slidectl{flex-wrap:wrap;gap:6px;justify-content:center}
+  .detail .relside .slcount{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .detail .relside .navbtn{width:32px;height:32px}
+  .detail .relside [data-full]{flex:1 1 auto;padding-inline:8px}}
 .detail .sleeve{box-shadow:0 1px 0 var(--line),0 24px 40px -24px rgba(0,0,0,.6)}
 .facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:16px 0 0}
 .facts dt{font:500 12px/1.9 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
@@ -339,6 +349,9 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 @media (min-width:640px){.mosaic{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media (min-width:1000px){.mosaic{grid-template-columns:repeat(7,minmax(0,1fr))}}
 .mosaic a{display:block;aspect-ratio:1;overflow:hidden;background:var(--surface)}
+body.mosaicfit > footer{display:none}
+body.mosaicfit main{padding-bottom:0}
+.mosaic.fit{gap:3px;justify-content:center;grid-template-columns:repeat(var(--fc),var(--fs))}
 .mosaic img,.mosaic svg{display:block;width:100%;height:100%;object-fit:contain;background:var(--surface);transition:transform .15s}
 .mosaic a:hover img,.mosaic a:hover svg{transform:scale(1.04)}
 .mosaic a:focus-visible{outline-offset:-3px}
@@ -661,7 +674,20 @@ function announce(t){ live.textContent=""; setTimeout(()=>live.textContent=t,30)
 let quiet=false;
 function focusMain(){ if(quiet) return; const h=main.querySelector("h1"); if(h){h.setAttribute("tabindex","-1"); h.focus({preventScroll:true});} window.scrollTo(0,0); }
 
+// Mosaic: every release in the selection fits in the space under the filters, nothing to scroll.
+// Picks the number of columns that gives the biggest square tiles.
+function fitMosaic(){
+  const m=main.querySelector("ul.mosaic"); if(!m) return;
+  const n=m.children.length; if(!n){ m.classList.remove("fit"); document.body.classList.remove("mosaicfit"); return; }
+  const top=m.getBoundingClientRect().top+scrollY-(document.querySelector("header.top").offsetHeight&&0);
+  const W=m.parentElement.clientWidth, H=innerHeight-(m.getBoundingClientRect().top)-(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dockh"))||0)-16, g=3;
+  if(H<120){ m.classList.remove("fit"); return; }
+  let best={c:1,s:0}; for(let c=1;c<=n;c++){ const r=Math.ceil(n/c), s=Math.min((W-g*(c-1))/c,(H-g*(r-1))/r); if(s>best.s) best={c,s}; }
+  m.style.setProperty("--fc",best.c); m.style.setProperty("--fs",Math.floor(best.s)+"px"); m.classList.add("fit"); document.body.classList.add("mosaicfit");
+}
+addEventListener("resize",()=>{ if(mosaic) fitMosaic(); });
 function viewReleases(fromSearch){
+  document.body.classList.remove("mosaicfit");
   setNav("releases");
   const term = norm(q.value.trim());
   const found = sortReleases(R.filter(r=>(filter==="all"||r.group===filter) && (!term || term.split(/\s+/).every(w=>r._s.includes(w)))));
@@ -689,6 +715,7 @@ function viewReleases(fromSearch){
   const fs=document.getElementById("fxSel");
   if(fs) fs.onclick=()=>{ const ks=Object.keys(FX); fxMode=ks[(ks.indexOf(fxMode)+1)%ks.length]; try{ localStorage.setItem("loop-fx",fxMode); }catch(e){}
     fs.setAttribute("aria-label",`Slideshow transition: ${FX[fxMode]}. Change`); fs.title=`Slideshow transition: ${FX[fxMode]}`; announce("Transition: "+FX[fxMode]); };
+  if(mosaic) requestAnimationFrame(fitMosaic);
   if(fromSearch) announce(scope==="people"?`${ppl.length} people`:`${list.length} releases${ppl.length?` and ${ppl.length} people`:""}`);
 }
 function tile(r){
@@ -732,7 +759,7 @@ const dock = (()=>{
     sound:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
     muted:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>'};
   function show(){ el.hidden=false; document.body.classList.add("docked"); }
-  new ResizeObserver(()=>document.documentElement.style.setProperty("--dockh", (el.hidden?0:el.offsetHeight)+"px")).observe(el);
+  new ResizeObserver(()=>{ document.documentElement.style.setProperty("--dockh", (el.hidden?0:el.offsetHeight)+"px"); if(typeof mosaic!=="undefined" && mosaic) requestAnimationFrame(fitMosaic); }).observe(el);
   let idleV=null;
   function hide(){ el.hidden=true; document.body.classList.remove("docked"); clearInterval(timer); }
   function draw(){
@@ -1761,6 +1788,7 @@ function wake(e){
 ["click","pointerup","mouseup","touchend"].forEach(t=>document.addEventListener(t, e=>{ if(Date.now()<swallowUntil){ e.preventDefault(); e.stopPropagation(); } }, {capture:true}));
 document.addEventListener("visibilitychange", ()=>{ if(document.hidden){ clearTimeout(saverTimer); hideSaver(); } else armSaver(); });
 function route(){
+  document.body.classList.remove("mosaicfit");
   // A video playing on the page (not in the player window) carries on in the small player when you move on.
   let carry=null;
   try{ cleanPlayers.forEach(x=>{ if(carry||x.inWindow) return; const st=x.player&&x.player.getPlayerState&&x.player.getPlayerState();
