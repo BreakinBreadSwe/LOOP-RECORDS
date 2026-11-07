@@ -198,7 +198,11 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 #pwin[hidden]{display:none}
 #pwin .pwhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 #pwin .pwbody{display:grid;grid-template-columns:minmax(0,1fr);gap:20px 24px;align-items:start}
-@media (min-width:900px){#pwin .pwbody{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}}
+#pwin:not(.withart) .pwvid{width:100%}
+/* From tablet width: the video column and Up next are two separate columns, each scrolling on its own. */
+@media (min-width:761px){#pwin:not(.mini){overflow:hidden;display:flex;flex-direction:column}
+  #pwin:not(.mini) .pwbody{flex:1;min-height:0;grid-template-columns:minmax(0,1fr) clamp(280px,28vw,400px);align-items:stretch}
+  #pwin:not(.mini) .pwmain,#pwin:not(.mini) .upnext{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}}
 .pwth{margin:22px 0 8px;font-size:18px}
 #partyDlg{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:20px;max-width:min(440px,calc(100vw - 32px))}
 #partyDlg::backdrop{background:var(--scrim)}
@@ -890,8 +894,8 @@ const pwin = (()=>{
   function fill(v){
     cur=v; const r=v.r;
     // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
-    // Gordon loves it: the square sleeve on top, the video playing underneath.
-    const PW_ART=true, u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(PW_ART&&v.track&&u); el.classList.toggle("withart",!art.hidden);
+    // Off (Gordon, later the same night): just the video, large. The sleeve slideshow code stays for later.
+    const PW_ART=false, u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(PW_ART&&v.track&&u); el.classList.toggle("withart",!art.hidden);
     // Every picture of the release, swipe or use the arrows; the video plays underneath.
     const pics = imgUrls(r);
     art.innerHTML = art.hidden ? "" : `<div class="pwslides" id="pwSlides" tabindex="0" role="group" aria-roledescription="slideshow" aria-label="Pictures of ${esc(r.title)}">${pics.map((x,k)=>`<img src="${esc(x)}" alt="Picture ${k+1} of ${pics.length}, ${esc(r.title)}"${k?' loading="lazy"':""}>`).join("")}</div>
@@ -928,7 +932,7 @@ const pwin = (()=>{
   }
   function step(d){ const list=videoOrder(), i=list.indexOf(cur); open(list[((i<0?0:i)+d+list.length)%list.length], true); }
   async function open(v, play, fromHandle){
-    if(!v) return; show(); fill(v); $("pwTitle").focus();
+    if(!v) return; show(); fill(v); el.scrollTop=0; el.querySelectorAll(".pwmain,.upnext").forEach(x=>x.scrollTop=0); $("pwTitle").focus({preventScroll:true});
     // Opened from a video playing on the page: carry on in the window from the same moment.
     let at=0; if(fromHandle && fromHandle!==h){ try{ at=fromHandle.player.getCurrentTime()||0; const st=fromHandle.player.getPlayerState(); play = play || st===1 || st===3; fromHandle.player.pauseVideo(); }catch(e){} }
     const box=$("pwBox");
