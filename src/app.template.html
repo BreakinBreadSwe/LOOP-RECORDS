@@ -169,7 +169,8 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
   display:grid;grid-template-columns:auto minmax(0,1.1fr) auto minmax(0,3fr) auto auto;grid-template-areas:"art meta ctl wave time vol";gap:6px 12px;align-items:center}
 #dock[hidden]{display:none}
 #dock .dmeta,#dock .dart{cursor:pointer}
-#pwin{position:fixed;left:0;right:0;top:0;bottom:var(--dockh,72px);z-index:7;background:var(--bg);overflow:auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 24px;transform:translateY(100%);transition:transform .35s cubic-bezier(.65,0,.35,1)}
+#pwin{position:fixed;left:0;right:0;top:0;bottom:var(--dockh,72px);z-index:7;background:var(--bg);overflow:auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 24px;transform:translateY(100%);transition:transform .32s cubic-bezier(.65,0,.35,1)}
+@media (prefers-reduced-motion:reduce){#pwin{transition:none}}
 #pwin.on{transform:none}
 #pwin[hidden]{display:none}
 #pwin .pwhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -819,9 +820,14 @@ const pwin = (()=>{
   const el=document.getElementById("pwin"), $=id=>document.getElementById(id);
   let h=null, cur=null, opener=null;
   function mark(open){ const m=$("dMeta"); m.setAttribute("aria-expanded",open?"true":"false"); m.setAttribute("aria-controls","pwin"); }
-  function show(){ if(!el.hidden) return; opener=document.activeElement; el.hidden=false; document.body.classList.add("pwopen"); mark(true); requestAnimationFrame(()=>el.classList.add("on")); }
-  function close(){ if(el.hidden) return; try{ h&&h.player&&h.player.pauseVideo(); }catch(e){} el.classList.remove("on"); document.body.classList.remove("pwopen");
-    el.hidden=true; mark(false); if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); }
+  let closing=null;
+  function show(){ if(!el.hidden && !closing) return; clearTimeout(closing); closing=null;
+    if(el.hidden) opener=document.activeElement; el.hidden=false; document.body.classList.add("pwopen"); mark(true);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); }
+  // Slides down on the same quick S-curve it slides up on, then hides.
+  function close(){ if(el.hidden || closing) return; try{ h&&h.player&&h.player.pauseVideo(); }catch(e){} el.classList.remove("on"); document.body.classList.remove("pwopen"); mark(false);
+    if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus();
+    closing=setTimeout(()=>{ closing=null; el.hidden=true; }, reducedMotion.matches?0:320); }
   function fill(v){
     cur=v; const r=v.r;
     // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
@@ -877,7 +883,7 @@ const pwin = (()=>{
   $("pwClose").onclick=close;
   el.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); close(); } });
   addEventListener("hashchange",()=>close());
-  return { open, close, show, isOpen:()=>!el.hidden };
+  return { open, close, show, isOpen:()=>!el.hidden && !closing };
 })();
 window.pwin = pwin;
 
