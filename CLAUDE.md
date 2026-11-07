@@ -28,7 +28,7 @@ Gordon is blind and uses a screen reader, mostly on an Android phone. Everything
 
 ## Where things stand
 
-The Claude-hosted version is live as a private artifact on claude.ai; that is where Gordon pastes covers today and its data lives in that artifact's own store. This repository runs the same page as a normal website on Vercel with Supabase behind it. Deploy needs `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PUBLIC_SITE_URL` (see `.env.example`). First staff member: sign in once, then `insert into public.staff (user_id) select id from auth.users where email = '...';`.
+The Claude-hosted version is live as a private artifact on claude.ai; that is where Gordon pastes covers today and its data lives in that artifact's own store. This repository runs the same page as a normal website on Vercel with Supabase behind it. Deploy needs `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PUBLIC_SITE_URL` (see `.env.example`). Supabase project `lvpayzovumfpjkbaiwhy` ("LOOP RECORDS", own organization, free plan) has migrations 0001 to 0004 and the seed applied; the site is https://loop-records-mocha.vercel.app and Supabase's sign-in links point there. Staff: add an email to `public.staff_invites` (migration 0004) and that person becomes staff automatically on first sign-in. Invited: gordoncyrus@gmail.com (staff), joachim@streetstar.se. Vito is not hands-on yet. Sign-in emails still use Supabase's built-in mailer (2 a hour, template can't be changed on free) until custom SMTP is set up.
 
 ## Next steps, in order
 
