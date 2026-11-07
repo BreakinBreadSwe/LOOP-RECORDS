@@ -45,4 +45,4 @@ mkdirSync(join(root, "public"), { recursive: true });
 writeFileSync(join(root, "public/index.html"), html);
 copyFileSync(join(root, "src/runtime.js"), join(root, "public/runtime.js"));
 writeFileSync(join(root, "public/catalog.json"), JSON.stringify(catalog, null, 1));
-console.log(`Built public/index.html (${(html.length / 1024).toFixed(0)} KB, ${catalog.releases.length} releases, ${catalog.people.length} people, ${catalog.releases.filter(r => r.images).length} with pasted covers)`);
+console.log(`Built public/index.html (${(html.length / 1024).toFixed(0)} KB, ${catalog.releases.length} releases, ${catalog.people.length} people, ${catalog.releases.filter(r => r.images).length} with covers)`);
