@@ -537,6 +537,8 @@ let artMsg={id:null,text:""};
 function setArtMsg(r,text){ artMsg={id:r.id,text}; const st=document.getElementById("artStatus"); if(st) st.textContent=text; }
 function imgsOf(r){ return (artImgs[r.id]||[]).map(x=>({...x})); }
 async function writeImgs(r, imgs){
+  // Keep the local copy current at once, so several images saved in a row each see the last one.
+  if(imgs.length){ artImgs[r.id]=imgs.map(x=>({...x})); art[r.id]=imgs[0].url; } else { delete artImgs[r.id]; delete art[r.id]; }
   if(!imgs.length) return dbNS.doc("artwork/"+r.id).delete();
   return dbNS.doc("artwork/"+r.id).set({catno:r.catno, title:r.title, images:imgs, url:imgs[0].url, assetId:imgs[0].assetId||null, at:new Date().toISOString()});
 }
@@ -600,9 +602,16 @@ function renderArtTools(r){
   const imgs = imgsOf(r);
   if(!assetsNS || !dbNS){ box.innerHTML = ""; return; }
   box.innerHTML = `<button type="button" class="btn primary" id="pasteBtn" aria-controls="pasteBox">${imgs.length?"Paste another image":"Paste cover"}</button>
-    <label class="btn" for="coverFile">${imgs.length?"Add image from phone or computer":"Choose cover image"}</label>
-    <input type="file" id="coverFile" accept="image/*" class="sr">`;
-  document.getElementById("coverFile").onchange = e => { const f = e.target.files && e.target.files[0]; if(f) saveCover(r, f); e.target.value = ""; };
+    <label class="btn" for="coverFile">${imgs.length?"Add images from phone or computer":"Choose cover images"}</label>
+    <input type="file" id="coverFile" accept="image/*" multiple class="sr">`;
+  document.getElementById("coverFile").onchange = async e => {
+    const files = [...(e.target.files || [])]; e.target.value = ""; if(!files.length) return;
+    for(let i = 0; i < files.length; i++){
+      if(files.length > 1) setArtMsg(r, `Saving image ${i+1} of ${files.length} for ${r.catno}…`);
+      await saveCover(r, files[i]);
+    }
+    if(files.length > 1){ const msg = `${files.length} images added to ${r.catno}, ${r.title}.`; setArtMsg(r, msg); announce(msg); }
+  };
   const pb=document.getElementById("pasteBox"), pa=document.getElementById("pasteArea");
   document.getElementById("pasteBtn").onclick=async()=>{
     // Read the clipboard straight away where the browser allows it; otherwise open the paste box.
