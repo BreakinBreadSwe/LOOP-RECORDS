@@ -139,6 +139,15 @@ h2.galh{font-size:22px;margin:20px 0 8px}
 .tile .tt{font:800 24px/1.05 var(--display);text-transform:uppercase}
 .tile .td{font-size:15px;line-height:1.4;color:var(--muted)}
 .tile .ts{margin-top:auto;font:600 13px var(--mono);color:var(--loop-text)}
+.viewer{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#000;color:#fff;overflow:hidden}
+.viewer::backdrop{background:#000}
+.viewer .vstage{position:absolute;inset:0 0 72px 0;display:flex;align-items:center;justify-content:center;touch-action:pan-y}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain;user-select:none}
+.viewer .vbar{position:absolute;left:0;right:0;bottom:0;height:72px;display:flex;align-items:center;justify-content:center;gap:14px;background:#000}
+.viewer .vcount{font:500 14px var(--mono);min-width:7em;text-align:center}
+.viewer .btn{color:#fff;border-color:#fff}
+.viewer :focus-visible{outline:3px solid #8f88ff;outline-offset:3px}
+#slides img{cursor:zoom-in}
 .staffonly{display:contents}.staffonly[hidden]{display:none}
 .staffrel{margin:28px 0;padding:16px;border:2px solid var(--loop);border-radius:10px}
 .subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
@@ -567,13 +576,15 @@ function renderSlides(r){
   const box=document.getElementById("slides"); if(!box) return;
   const imgs=imgsOf(r), n=imgs.length;
   const k=Math.min(slideAt[r.id]||0, Math.max(0,n-1)); slideAt[r.id]=k;
-  if(n<=1){ box.innerHTML=sleeve(r); renderSlideCtl(r); return; }
+  box.onclick = e => { if(e.target.closest("img")||e.target.closest("[data-full]")) openViewer(r, slideAt[r.id]||0); };
+  if(n<=1){ box.innerHTML=sleeve(r)+(n?`<div class="slidectl"><button type="button" class="btn small" data-full>Full screen</button></div>`:""); renderSlideCtl(r); return; }
   box.innerHTML=`<section class="slideshow" aria-roledescription="carousel" aria-label="Artwork for ${esc(r.title)}, ${n} images" tabindex="0">
     <div class="sleeve multi"><div class="track" id="slTrack">${imgs.map((x,i)=>`<img src="${esc(x.url)}" alt="${i===0?"Main cover":"Image "+(i+1)} of ${esc(r.title)}" draggable="false">`).join("")}</div></div>
     <div class="slidectl">
       <button type="button" class="navbtn prev" id="slPrev" aria-label="Previous image"></button>
       <span class="slcount" id="slCount" aria-live="polite">Image ${k+1} of ${n}</span>
       <button type="button" class="navbtn next" id="slNext" aria-label="Next image"></button>
+      <button type="button" class="btn small" data-full>Full screen</button>
     </div>
     <div class="dots" aria-hidden="true">${imgs.map((_,d)=>`<span class="${d===k?"on":""}"></span>`).join("")}</div>
   </section>`;
@@ -584,6 +595,38 @@ function renderSlides(r){
   document.getElementById("slNext").onclick=()=>go(1);
   box.querySelector(".slideshow").onkeydown=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); go(-1); } if(e.key==="ArrowRight"){ e.preventDefault(); go(1); } };
   renderSlideCtl(r);
+}
+// ---------- full-screen artwork viewer: swipe, arrow keys, buttons ----------
+function openViewer(r, start){
+  const imgs=imgsOf(r), n=imgs.length; if(!n) return;
+  let k=Math.max(0,Math.min(n-1,start||0));
+  let dlg=document.getElementById("viewer");
+  if(!dlg){ dlg=document.createElement("dialog"); dlg.id="viewer"; dlg.className="viewer"; document.body.appendChild(dlg); }
+  dlg.setAttribute("aria-label", `Artwork for ${r.catno}, ${r.title}`);
+  dlg.innerHTML=`<div class="vstage"><img id="vImg" alt="" draggable="false"></div>
+    <div class="vbar">
+      ${n>1?`<button type="button" class="navbtn prev" id="vPrev" aria-label="Previous image"></button>`:""}
+      <span class="vcount" id="vCount" aria-live="polite"></span>
+      ${n>1?`<button type="button" class="navbtn next" id="vNext" aria-label="Next image"></button>`:""}
+      <button type="button" class="btn" id="vClose">Close</button>
+    </div>`;
+  const img=dlg.querySelector("#vImg"), cnt=dlg.querySelector("#vCount");
+  const show=()=>{ img.src=imgs[k].url; img.alt=`${k===0?"Main cover":"Image "+(k+1)} of ${r.title}`; cnt.textContent=n>1?`Image ${k+1} of ${n}`:r.title; };
+  const go=d=>{ if(n<2) return; k=(k+d+n)%n; show(); };
+  show();
+  if(n>1){ dlg.querySelector("#vPrev").onclick=()=>go(-1); dlg.querySelector("#vNext").onclick=()=>go(1); }
+  const close=()=>dlg.close();
+  dlg.querySelector("#vClose").onclick=close;
+  dlg.onkeydown=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); go(-1); } if(e.key==="ArrowRight"){ e.preventDefault(); go(1); } };
+  let x0=null, y0=null;
+  dlg.onpointerdown=e=>{ if(e.target.closest("button")) return; x0=e.clientX; y0=e.clientY; };
+  dlg.onpointerup=e=>{ if(x0==null) return; const dx=e.clientX-x0, dy=e.clientY-y0; x0=null;
+    if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) go(dx<0?1:-1);
+    else if(dy>90 && Math.abs(dy)>Math.abs(dx)) close(); };            // swipe down closes
+  dlg.onclose=()=>{ if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); slideAt[r.id]=k; if(location.hash==="#release-"+r.id){ renderSlides(r); const b=document.querySelector("#slides [data-full]"); if(b) b.focus(); } };
+  dlg.showModal();
+  if(dlg.requestFullscreen) dlg.requestFullscreen().catch(()=>{});
+  dlg.querySelector("#vClose").focus();
 }
 function setSlide(r,k){
   const n=imgsOf(r).length; k=Math.max(0,Math.min(n-1,k)); if(slideAt[r.id]===k) return; slideAt[r.id]=k;
