@@ -144,28 +144,39 @@
     var btn = el("button", { type: "button", id: "staffBtn", "class": "staffbtn" });
     nav.parentNode.appendChild(btn);
     var dlg = el("dialog", { id: "staffDlg", "aria-labelledby": "staffTitle" },
-      '<form method="dialog" id="staffForm" class="staffform">' +
       '<h2 id="staffTitle">Staff sign in</h2>' +
+      '<form id="staffForm" class="staffform">' +
       '<p>We email you a sign-in link. Only label staff get the back office.</p>' +
       '<label for="staffEmail">Email</label><input id="staffEmail" name="email" type="email" autocomplete="email" required>' +
-      '<p class="staffmsg" id="staffMsg" role="status"></p>' +
-      '<div class="btnrow"><button class="btn primary" type="submit" value="send">Email me a link</button><button class="btn" type="button" id="staffCancel">Close</button></div></form>');
+      '<div class="btnrow"><button class="btn primary" type="submit">Email me a link</button><button class="btn" type="button" data-close>Close</button></div></form>' +
+      '<form id="codeForm" class="staffform" hidden>' +
+      '<p id="sentMsg" tabindex="-1"></p>' +
+      '<div class="btnrow"><button class="btn" type="button" id="staffAgain">Use another email</button><button class="btn primary" type="button" data-close>Close</button></div></form>' +
+      '<p class="staffmsg" id="staffMsg" role="status" aria-live="polite"></p>');
     document.body.appendChild(dlg);
     var css = el("style", {}, ".staffbtn{font:inherit;font-weight:600;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:4px}.staffbtn:hover{color:var(--loop-text)}" +
       "#staffDlg{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:20px;max-width:min(420px,calc(100vw - 32px))}#staffDlg::backdrop{background:var(--scrim)}" +
-      ".staffform label{display:block;font-weight:600;margin:12px 0 4px}.staffform input{width:100%;box-sizing:border-box;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}.staffmsg{min-height:1.4em;color:var(--muted)}");
+      ".staffform label{display:block;font-weight:600;margin:12px 0 4px}.staffform input{width:100%;box-sizing:border-box;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}" +
+      "#sentMsg{font-weight:600}.staffmsg{min-height:1.4em;color:var(--muted)}");
     document.head.appendChild(css);
+    var f1 = document.getElementById("staffForm"), f2 = document.getElementById("codeForm"), msg = document.getElementById("staffMsg"), sentTo = "";
+    function showStep(n) { f1.hidden = n !== 1; f2.hidden = n !== 2; msg.textContent = ""; }
     ready.then(function (s) {
       btn.textContent = s ? "Sign out" : "Staff sign in";
-      btn.onclick = function () { if (s) { sb.auth.signOut(); } else { dlg.showModal(); document.getElementById("staffEmail").focus(); } };
+      btn.onclick = function () { if (s) { sb.auth.signOut(); } else { showStep(1); dlg.showModal(); document.getElementById("staffEmail").focus(); } };
     });
-    document.getElementById("staffCancel").onclick = function () { dlg.close(); };
-    document.getElementById("staffForm").onsubmit = async function (e) {
+    dlg.querySelectorAll("[data-close]").forEach(function (b) { b.onclick = function () { dlg.close(); }; });
+    document.getElementById("staffAgain").onclick = function () { showStep(1); document.getElementById("staffEmail").focus(); };
+    f1.onsubmit = async function (e) {
       e.preventDefault();
-      var email = document.getElementById("staffEmail").value.trim(), msg = document.getElementById("staffMsg");
+      var email = document.getElementById("staffEmail").value.trim();
       msg.textContent = "Sending…";
       var r = await sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: location.origin + location.pathname + "#admin", shouldCreateUser: true } });
-      msg.textContent = r.error ? "Couldn't send the link: " + r.error.message : "Check " + email + " for the sign-in link.";
+      if (r.error) { msg.textContent = "Couldn't send the email: " + r.error.message; return; }
+      sentTo = email; showStep(2);
+      var sent = document.getElementById("sentMsg");
+      sent.textContent = "Email sent to " + email + ". Open it in this same browser and tap Sign in. The email is called Your sign-in link and comes from Supabase Auth for now.";
+      sent.focus();
     };
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountAuth); else mountAuth();

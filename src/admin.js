@@ -1,6 +1,6 @@
 // ===================== Back office =====================
 const S = {products:{}, orders:{}, events:{}, sync:{}, rights:{}, settings:{}};
-let staff = false, dlNS = null, loaded = {};
+let staff = false, dlNS = null, loaded = {}, adminChecked = false, adminEmail = "";
 const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-export","Export"]];
 // The back office (staff only) may name Breakin Bread; the public site never does.
 ADMIN.push(["admin-bb","Breakin Bread"]);
@@ -38,8 +38,9 @@ async function del(c,id){ await dbNS.doc(c+"/"+id).delete(); }
 function armed(btn){ if(btn.dataset.armed==="1") return true; btn.dataset.armed="1"; const t=btn.textContent; btn.textContent="Confirm delete"; setTimeout(()=>{ if(btn.isConnected){ btn.dataset.armed=""; btn.textContent=t; } },5000); return false; }
 
 async function initAdmin(db){
-  try{ const u = await claude.use("user"); staff = u ? await u.canEdit() : false; }catch(e){ staff=false; }
-  if(!staff) return;
+  try{ const u = await claude.use("user"); adminEmail = (u && u.email) || ""; staff = u ? await u.canEdit() : false; }catch(e){ staff=false; }
+  adminChecked = true;
+  if(!staff){ if(location.hash.startsWith("#admin")) route(); return; }
   document.getElementById("navAdmin").hidden=false;
   try{ dlNS = await claude.use("downloads"); }catch(e){}
   for(const k of Object.keys(S)){
@@ -51,7 +52,11 @@ async function initAdmin(db){
 
 function viewAdmin(h){
   setNav("admin");
-  if(!staff){ main.innerHTML=`<h1>Back office</h1><p class="note">${dbNS?"The back office is for label staff with edit access to this app.":"Connecting to the back office…"}</p>`; focusMain(); return; }
+  if(!staff){
+    const note = !adminChecked ? "Connecting to the back office…"
+      : adminEmail ? `You're signed in as ${esc(adminEmail)}, but this account isn't label staff yet. Ask Gordon to add you, then reload this page.`
+      : "The back office is for label staff. Use Staff sign in at the top of the page.";
+    main.innerHTML=`<h1>Back office</h1><p class="note" role="status">${note}</p>`; focusMain(); return; }
   const sec = ADMIN.some(a=>a[0]===h) ? h : "admin";
   main.innerHTML = `<nav class="subnav" aria-label="Back office sections">${ADMIN.map(([k,l])=>`<a href="#${k}"${k===sec?' aria-current="page"':""}>${l}</a>`).join("")}</nav>
     <div id="adm"></div><p class="status" id="admStatus" role="status"></p>`;
