@@ -382,7 +382,7 @@ LIVE.sync = () => {
     <button type="button" class="btn small danger" data-act="del" data-id="${d._id}" aria-label="Delete deal with ${esc(d.licensee)}">Delete</button></td></tr>`; }).join("")}</tbody></table></div>`;
 };
 SECTIONS["admin-sync"] = el => {
-  el.innerHTML = `<h1>Sync licensing</h1><p class="lede">Film, TV, adverts and games. Paid fees go into royalties using each release's splits.</p>
+  el.innerHTML = `<p class="eyebrow">Sync licensing by servo.music</p><h1>Sync licensing</h1><p class="lede">Film, TV, adverts and games. Paid fees go into royalties using each release's splits.</p>
   <div id="sFormWrap">${syncForm()}</div><div data-live="sync"></div>`;
   const wrap=el.querySelector("#sFormWrap");
   el.onchange = e => { if(e.target.name==="releaseId" && e.target.form && e.target.form.id==="sForm"){ e.target.form.elements.track.innerHTML=trackOptions(e.target.value); } };

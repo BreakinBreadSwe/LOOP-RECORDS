@@ -45,4 +45,6 @@ The Claude-hosted version is live as a private artifact on claude.ai; that is wh
 4. A real checkout for digital files, vinyl, CD, cassette, merch and tickets.
 5. Native apps: Mac first, then iOS, then Android. Then switch on Breakin' Bread sync.
 
+Sync licensing partner: servo.music (spelling as Gordon dictated it; check with him). The back office Sync licensing page says "Sync licensing by servo.music". Meeting the Wednesday after 7 Nov 2026 with Gregor, Åsa and Max at servo.music about connecting Breakin Bread with them so Loop's catalog can be offered for sync too. Gregor knows Vito and Jocke (Joachim Hövel) well. No technical connection to servo.music exists yet.
+
 Open items: Wrong Steps Records and Loop Music are listed as sublabels on Discogs but their releases are not in the catalog yet. Six releases in the "related" group are only loosely tied to Loop and may be dropped.

@@ -181,6 +181,13 @@ html.tinted body{background:color-mix(in srgb,var(--tint-c,var(--loop)) 12%,var(
 .field{display:flex;flex-direction:column;gap:5px;min-width:0;font:600 13px var(--body)}
 .field input,.field select,.field textarea,.sel,.tbl input,.tbl select,.inline input{font:15px var(--body);padding:8px 10px;border:1px solid var(--muted);border-radius:6px;background:var(--bg);color:var(--ink);min-width:0;width:100%}
 .sel{width:auto}
+/* Form controls include their padding and border in their width, so a field never runs into the next column. */
+input,select,textarea,button{box-sizing:border-box}
+.field input,.field select,.tbl input,.tbl select{min-height:40px}
+input[type="date"]{display:block;-webkit-appearance:none;appearance:none;min-height:40px;text-align:left}
+input[type="date"]::-webkit-date-and-time-value{text-align:left}
+.field input[type="checkbox"],.field input[type="radio"]{width:22px;height:22px;min-height:0;padding:0;flex:none;order:-1;accent-color:var(--loop)}
+.field:has(> input[type="checkbox"]){flex-direction:row;justify-content:flex-start;align-items:center;gap:10px;font-size:15px}
 fieldset{border:1px solid var(--line);border-radius:8px;padding:12px;margin:0;min-width:0}
 legend{font-weight:600;padding:0 6px}
 .itemrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,.7fr) minmax(0,.7fr) auto;gap:10px;align-items:end;margin-bottom:10px}
