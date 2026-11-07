@@ -27,7 +27,8 @@ const head = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta property="og:title" content="Loop Records">
 <meta property="og:description" content="Loop Records, Stockholm 1993 to 1998. Every release, every credit, every video.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ff4400'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%231f16b2'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="/brand/loop-favicon.svg">
+<link rel="apple-touch-icon" href="/brand/loop-spiral-orange.png">
 <script>window.__STANDALONE__=true;</script>
 <script src="/api/config"></script>
 <script src="${SUPABASE_JS}" crossorigin="anonymous"></script>
@@ -38,6 +39,8 @@ const page = template
   .replace("<title>Loop Records Catalog</title>", "<title>Loop Records</title>")
   .replace('<span id="vidNote">Videos link out to YouTube.</span>', "Videos play from YouTube.");
 const html = head + page
+  .replaceAll("__LOGO_SPIRAL__", "brand/loop-spiral.svg")
+  .replaceAll("__LOGO_WORD__", "brand/loop-wordmark.svg")
   .replace("__CATALOG__", () => json)
   .replace("/*__ADMIN__*/", () => admin);
 

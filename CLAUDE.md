@@ -17,6 +17,7 @@ Gordon is blind and uses a screen reader, mostly on an Android phone. Everything
 ## What is in this repository
 
 * `src/app.template.html` is the shared page (public catalog plus back office shell). `src/admin.js` is the back office, spliced in at `/*__ADMIN__*/`. `src/runtime.js` connects the page to Supabase (staff sign-in by email link, live document store, artwork uploads, downloads) by implementing the small `window.claude` API the page was written against.
+* `public/brand/` holds the real Loop logo, vectorized from the sleeves with potrace: `loop-spiral.svg` (from the LOOP 012 label) and `loop-wordmark.svg` (the italic LOOP RECORDS lettering from the LOOP 001 sleeve), both `fill="currentColor"`, plus PNGs in black, white and orange at 1600px and `loop-favicon.svg`. The header shows them through CSS masks (spiral in Loop orange, lettering in the text colour); the build swaps `__LOGO_SPIRAL__`/`__LOGO_WORD__` for file paths, or for data URIs in the Claude build.
 * `npm run build` (`scripts/build.mjs`) writes `public/index.html`, `public/runtime.js`, `public/catalog.json`. Never edit those by hand. `public/art/` holds the pasted cover images.
 * `data/catalog.json` is the full catalog: 62 releases, 156 people, tracklists, credits, video links. Shape `loop-records.catalog/v0`.
 * `api/config.js` hands the browser the public Supabase URL and anon key. `api/breakin-bread/push.js` is the switched-off partner sync. `lib/bundle.js` builds the sync payload; `lib/server.js` holds server helpers.
