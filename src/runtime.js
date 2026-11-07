@@ -158,6 +158,8 @@
     var btn = el("button", { type: "button", id: "staffBtn", "class": "ico" });
     (nav.closest(".tools") || nav.parentNode).appendChild(btn);
     var dlg = el("dialog", { id: "staffDlg", "aria-labelledby": "staffTitle" },
+      '<div class="brand dlgbrand" aria-hidden="true"><span class="mark mk-spiral"></span><span class="words"><span class="mark mk-word"></span>' +
+      '<svg class="era" viewBox="0 0 200 10" focusable="false"><text x="0" y="9" textLength="200" lengthAdjust="spacing">STOCKHOLM 1993–1998</text></svg></span></div>' +
       '<h2 id="staffTitle">Sign in or sign up</h2>' +
       '<form id="staffForm" class="staffform">' +
       '<p>Type your email and we send you a link. New here? The same link creates your account.</p>' +
@@ -171,6 +173,7 @@
     var css = el("style", {}, "" +
       "#staffDlg{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:20px;max-width:min(420px,calc(100vw - 32px))}#staffDlg::backdrop{background:var(--scrim)}" +
       ".staffform label{display:block;font-weight:600;margin:12px 0 4px}.staffform input{width:100%;box-sizing:border-box;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}" +
+      ".dlgbrand{margin:4px 0 22px;max-width:300px}#staffTitle{margin-top:0}" +
       "#sentMsg{font-weight:600}.staffmsg{min-height:1.4em;color:var(--muted)}");
     document.head.appendChild(css);
     var f1 = document.getElementById("staffForm"), f2 = document.getElementById("codeForm"), msg = document.getElementById("staffMsg"), sentTo = "";

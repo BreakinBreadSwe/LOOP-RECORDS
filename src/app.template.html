@@ -344,15 +344,16 @@ let filter = "all";
 let sortBy = "cat", sortRev = false, scope = "all";
 try{ const o=JSON.parse(localStorage.getItem("loop-sort")||"{}"); if(["cat","az","year"].includes(o.by)) sortBy=o.by; sortRev=!!o.rev; }catch(e){}
 const SORTS = {cat:["Cat. no.","Catalog number"], az:["A–Z","Artist, A to Z"], year:["Year","Year released"]};
-const REV_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4v16M3.5 16.5 7 20l3.5-3.5M17 20V4M13.5 7.5 17 4l3.5 3.5"/></svg>';
 const MOSAIC_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>';
 const collator = new Intl.Collator("sv", {sensitivity:"base", numeric:true});
 function relDate(r){ return String(r.released||r.year||"9999").replace(/-00/g,"-01"); }
+// Releases without a year always come last, whichever way the year order runs.
+const undatedLast = list => sortBy==="year" ? [...list.filter(x=>(x.r||x).year), ...list.filter(x=>!(x.r||x).year)] : list;
 function sortReleases(list){
   const out=[...list];
   if(sortBy==="az") out.sort((a,b)=>collator.compare(artistLine(a),artistLine(b))||collator.compare(a.title||"",b.title||""));
   else if(sortBy==="year") out.sort((a,b)=>relDate(a).localeCompare(relDate(b))||R.indexOf(a)-R.indexOf(b));
-  return sortRev?out.reverse():out;
+  return undatedLast(sortRev?out.reverse():out);
 }
 function firstYear(p){ const ys=p.releases.map(id=>byId.get(String(id))).filter(Boolean).map(r=>r.year||9999); return ys.length?Math.min(...ys):9999; }
 function sortPeople(list){
@@ -361,12 +362,25 @@ function sortPeople(list){
   else out.sort((a,b)=>collator.compare(a.name,b.name));
   return sortRev?out.reverse():out;
 }
+// Order chips: tap one to order by it, tap the active one again to turn the direction around.
+function sortLabel(k, rev, what){
+  const az = what==="people"?"Name":what==="videos"?"Title":"Artist";
+  return {cat: rev?["Cat. no. ↑","Catalog number, last to first"]:["Cat. no. ↓","Catalog number, first to last"],
+          az:  rev?["Z–A",`${az}, Z to A`]:["A–Z",`${az}, A to Z`],
+          year:rev?["Year ↑","Year, newest first"]:["Year ↓","Year, oldest first"]}[k];
+}
+let sortWhat="releases";
 function sortRow(what){
-  return `<div class="chiprow" role="group" aria-label="Order ${what}">${Object.entries(SORTS).filter(([k])=>what!=="people"||k!=="cat").map(([k,[t,l]])=>`<button type="button" class="chip" data-sort="${k}" aria-pressed="${sortBy===k||(what==="people"&&k==="az"&&sortBy==="cat")}" aria-label="${l}">${t}</button>`).join("")}<button type="button" class="chip icochip" data-rev aria-pressed="${sortRev}" aria-label="Reverse order" title="Reverse order">${REV_ICON}</button></div>`;
+  sortWhat=what;
+  const eff = (what==="people"&&sortBy==="cat") ? "az" : sortBy;
+  return `<div class="chiprow" role="group" aria-label="Order ${what}">${Object.keys(SORTS).filter(k=>what!=="people"||k!=="cat").map(k=>{ const on=eff===k, [t,l]=sortLabel(k, on&&sortRev, what);
+    return `<button type="button" class="chip" data-sort="${k}" aria-pressed="${on}" aria-label="${l}">${t}</button>`; }).join("")}</div>`;
 }
 function wireSort(rerender){
-  main.querySelectorAll("[data-sort]").forEach(b=>b.onclick=()=>{ sortBy=b.dataset.sort; saveSort(); rerender(); main.querySelector(`[data-sort="${sortBy}"]`).focus(); announce("Ordered by "+SORTS[sortBy][1]+(sortRev?", reversed":"")); });
-  main.querySelectorAll("[data-rev]").forEach(b=>b.onclick=()=>{ sortRev=!sortRev; saveSort(); rerender(); main.querySelector("[data-rev]").focus(); announce(sortRev?"Order reversed":"Order back to normal"); });
+  main.querySelectorAll("[data-sort]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.sort, eff=(sortWhat==="people"&&sortBy==="cat")?"az":sortBy;
+    if(k===eff) sortRev=!sortRev; else { sortBy=k; sortRev=false; }
+    saveSort(); rerender(); main.querySelector(`[data-sort="${k}"]`).focus(); announce("Ordered by "+sortLabel(k, sortRev, sortWhat)[1]); });
 }
 function saveSort(){ try{ localStorage.setItem("loop-sort",JSON.stringify({by:sortBy,rev:sortRev})); }catch(e){} }
 let mosaic = false; try{ mosaic = localStorage.getItem("loop-mosaic")==="1"; }catch(e){}
@@ -511,7 +525,7 @@ function sortVideos(list){
   const out=[...list];
   if(sortBy==="az") out.sort((a,b)=>collator.compare(a.title,b.title));
   else if(sortBy==="year") out.sort((a,b)=>relDate(a.r).localeCompare(relDate(b.r))||R.indexOf(a.r)-R.indexOf(b.r));
-  return sortRev?out.reverse():out;
+  return undatedLast(sortRev?out.reverse():out);
 }
 function sleeveThumb(r){ const u=imgUrls(r)[0]; return u?`<img src="${esc(u)}" alt="" loading="lazy">`:placeholder(r,true); }
 function viewVideos(startId){
