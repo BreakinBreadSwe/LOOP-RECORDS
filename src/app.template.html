@@ -1084,12 +1084,13 @@ function saverAllowed(){
 function armSaver(){ clearTimeout(saverTimer); const s=Math.max(3, Number(LOOK.saverDelay)||9); if(LOOK.saver) saverTimer=setTimeout(showSaver, s*1000); }
 function showSaver(){
   if(!saverAllowed()){ armSaver(); return; }
-  const urls=R.flatMap(r=>imgUrls(r).slice(0,1)).filter(Boolean); if(!urls.length) return;
+  const urls=[...new Set(R.flatMap(r=>imgUrls(r).slice(0,1)).filter(Boolean))]; if(!urls.length) return;
   let el=document.getElementById("saver");
   if(!el){ el=document.createElement("div"); el.id="saver"; el.setAttribute("aria-hidden","true"); document.body.appendChild(el); }
   const w=innerWidth, h=innerHeight, size=w<600?w/4:w<1000?w/6:w/8, cols=Math.round(w/size), rows=Math.max(1,Math.round(h/size)), n=cols*rows;
   el.style.gridTemplateColumns=`repeat(${cols},1fr)`; el.style.gridTemplateRows=`repeat(${rows},1fr)`;
-  const shuffled=[...urls].sort(()=>Math.random()-0.5);
+  const uniq=[...new Set(urls)];
+  const shuffled=uniq.sort(()=>Math.random()-0.5);
   el.innerHTML=Array.from({length:n},(_,i)=>`<div class="st"><img src="${esc(shuffled[i%shuffled.length])}" alt="" class="on"><img alt=""></div>`).join("");
   el.hidden=false; requestAnimationFrame(()=>el.classList.add("on"));
   clearInterval(saverSwap);
@@ -1112,10 +1113,14 @@ function showSaver(){
   function swapTile(t, fx){
     if(!t || t.dataset.busy) return; t.dataset.busy="1";
     const [a,b]=t.querySelectorAll("img"), on=a.classList.contains("on")?a:b, off=on===a?b:a;
-    off.onload=()=>{ (off.decode?off.decode():Promise.resolve()).catch(()=>{}).then(()=>requestAnimationFrame(()=>saverFx(fx||SAVER_FX[Math.floor(Math.random()*SAVER_FX.length)], on, off).then(()=>{ delete t.dataset.busy; }))); };
-    off.onerror=()=>{ delete t.dataset.busy; };
-    const shown=new Set([...el.querySelectorAll("img.on")].map(i=>i.getAttribute("src"))), fresh=urls.filter(u=>!shown.has(u)), pool=fresh.length?fresh:urls;
-    off.src=pool[Math.floor(Math.random()*pool.length)];
+    off.onload=()=>{ (off.decode?off.decode():Promise.resolve()).catch(()=>{}).then(()=>requestAnimationFrame(()=>saverFx(fx||SAVER_FX[Math.floor(Math.random()*SAVER_FX.length)], on, off).then(()=>{ delete t.dataset.busy; delete t.dataset.next; }))); };
+    off.onerror=()=>{ delete t.dataset.busy; delete t.dataset.next; };
+    // Never two of the same sleeve on screen: skip everything showing now and everything on its way in.
+    const shown=new Set([...el.querySelectorAll("img.on")].map(i=>i.getAttribute("src")));
+    el.querySelectorAll(".st[data-next]").forEach(x=>shown.add(x.dataset.next));
+    const fresh=urls.filter(u=>!shown.has(u)); if(!fresh.length){ delete t.dataset.busy; return; }
+    const pick=fresh[Math.floor(Math.random()*fresh.length)]; t.dataset.next=pick;
+    off.src=pick;
   }
 }
 // Transition effects between two sleeves in a tile: fade, flip (sideways), swivel (top to bottom), page flip, slide.

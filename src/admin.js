@@ -67,7 +67,7 @@ function viewAdmin(h){
     <div id="adm"></div><p class="status" id="admStatus" role="status"></p>`;
   const el=document.getElementById("adm");
   SECTIONS[sec](el);
-  main.insertAdjacentHTML("beforeend", `<p class="devcredit">App developed by Breakin Bread</p>`);
+  main.insertAdjacentHTML("beforeend", `<p class="devcredit">App developed by Breakin Bread · <a href="https://www.breakinbread.com" target="_blank" rel="noopener">breakinbread.com</a></p>`);
   refreshAdmin();
   focusMain();
 }
