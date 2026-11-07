@@ -253,6 +253,7 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
       <a href="#people" id="navPeople">People</a>
       <a href="#about" id="navAbout">About</a>
       <a href="#admin" id="navAdmin" hidden>Back office</a>
+      <a href="#" id="navMine" hidden>My page</a>
     </nav>
     <div class="theme"><label for="theme">Theme</label>
       <select id="theme"><option value="system">Match device</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
@@ -465,6 +466,9 @@ function viewRelease(r){
 // SOUND: "<release id>_<pos>" -> {release, pos, url, path, name, size, type, at}. Filled from the
 // "audio" collection; anyone can play, label staff can add, replace or remove a file per track.
 const SOUND = {}; let audioStaff = false, soundFocus = null;
+// Signed-in person: role (visitor, customer, artist, admin) and, for artists, the release ids they may edit.
+let ME = {role:"visitor", person:null, releases:new Set()};
+function canEditRelease(r){ return ME.role==="admin" || (typeof staff!=="undefined" && staff) || ME.releases.has(Number(r.id)); }
 const soundKey = (r, pos) => String(r.id) + "_" + String(pos).replace(/[^\w-]+/g, "-");
 function trackLabel(r, t){ return `${t.pos} ${t.title}`; }
 function renderAudio(r, onlyPos){
@@ -475,7 +479,7 @@ function renderAudio(r, onlyPos){
     const snd = SOUND[soundKey(r, pos)];
     const id = "up-" + soundKey(r, pos);
     let html = snd ? `<audio controls preload="none" tabindex="0" src="${esc(snd.url)}" aria-label="Play ${esc(trackLabel(r,t))}"></audio>` : "";
-    if(audioStaff && AB){
+    if(canEditRelease(r) && AB){
       html += `<span class="up"><label for="${id}">${snd ? "Replace sound file for" : "Add sound file for"} ${esc(trackLabel(r,t))}</label>
         <input type="file" id="${id}" accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.aif,.aiff,.ogg" data-up="${esc(pos)}">
         ${snd ? `<button type="button" class="btn small" data-rmsnd="${esc(pos)}">Remove sound file</button>` : ""}</span>`;
@@ -637,7 +641,7 @@ function setSlide(r,k){
 function renderSlideCtl(r){
   const gal=document.getElementById("artGallery"); if(!gal) return;
   const n=imgsOf(r).length, k=slideAt[r.id]||0;
-  if(!(assetsNS&&dbNS) || !n){ gal.innerHTML=""; return; }
+  if(!(assetsNS&&dbNS) || !n || !canEditRelease(r)){ gal.innerHTML=""; return; }
   gal.innerHTML=`<div class="gbtns"><span class="eyebrow">${n>1?`Image ${k+1} of ${n}`:"1 image"}${k?"":" · main cover"}</span>
     ${n>1?`<button type="button" class="btn small" id="mvUp" data-mv="-1" ${k===0?"disabled":""}>Move earlier</button>
     <button type="button" class="btn small" id="mvDown" data-mv="1" ${k===n-1?"disabled":""}>Move later</button>`:""}
@@ -663,7 +667,7 @@ function renderSlideCtl(r){
 function renderArtTools(r){
   const box = document.getElementById("artTools"); if(!box) return;
   const imgs = imgsOf(r);
-  if(!assetsNS || !dbNS){ box.innerHTML = ""; return; }
+  if(!assetsNS || !dbNS || !canEditRelease(r)){ box.innerHTML = ""; return; }
   box.innerHTML = `<button type="button" class="btn primary" id="pasteBtn" aria-controls="pasteBox">${imgs.length?"Paste another image":"Paste cover"}</button>
     <label class="btn" for="coverFile">${imgs.length?"Add images from phone or computer":"Choose cover images"}</label>
     <input type="file" id="coverFile" accept="image/*" multiple class="sr">`;
@@ -880,7 +884,11 @@ quiet=true; route(); quiet=false;
       snap.docs.forEach(d=>{ const v=d.exists&&d.data(); if(v&&v.url) SOUND[d.id]={...v}; });
       const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(r) renderAudio(r);
     }, ()=>{});
-    if(window.LoopBackend && window.LoopBackend.audio){ window.LoopBackend.isStaff().then(ok=>{ audioStaff=!!ok; const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(r) renderAudio(r); }).catch(()=>{}); }
+    if(window.LoopBackend && window.LoopBackend.me){ window.LoopBackend.me().then(m=>{
+      ME={...m, releases:new Set((m.releases||[]).map(Number))}; audioStaff = m.role==="admin";
+      const mine=document.getElementById("navMine"); if(mine && m.role==="artist" && m.person && byKey.has(m.person)){ mine.href="#artist-"+m.person; mine.hidden=false; }
+      const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(r){ renderArtTools(r); renderSlideCtl(r); renderAudio(r); }
+    }).catch(()=>{}); }
     const cur = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(cur){ renderSlides(cur); renderArtTools(cur); renderAudio(cur); }
   }catch(e){}
 })();

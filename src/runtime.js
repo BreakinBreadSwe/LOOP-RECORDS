@@ -28,6 +28,20 @@
     });
   });
   async function token() { var r = await sb.auth.getSession(); return r.data.session ? r.data.session.access_token : null; }
+  // Who is signed in: role (visitor, customer, artist, admin), linked artist and their release ids.
+  var mePromise = null;
+  function me() {
+    if (!mePromise) mePromise = (async function () {
+      var s = await ready; if (!s) return { role: "visitor", person: null, releases: [], email: "" };
+      var r = await sb.rpc("my_role"); var role = (!r.error && r.data) || "customer", person = null, rel = [];
+      if (role === "artist") {
+        var p = await sb.rpc("my_person_key"); person = p.data || null;
+        var x = await sb.rpc("my_release_ids"); rel = (x.data || []).map(function (v) { return Number(typeof v === "object" && v ? Object.values(v)[0] : v); });
+      }
+      return { role: role, person: person, releases: rel, email: s.user.email || "" };
+    })();
+    return mePromise;
+  }
   async function isStaff() {
     var s = await ready; if (!s) return false;
     var r = await sb.rpc("is_staff"); return !r.error && r.data === true;
@@ -107,7 +121,7 @@
   function safeName(n) { return String(n || "track").normalize("NFKD").replace(/[^\w.\-]+/g, "_").slice(-80); }
   var audio = {
     upload: async function (file, releaseId, pos) {
-      if (!(await isStaff())) throw new Error("Only label staff can add sound files.");
+      var m = await me(); if (m.role !== "admin" && m.role !== "artist") throw new Error("Only label staff and the release's artists can add sound files.");
       var path = releaseId + "/" + safeName(pos) + "-" + Date.now().toString(36) + "-" + safeName(file.name);
       var r = await sb.storage.from("audio").upload(path, file, { contentType: file.type || "audio/mpeg", upsert: false });
       if (r.error) throw r.error;
@@ -129,13 +143,13 @@
   window.claude = {
     use: async function (name) {
       if (name === "db") return db;
-      if (name === "assets") return (await isStaff()) ? assets : null;
+      if (name === "assets") { var m = await me(); return (m.role === "admin" || m.role === "artist" || (await isStaff())) ? assets : null; }
       if (name === "downloads") return downloads;
       if (name === "user") { var s = await ready; return { id: s ? s.user.id : null, email: s ? s.user.email : null, canEdit: isStaff }; }
       return null;
     }
   };
-  window.LoopBackend = { client: sb, token: token, isStaff: isStaff, ready: ready, audio: audio };
+  window.LoopBackend = { client: sb, token: token, isStaff: isStaff, ready: ready, audio: audio, me: me };
 
   // ---- sign in or sign up (magic link): staff, artists and customers ----
   function el(tag, attrs, html) { var e = document.createElement(tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; }

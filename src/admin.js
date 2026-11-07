@@ -1,7 +1,7 @@
 // ===================== Back office =====================
 const S = {products:{}, orders:{}, events:{}, sync:{}, rights:{}, settings:{}};
 let staff = false, dlNS = null, loaded = {}, adminChecked = false, adminEmail = "";
-const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-export","Export"]];
+const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-export","Export"]];
 // The back office (staff only) may name Breakin Bread; the public site never does.
 ADMIN.push(["admin-bb","Breakin Bread"]);
 const TYPES = {digital_release:"Digital release", digital_track:"Digital track", vinyl:"Vinyl", cd:"CD", cassette:"Cassette", merch:"Merch", ticket:"Ticket", bundle:"Bundle"};
@@ -106,6 +106,7 @@ const TILE_INFO = {
   "admin-sync": ["Film, TV, adverts and games, from enquiry to paid deal.", () => { const open=all("sync").filter(d=>!["paid","declined"].includes(d.status)).length; return open?`${open} open ${open===1?"deal":"deals"}`:"No open deals"; }],
   "admin-rights": ["Who gets what from each release, plus ISRC, STIM and SAMI.", () => { const n=R.filter(r=>S.rights[r.id]&&(S.rights[r.id].splits||[]).length).length; return `${n} of ${R.length} releases have splits`; }],
   "admin-royalties": ["Statements per person and period, from sales and sync.", () => "By year or quarter"],
+  "admin-access": ["Who can sign in and what they can do: customer, artist or admin.", () => accounts ? `${accounts.length} ${accounts.length===1?"account":"accounts"}` : "Accounts and access levels"],
   "admin-export": ["Everything in one file, or orders and products as spreadsheets.", () => "JSON and CSV"],
   "admin-bb": ["Send the whole label to Breakin Bread in one go.", () => { const s=S.settings.breakinbread; return s&&s.lastStatus==="ok"?"Last sent "+new Date(s.at).toLocaleDateString("sv-SE"):"Not sent yet"; }],
 };
@@ -476,6 +477,40 @@ function renderReleaseStaff(r){
   mountRights(document.getElementById("relRights"), r);
   const dup=box.querySelector("#rForm > h2"); if(dup) dup.remove();   // the release's own heading is right above
 }
+
+// ---------- People and access ----------
+// Everyone who signs up is a customer. Admins make someone an artist (linked to their catalog
+// page, so they can add covers and sound files to their own releases) or an admin.
+let accounts = null;
+const ROLE = {customer:"Customer", artist:"Artist", admin:"Admin"};
+async function loadAccounts(){ const r=await window.LoopBackend.client.rpc("list_accounts"); if(r.error) throw r.error; accounts=r.data||[]; return accounts; }
+function accountRow(a){
+  const me = a.email && a.email===adminEmail, p = a.person_key && byKey.get(a.person_key), id = "acc-"+a.user_id;
+  return `<tr data-acc="${esc(a.user_id)}"><th scope="row">${esc(a.email||"No email")}${me?' <span class="muted">(you)</span>':""}<br><span class="muted">Joined ${dt(a.created_at)}${a.last_sign_in_at?", last signed in "+dt(a.last_sign_in_at):""}</span></th>
+    <td><label class="sr" for="${id}-role">Access for ${esc(a.email||"")}</label><select id="${id}-role" data-k="role"${me?" disabled":""}>${opt(ROLE,a.role)}</select>${me?'<br><span class="muted">You can\'t change your own access.</span>':""}</td>
+    <td><label class="sr" for="${id}-person">Artist page for ${esc(a.email||"")}</label><input id="${id}-person" data-k="person" list="peopleList" value="${esc(p?p.name:"")}" placeholder="Artist name, for artists"></td>
+    <td><button type="button" class="btn small" data-save="${esc(a.user_id)}"${me?" disabled":""}>Save</button></td></tr>`;
+}
+LIVE.access = () => !accounts ? `<p class="note">Loading accounts…</p>` : `<div class="tblwrap"><table class="tbl"><caption>${accounts.length} ${accounts.length===1?"account":"accounts"}</caption>
+  <thead><tr><th scope="col">Account</th><th scope="col">Access</th><th scope="col">Linked artist</th><th scope="col"><span class="sr">Save</span></th></tr></thead>
+  <tbody>${accounts.map(accountRow).join("")}</tbody></table></div>`;
+SECTIONS["admin-access"] = el => {
+  el.innerHTML = `<h1>People and access</h1><p class="lede">Anyone can sign up and gets a customer account. Make someone an artist and link them to their artist page, and they can add covers and sound files to their own releases. Admins can do everything here.</p>
+  <dl class="facts"><dt>Customer</dt><dd>Signed in. Sees the catalog like everyone else.</dd><dt>Artist</dt><dd>Gets a My page link, and can add covers and sound files on releases they are credited on.</dd><dt>Admin</dt><dd>The whole back office, every release.</dd></dl>
+  <div data-live="access"></div>`;
+  loadAccounts().then(refreshAdmin).catch(err=>setStatus("Couldn't load accounts: "+(err&&err.message||err)));
+  el.onclick = async e => { const b=e.target.closest("[data-save]"); if(!b) return; const row=b.closest("tr"), uid=b.dataset.save;
+    const role=row.querySelector("[data-k=role]").value, name=row.querySelector("[data-k=person]").value.trim();
+    const p = name ? P.find(x=>x.name.toLowerCase()===name.toLowerCase()||x.aliases.some(a=>a.toLowerCase()===name.toLowerCase())) : null;
+    if(role==="artist" && !p){ setStatus(name?`No artist called ${name} in the catalog. Pick a name from the list.`:"Artists need a linked artist page. Type their artist name."); row.querySelector("[data-k=person]").focus(); return; }
+    b.disabled=true;
+    const r=await window.LoopBackend.client.from("profiles").update({role, person_key: p?p.key:null}).eq("user_id", uid);
+    b.disabled=false;
+    if(r.error){ setStatus("Couldn't save: "+r.error.message); return; }
+    const a=accounts.find(x=>x.user_id===uid); if(a){ a.role=role; a.person_key=p?p.key:null; }
+    setStatus(`Saved. ${a?a.email:"The account"} is now ${ROLE[role].toLowerCase()}${role==="artist"?", linked to "+p.name:""}. It takes effect the next time they open the site.`);
+  };
+};
 
 // ---------- Royalties ----------
 let royPeriod="all";

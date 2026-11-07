@@ -36,7 +36,7 @@ and `src/lib/label-import.ts`.
 ## Set up
 
 1. **Supabase**: create a project, then run `supabase/migrations/0001_loop_backoffice.sql`,
-   `supabase/migrations/0002_app_docs.sql`, `supabase/migrations/0003_audio.sql`, `supabase/migrations/0004_staff_invites.sql` and `supabase/seed.sql` in the SQL editor
+   `supabase/migrations/0002_app_docs.sql`, `supabase/migrations/0003_audio.sql`, `supabase/migrations/0004_staff_invites.sql`, `supabase/migrations/0005_roles.sql` and `supabase/seed.sql` in the SQL editor
    (or `supabase db push`). Under Authentication → URL configuration, add the site URL.
 2. **First staff member**: sign in once on the site with **Staff sign in**, then in SQL:
    `insert into public.staff (user_id) select id from auth.users where email = 'you@example.com';`
