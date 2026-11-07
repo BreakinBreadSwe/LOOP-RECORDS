@@ -220,7 +220,7 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 .rightctl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-left:auto;justify-content:flex-end}
 .rightctl .count{margin:0}
 .ctls{display:flex;gap:6px;align-items:center}
-@media (max-width:640px){.rightctl{margin-left:0;flex:1 1 100%;justify-content:space-between}}
+@media (max-width:640px){.rightctl{margin-left:0;flex:1 1 100%;justify-content:space-between;flex-wrap:nowrap;gap:6px}.rightctl .count{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 .countrow .count{margin:0}
 .mosaic{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
 @media (min-width:640px){.mosaic{grid-template-columns:repeat(5,minmax(0,1fr))}}
@@ -270,6 +270,21 @@ header.top{transition:transform .25s ease}
 .stage{scroll-margin-top:84px;display:grid;gap:14px 24px;margin:4px 0 26px;padding:14px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--stage-c,var(--loop)) 22%,var(--surface)),var(--surface) 70%);border:1px solid var(--line);transition:background .8s}
 @media (min-width:900px){.stage{grid-template-columns:minmax(0,2fr) minmax(240px,1fr);align-items:center;padding:18px}}
 .stage .ytbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* Clean player: YouTube's own title bar, buttons and suggestions are kept out of sight. The iframe is
+   taller than its box, so YouTube's top and bottom bars fall outside; a transparent shield takes the
+   taps, the sleeve-style poster covers the pause screen, and our own controls sit underneath. */
+.ytbox.clean .ytcrop{position:absolute;left:0;right:0;top:-90px;bottom:-90px}
+.ytbox.clean .ytcrop iframe{position:static;display:block;width:100%;height:100%;border:0}
+.ytbox.clean .ytshield{position:absolute;inset:0;z-index:2;cursor:pointer}
+.ytbox.clean.letthrough .ytshield{pointer-events:none}
+.ytbox.clean .ytposter{position:absolute;inset:0;z-index:3;width:100%;height:100%;object-fit:cover;pointer-events:none;transition:opacity .4s}
+.ytbox.clean.playing .ytposter{opacity:0}
+.ytbox.clean .ythint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;margin:0;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.75);color:#fff;font:600 14px var(--body);pointer-events:none}
+.ytbox.clean:fullscreen{border-radius:0}
+.ytbar{display:flex;align-items:center;gap:6px;margin-top:8px}
+.ytbar .ytseek{flex:1;min-width:0;accent-color:var(--loop);height:28px}
+.ytbar .yttime{font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
+.ytbar .ico svg{width:20px;height:20px}
 .stageinfo h2{margin:2px 0 12px;font-size:clamp(22px,2.6vw,30px);text-transform:none}
 .relchip{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-bottom:12px}
 .relchip img,.relchip svg{width:76px;height:76px;flex:none;object-fit:contain;background:var(--surface)}
@@ -428,6 +443,7 @@ function sleeve(r, swipe){
   return `<div class="sleeve">${u.length?`<img src="${esc(u[0])}" alt="${alt}">`:placeholder(r)}</div>`;
 }
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const FX_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="10" height="12" rx="1.5"/><path d="M16 7.5c2.5 1 4 2.6 4 4.5s-1.5 3.5-4 4.5M13.5 12h0"/><path d="M17.5 4.5 16 7.5l3 1"/></svg>';
 const FX = {random:"Random", fade:"Fade", flipx:"Flip sideways", flipy:"Flip up and down", page:"Page turn"};
 let fxMode="random"; try{ fxMode=localStorage.getItem("loop-fx")||"random"; if(!FX[fxMode]) fxMode="random"; }catch(e){}
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -481,7 +497,7 @@ function viewReleases(fromSearch){
     <h1${term?"":' class="sr"'}>${term?"Search":"Loop Records releases"}</h1>
     <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div>
       <div class="rightctl">${sortRow("releases")}<p class="count" id="cnt">${scope==="people"?`${ppl.length} ${ppl.length===1?"person":"people"}`:`${list.length} ${list.length===1?"release":"releases"}`}${term?` matching “${esc(q.value.trim())}”`:""}</p>
-      <span class="ctls">${mosaic && list.some(r=>imgUrls(r).length>1)?`<label class="sr" for="fxSel">Slideshow transition</label><select id="fxSel" class="fxsel">${Object.entries(FX).map(([k,l])=>`<option value="${k}"${k===fxMode?" selected":""}>${l}</option>`).join("")}</select>`:""}
+      <span class="ctls">${mosaic && list.some(r=>imgUrls(r).length>1)?`<button type="button" class="chip icochip" id="fxSel" aria-label="Slideshow transition: ${FX[fxMode]}. Change" title="Slideshow transition: ${FX[fxMode]}">${FX_ICON}</button>`:""}
       <button type="button" class="chip icochip" id="mosaicBtn" aria-pressed="${mosaic}" aria-label="Mosaic" title="Mosaic">${MOSAIC_ICON}</button></span></div></div>
     ${scopes}
     ${ppl.length?`<h2>People</h2><ul class="people">${ppl.map(personRow).join("")}</ul>${scope==="all"&&pplAll.length>12?`<p><button type="button" class="btn small" data-scope="people">Show all ${pplAll.length} people</button></p>`:""}${list.length?"<h2>Releases</h2>":""}`:""}
@@ -492,7 +508,8 @@ function viewReleases(fromSearch){
   wireSort(()=>viewReleases(false));
   document.getElementById("mosaicBtn").onclick=()=>{ mosaic=!mosaic; try{ localStorage.setItem("loop-mosaic",mosaic?"1":"0"); }catch(e){} viewReleases(false); document.getElementById("mosaicBtn").focus(); announce(mosaic?"Mosaic on, covers only":"Mosaic off, covers with details"); };
   const fs=document.getElementById("fxSel");
-  if(fs) fs.onchange=()=>{ fxMode=fs.value; try{ localStorage.setItem("loop-fx",fxMode); }catch(e){} announce("Transition: "+FX[fxMode]); };
+  if(fs) fs.onclick=()=>{ const ks=Object.keys(FX); fxMode=ks[(ks.indexOf(fxMode)+1)%ks.length]; try{ localStorage.setItem("loop-fx",fxMode); }catch(e){}
+    fs.setAttribute("aria-label",`Slideshow transition: ${FX[fxMode]}. Change`); fs.title=`Slideshow transition: ${FX[fxMode]}`; announce("Transition: "+FX[fxMode]); };
   if(fromSearch) announce(scope==="people"?`${ppl.length} people`:`${list.length} releases${ppl.length?` and ${ppl.length} people`:""}`);
 }
 function tile(r){
@@ -512,12 +529,64 @@ function plink(x){ return byKey.has(x.key)?`<a class="plink" href="#artist-${x.k
 function playAll(vs, who){ if(STANDALONE) return ""; const ids=[...new Set(vs.map(v=>v.id))].slice(0,50); if(ids.length<2) return "";
   return `<div class="btnrow" style="margin:0 0 12px"><a class="btn primary" href="https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}" target="_blank" rel="noopener">Play all ${ids.length} on YouTube</a></div>`; }
 function videoList(vs){
+  if(STANDALONE && vs.length) setTimeout(loadYT, 0); // get the player ready before the first tap
   if(STANDALONE) return `<ul class="ytgrid">${vs.map(v=>{ const rel=v.release&&byId.get(String(v.release));
     return `<li><div class="ytbox"><button type="button" class="ytplay" data-yt="${esc(v.id)}" data-title="${esc(v.title||"Video")}" aria-label="Play ${esc(v.title||"video")}">
       <img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt="" loading="lazy"><span class="bigplay" aria-hidden="true"></span></button></div>
       <p class="yttitle">${esc(v.title||"Untitled video")}${rel?`<small>${esc(rel.catno)}</small>`:""}</p></li>`; }).join("")}</ul>`;
   return `<ul class="videos">${vs.map(v=>{ const rel=v.release&&byId.get(String(v.release));
     return `<li><a href="${yt(v.id)}" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span>${esc(v.title||"Untitled video")}<small>${rel?esc(rel.catno)+" · ":""}${esc(v.source)} · opens YouTube</small></span></a></li>`;}).join("")}</ul>`;
+}
+
+// ---------- Clean YouTube player: no YouTube overlays, our own controls underneath ----------
+const YT_ICONS={play:'<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',pause:'<path d="M8 5v14M16 5v14" stroke-width="3"/>',
+  sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+  muted:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>',
+  full:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'};
+const ytIcon=k=>`<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${YT_ICONS[k]}</svg>`;
+const ytClock=t=>{ t=Math.max(0,Math.floor(t||0)); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); };
+const ytSpoken=t=>{ t=Math.max(0,Math.floor(t||0)); const m=Math.floor(t/60), s=t%60; return (m?m+(m===1?" minute ":" minutes "):"")+s+(s===1?" second":" seconds"); };
+const cleanPlayers=new Set();
+function cleanPlayer(box, o){
+  box.classList.add("clean"); box.classList.remove("playing","letthrough");
+  box.innerHTML=`<div class="ytcrop"><div></div></div><div class="ytshield" aria-hidden="true"></div><img class="ytposter" alt="" src="https://i.ytimg.com/vi/${esc(o.id)}/hqdefault.jpg"><p class="ythint" aria-hidden="true" hidden>Tap the video once to start it</p>`;
+  let bar=box.nextElementSibling; if(!bar||!bar.classList.contains("ytbar")){ bar=document.createElement("div"); bar.className="ytbar"; box.after(bar); }
+  bar.setAttribute("role","group"); bar.setAttribute("aria-label","Video controls: "+o.title);
+  bar.innerHTML=`<button type="button" class="ico" data-c="play" aria-label="Play">${ytIcon("play")}</button>
+    <input type="range" class="ytseek" min="0" max="1000" value="0" step="1" aria-label="Position in the video" aria-valuetext="0 seconds">
+    <span class="yttime" aria-hidden="true">0:00 / 0:00</span>
+    <button type="button" class="ico" data-c="mute" aria-label="Mute">${ytIcon("sound")}</button>
+    ${document.fullscreenEnabled?`<button type="button" class="ico" data-c="full" aria-label="Full screen">${ytIcon("full")}</button>`:""}`;
+  const playB=bar.querySelector('[data-c="play"]'), muteB=bar.querySelector('[data-c="mute"]'), fullB=bar.querySelector('[data-c="full"]'),
+        seek=bar.querySelector(".ytseek"), time=bar.querySelector(".yttime"), hint=box.querySelector(".ythint"), poster=box.querySelector(".ytposter");
+  let title=o.title, dragging=false, ticker=null, startCheck=null;
+  const h={ player:null, box, bar, iframe:()=>h.player&&h.player.getIframe&&h.player.getIframe() };
+  const dur=()=>{ try{ return h.player.getDuration()||0; }catch(e){ return 0; } };
+  const cur=()=>{ try{ return h.player.getCurrentTime()||0; }catch(e){ return 0; } };
+  function paint(){ const d=dur(), c=cur(); if(!dragging){ seek.value=d?Math.round(c/d*1000):0; }
+    time.textContent=`${ytClock(c)} / ${ytClock(d)}`; seek.setAttribute("aria-valuetext",`${ytSpoken(c)} of ${ytSpoken(d)}`); }
+  function setPlaying(on){ box.classList.toggle("playing",on); playB.innerHTML=ytIcon(on?"pause":"play"); playB.setAttribute("aria-label",on?"Pause":"Play");
+    clearInterval(ticker); if(on) ticker=setInterval(paint,250); paint(); }
+  function needTap(){ box.classList.add("letthrough"); hint.hidden=false; announce("Tap the video once to start it."); }
+  function play(){ if(!h.player||!h.player.playVideo) return; cleanPlayers.forEach(x=>{ if(x!==h) try{ x.player.pauseVideo(); }catch(e){} });
+    h.player.playVideo(); clearTimeout(startCheck); startCheck=setTimeout(()=>{ let st=-1; try{ st=h.player.getPlayerState(); }catch(e){} if(st!==1&&st!==3) needTap(); },2500); }
+  function toggle(){ let st=-1; try{ st=h.player.getPlayerState(); }catch(e){} st===1||st===3 ? h.player.pauseVideo() : play(); }
+  box.querySelector(".ytshield").onclick=toggle;
+  playB.onclick=toggle;
+  muteB.onclick=()=>{ if(!h.player) return; const m=h.player.isMuted(); m?h.player.unMute():h.player.mute(); muteB.innerHTML=ytIcon(m?"sound":"muted"); muteB.setAttribute("aria-label",m?"Mute":"Turn sound on"); announce(m?"Sound on":"Muted"); };
+  if(fullB) fullB.onclick=()=>{ document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen&&box.requestFullscreen().catch(()=>{}); };
+  seek.addEventListener("input",()=>{ dragging=true; const d=dur(); if(d){ time.textContent=`${ytClock(seek.value/1000*d)} / ${ytClock(d)}`; } });
+  seek.addEventListener("change",()=>{ const d=dur(); if(d&&h.player) h.player.seekTo(seek.value/1000*d,true); dragging=false; paint(); });
+  h.player=new YT.Player(box.querySelector(".ytcrop > div"),{host:"https://www.youtube-nocookie.com",videoId:o.id,
+    playerVars:{autoplay:1,controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
+    events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video: "+title; f.setAttribute("tabindex","-1"); f.setAttribute("aria-hidden","true"); play(); paint(); if(o.focus) playB.focus(); },
+            onStateChange:e=>{ if(e.data===1){ clearTimeout(startCheck); box.classList.remove("letthrough"); hint.hidden=true; setPlaying(true); }
+              else { setPlaying(false); if(e.data===0){ seek.value=1000; o.onEnd&&o.onEnd(); } } },
+            onError:()=>{ setPlaying(false); o.onError&&o.onError(); }}});
+  h.load=(id,t)=>{ title=t; poster.src=`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`; bar.setAttribute("aria-label","Video controls: "+t);
+    const f=h.iframe(); if(f) f.title="Video: "+t; h.player.loadVideoById(id); play(); };
+  cleanPlayers.add(h);
+  return h;
 }
 
 // ---------- Videos: "Loop TV". A player with the sleeve beside it, and every video below. ----------
@@ -596,12 +665,11 @@ function viewVideos(startId){
     if(vList[vNow]!==v) return;
     const box=document.getElementById("stageBox"); if(!box) return;
     if(ok){
-      if(ytPlayer && ytPlayer.getIframe && box.contains(ytPlayer.getIframe())){ ytPlayer.loadVideoById(v.id); ytPlayer.getIframe().title="Video player: "+v.title; }
-      else { box.innerHTML='<div id="ytp"></div>';
-        ytPlayer=new YT.Player("ytp",{host:"https://www.youtube-nocookie.com",videoId:v.id,playerVars:{autoplay:1,rel:0,playsinline:1,modestbranding:1},
-          events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video player: "+v.title; if(fromList) f.focus(); },
-                  onStateChange:e=>{ if(e.data===0 && vTV) playAt(vNow+1,false); },
-                  onError:()=>{ if(vTV) setTimeout(()=>playAt(vNow+1,false),800); }}}); }
+      const f = ytPlayer && ytPlayer.iframe && ytPlayer.iframe();
+      if(f && box.contains(f)) ytPlayer.load(v.id, v.title);
+      else ytPlayer = cleanPlayer(box, {id:v.id, title:v.title, focus:fromList,
+          onEnd:()=>{ if(vTV) playAt(vNow+1,false); },
+          onError:()=>{ if(vTV) setTimeout(()=>playAt(vNow+1,false),800); }});
     } else {
       box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&rel=0&playsinline=1" title="Video player: ${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
       if(fromList) box.querySelector("iframe").focus();
@@ -1187,7 +1255,9 @@ function route(){
 let t; q.addEventListener("input",()=>{ clearTimeout(t); t=setTimeout(()=>{ if(location.hash&&location.hash!=="#"){ history.replaceState(null,"",location.pathname+location.search); } viewReleases(true); },160); });
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault(); viewReleases(true); const c=document.getElementById("cnt"); if(c){c.tabIndex=-1;c.focus();}});
 window.addEventListener("hashchange",route);
-document.addEventListener("click", e=>{ const b=e.target.closest(".ytplay"); if(!b) return;
+document.addEventListener("click", async e=>{ const b=e.target.closest(".ytplay"); if(!b || b.id==="stagePlay") return;
+  const box=b.closest(".ytbox");
+  if(box && await loadYT()){ cleanPlayer(box,{id:b.dataset.yt,title:b.dataset.title,focus:true}); return; }
   const f=document.createElement("iframe");
   f.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.yt)}?autoplay=1&rel=0&playsinline=1`;
   f.title=b.dataset.title; f.allow="autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen=true; f.loading="lazy";
