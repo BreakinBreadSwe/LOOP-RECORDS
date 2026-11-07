@@ -120,7 +120,11 @@ a.card:hover .sleeve:not(.multi){transform:translateY(-3px) rotate(-.6deg)}
 
 .people{list-style:none;padding:0;margin:0;columns:3 260px;column-gap:28px}
 .people li{break-inside:avoid;padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
-.people .meta{font:12px var(--mono);color:var(--muted);white-space:nowrap}
+.people .meta{font:12px var(--mono);color:var(--muted);text-align:right;min-width:0;overflow-wrap:anywhere}
+.people li a{flex:0 1 auto;min-width:0}
+h2.sect{font-size:22px;margin:26px 0 10px}
+main > .pagetitle + .roles,main > .pagetitle + .note{margin-top:0}
+.people li .meta{flex:0 1 55%}
 
 /* Release page: from tablet width the artwork column (with All releases) stays in place while the
    tracklist, credits and videos scroll beside it. */
@@ -1198,17 +1202,16 @@ function viewPerson(p){
   const rels = p.releases.map(id=>byId.get(String(id))).filter(Boolean);
   main.innerHTML = `
     <a class="back" href="#people">All people</a>
-    <p class="eyebrow">${p.releases.length} ${p.releases.length===1?"release":"releases"} on the label</p>
-    <h1>${esc(p.name)}</h1>
+    <h1 class="pagetitle">${esc(p.name)}</h1>
     ${p.aliases.length?`<p class="note">Also credited as ${p.aliases.map(esc).join(", ")}</p>`:""}
-    <ul class="roles" aria-label="Roles">${Object.entries(roles).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<li>${esc(r)} × ${n}</li>`).join("")}</ul>
+    <ul class="roles" aria-label="Roles">${Object.entries(roles).sort((a,b)=>b[1]-a[1]).map(([r])=>`<li>${esc(r)}</li>`).join("")}</ul>
     <div class="btnrow staffonly" hidden>${p.discogs?`<a class="btn" href="${p.discogs}" target="_blank" rel="noopener">Discogs profile</a>`:""}
       <a class="btn" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.name)}" target="_blank" rel="noopener">Search YouTube</a></div>
-    <h2>Releases</h2>
+    <h2 class="sect">Releases</h2>
     <ul class="grid">${rels.map(card).join("")}</ul>
-    <h2>Credits in detail</h2>
+    <h2 class="sect">Credits in detail</h2>
     <div class="credits">${p.credits.map(c=>{const r=byId.get(String(c.release)); return `<div><span class="role">${esc(c.role)}${c.track?` (track ${esc(c.track)})`:""}</span><span><a href="#release-${r.id}">${esc(r.catno)} ${esc(r.title)}</a></span></div>`;}).join("")}</div>
-    <h2>Videos <span class="eyebrow">${p.videos.length}</span></h2>
+    <h2 class="sect">Videos</h2>
     ${p.videos.length?playAll(p.videos)+videoList(p.videos):`<p class="note">No videos found yet.</p>`}`;
   if(typeof revealStaff==="function") revealStaff();
   focusMain();
