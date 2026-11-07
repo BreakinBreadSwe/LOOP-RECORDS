@@ -599,7 +599,10 @@ function renderArtTools(r){
   const box = document.getElementById("artTools"); if(!box) return;
   const imgs = imgsOf(r);
   if(!assetsNS || !dbNS){ box.innerHTML = ""; return; }
-  box.innerHTML = `<button type="button" class="btn primary" id="pasteBtn" aria-controls="pasteBox">${imgs.length?"Paste another image":"Paste cover"}</button>`;
+  box.innerHTML = `<button type="button" class="btn primary" id="pasteBtn" aria-controls="pasteBox">${imgs.length?"Paste another image":"Paste cover"}</button>
+    <label class="btn" for="coverFile">${imgs.length?"Add image from phone or computer":"Choose cover image"}</label>
+    <input type="file" id="coverFile" accept="image/*" class="sr">`;
+  document.getElementById("coverFile").onchange = e => { const f = e.target.files && e.target.files[0]; if(f) saveCover(r, f); e.target.value = ""; };
   const pb=document.getElementById("pasteBox"), pa=document.getElementById("pasteArea");
   document.getElementById("pasteBtn").onclick=async()=>{
     // Read the clipboard straight away where the browser allows it; otherwise open the paste box.
