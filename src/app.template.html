@@ -592,7 +592,7 @@ function plink(x){ return byKey.has(x.key)?`<a class="plink" href="#artist-${x.k
 function playAll(vs, who){ if(STANDALONE) return ""; const ids=[...new Set(vs.map(v=>v.id))].slice(0,50); if(ids.length<2) return "";
   return `<div class="btnrow" style="margin:0 0 12px"><a class="btn primary" href="https://www.youtube.com/watch_videos?video_ids=${ids.join(",")}" target="_blank" rel="noopener">Play all ${ids.length} on YouTube</a></div>`; }
 function videoList(vs){
-  if(STANDALONE && vs.length) setTimeout(loadYT, 0); // get the player ready before the first tap
+  if(STANDALONE && vs.length) setTimeout(prepVideos, 0); // get the players ready before the first tap
   if(STANDALONE) return `<ul class="ytgrid">${vs.map(v=>{ const rel=v.release&&byId.get(String(v.release));
     return `<li><div class="ytbox"><button type="button" class="ytplay" data-yt="${esc(v.id)}" data-title="${esc(v.title||"Video")}" aria-label="Play ${esc(v.title||"video")}">
       <img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt="" loading="lazy"><span class="bigplay" aria-hidden="true"></span></button></div>
@@ -737,8 +737,8 @@ function cleanPlayer(box, o){
   function setPlaying(on){ box.classList.toggle("playing",on); playB.innerHTML=ytIcon(on?"pause":"play"); playB.setAttribute("aria-label",on?"Pause":"Play");
     clearInterval(ticker); if(on) ticker=setInterval(paint,250); paint(); }
   function needTap(){ box.classList.add("letthrough"); hint.hidden=false; announce("Tap the video once to start it."); }
-  function play(){ if(!h.player||!h.player.playVideo) return; cleanPlayers.forEach(x=>{ if(x!==h) try{ x.player.pauseVideo(); }catch(e){} });
-    h.player.playVideo(); clearTimeout(startCheck); startCheck=setTimeout(()=>{ let st=-1; try{ st=h.player.getPlayerState(); }catch(e){} if(st!==1&&st!==3) needTap(); },2500); }
+  function play(){ if(!h.ready){ h.wanted=true; return; } if(!h.player||!h.player.playVideo) return; cleanPlayers.forEach(x=>{ if(x!==h) try{ x.player.pauseVideo(); }catch(e){} });
+    h.player.playVideo(); clearTimeout(startCheck); startCheck=setTimeout(()=>{ let st=-1; try{ st=h.player.getPlayerState(); }catch(e){} if(st===-1||st===5) needTap(); },4000); }
   function toggle(){ let st=-1; try{ st=h.player.getPlayerState(); }catch(e){} st===1||st===3 ? h.player.pauseVideo() : play(); }
   box.querySelector(".ytshield").onclick=toggle;
   playB.onclick=toggle;
@@ -747,16 +747,26 @@ function cleanPlayer(box, o){
   seek.addEventListener("input",()=>{ dragging=true; seek.style.setProperty("--p",(seek.value/10)+"%"); const d=dur(); if(d){ time.textContent=`${ytClock(seek.value/1000*d)} / ${ytClock(d)}`; } });
   seek.addEventListener("change",()=>{ const d=dur(); if(d&&h.player) h.player.seekTo(seek.value/1000*d,true); dragging=false; paint(); });
   h.player=new YT.Player(box.querySelector(".ytcrop > div"),{host:"https://www.youtube-nocookie.com",videoId:o.id,
-    playerVars:{autoplay:1,controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
-    events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video: "+title; f.setAttribute("tabindex","-1"); f.setAttribute("aria-hidden","true"); play(); paint(); if(o.focus) playB.focus(); },
+    playerVars:{autoplay:o.autoplay===false?0:1,controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
+    events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video: "+title; f.setAttribute("tabindex","-1"); f.setAttribute("aria-hidden","true"); h.ready=true; if(o.autoplay!==false||h.wanted) play(); paint(); if(o.focus) playB.focus(); },
             onStateChange:e=>{ if(e.data===1){ clearTimeout(startCheck); box.classList.remove("letthrough"); hint.hidden=true; setPlaying(true); dock.followVideo(h, title, o.release||null); }
               else { setPlaying(false); if(e.data===0){ seek.value=1000; o.onEnd&&o.onEnd(); } } },
             onError:()=>{ setPlaying(false); o.onError&&o.onError(); }}});
   h.play=play; h.prev=o.prev||null; h.next=o.next||null;
   h.load=(id,t,rel)=>{ title=t; if(rel) o.release=rel; poster.src=`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`; bar.setAttribute("aria-label","Video controls: "+t);
     const f=h.iframe(); if(f) f.title="Video: "+t; h.player.loadVideoById(id); play(); };
-  cleanPlayers.add(h);
+  box._clean=h; cleanPlayers.add(h);
   return h;
+}
+
+let prepObs=null;
+async function prepVideos(){
+  if(!(await loadYT())) return;
+  if(!prepObs) prepObs=new IntersectionObserver(es=>es.forEach(en=>{ if(!en.isIntersecting) return; const box=en.target; prepObs.unobserve(box);
+      const b=box.querySelector(".ytplay"); if(!b||box._clean) return;
+      const rel=location.hash.startsWith("#release-")?byId.get(location.hash.slice(9)):null;
+      cleanPlayer(box,{id:b.dataset.yt,title:b.dataset.title,autoplay:false,release:rel||null}); }),{rootMargin:"300px"});
+  main.querySelectorAll(".ytbox").forEach(box=>{ if(!box._clean && box.querySelector(".ytplay")) prepObs.observe(box); });
 }
 
 // ---------- Videos: "Loop TV". A player with the sleeve beside it, and every video below. ----------
@@ -861,6 +871,12 @@ function viewVideos(startId){
   const start = startId ? vList.findIndex(v=>v.id===startId) : -1;
   poster(start>=0 ? start : 0);
   if(start>=0){ vNow=start; }
+  if(STANDALONE) loadYT().then(ok=>{ const box=document.getElementById("stageBox"), i0=start>=0?start:0, v=vList[i0];
+    if(!ok||!box||ytPlayer||!v||!box.querySelector("#stagePlay")) return;
+    ytPlayer=cleanPlayer(box,{id:v.id,title:v.title,autoplay:false,release:v.r,
+      prev:()=>playAt(vNow-1,false), next:()=>playAt(vNow+1,false),
+      onEnd:()=>{ if(vTV) playAt(vNow+1,false); }, onError:()=>{ if(vTV) setTimeout(()=>playAt(vNow+1,false),800); }});
+    vNow=i0; });
   document.getElementById("tvBtn").onclick=()=>{ vTV=!vTV; const b=document.getElementById("tvBtn"); b.setAttribute("aria-pressed",vTV); b.textContent=vTV?"Playing all":"Play all";
     if(vTV){ announce("Loop TV on. Videos play one after another."); playAt(vNow<0?0:vNow,false); } else { announce("Loop TV off"); const l=document.getElementById("nowLabel"); if(l) l.textContent="Loop TV"; } };
   document.getElementById("prevBtn").onclick=()=>playAt((vNow<0?0:vNow)-1,false);
@@ -1440,6 +1456,7 @@ document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDef
 window.addEventListener("hashchange",route);
 document.addEventListener("click", async e=>{ const b=e.target.closest(".ytplay"); if(!b || b.id==="stagePlay") return;
   const box=b.closest(".ytbox");
+  if(box && box._clean){ box._clean.play(); return; }
   if(box && await loadYT()){ const rel=location.hash.startsWith("#release-")?byId.get(location.hash.slice(9)):null;
     cleanPlayer(box,{id:b.dataset.yt,title:b.dataset.title,focus:true,release:rel||null}); return; }
   const f=document.createElement("iframe");
