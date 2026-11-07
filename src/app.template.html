@@ -208,7 +208,11 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 .chiprow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .chip.icochip{display:inline-grid;place-items:center;padding:0;width:34px;height:34px}
 .chip.icochip svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.filters.top{justify-content:space-between;align-items:center}
+.filters.top{justify-content:space-between;align-items:center;gap:8px 16px;margin-bottom:14px}
+.rightctl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-left:auto;justify-content:flex-end}
+.rightctl .count{margin:0}
+.ctls{display:flex;gap:6px;align-items:center}
+@media (max-width:640px){.rightctl{margin-left:0;flex:1 1 100%;justify-content:space-between}}
 .countrow .count{margin:0}
 .mosaic{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
 @media (min-width:640px){.mosaic{grid-template-columns:repeat(5,minmax(0,1fr))}}
@@ -433,10 +437,10 @@ function viewReleases(fromSearch){
   main.innerHTML = `
     <h1${term?"":' class="sr"'}>${term?"Search":"Loop Records releases"}</h1>
     <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div>
+      <div class="rightctl">${sortRow("releases")}<p class="count" id="cnt">${scope==="people"?`${ppl.length} ${ppl.length===1?"person":"people"}`:`${list.length} ${list.length===1?"release":"releases"}`}${term?` matching “${esc(q.value.trim())}”`:""}</p>
       <span class="ctls">${mosaic && list.some(r=>imgUrls(r).length>1)?`<label class="sr" for="fxSel">Slideshow transition</label><select id="fxSel" class="fxsel">${Object.entries(FX).map(([k,l])=>`<option value="${k}"${k===fxMode?" selected":""}>${l}</option>`).join("")}</select>`:""}
-      <button type="button" class="chip icochip" id="mosaicBtn" aria-pressed="${mosaic}" aria-label="Mosaic" title="Mosaic">${MOSAIC_ICON}</button></span></div>
+      <button type="button" class="chip icochip" id="mosaicBtn" aria-pressed="${mosaic}" aria-label="Mosaic" title="Mosaic">${MOSAIC_ICON}</button></span></div></div>
     ${scopes}
-    <div class="countrow">${sortRow("releases")}<p class="count" id="cnt">${scope==="people"?`${ppl.length} ${ppl.length===1?"person":"people"}`:`${list.length} ${list.length===1?"release":"releases"}`}${term?` matching “${esc(q.value.trim())}”`:""}</p></div>
     ${ppl.length?`<h2>People</h2><ul class="people">${ppl.map(personRow).join("")}</ul>${scope==="all"&&pplAll.length>12?`<p><button type="button" class="btn small" data-scope="people">Show all ${pplAll.length} people</button></p>`:""}${list.length?"<h2>Releases</h2>":""}`:""}
     ${scope==="people"?"":mosaic?`<ul class="mosaic">${list.map(tile).join("")}</ul>`:`<ul class="grid">${list.map(card).join("")}</ul>`}
     ${!list.length&&!ppl.length?`<p class="note">Nothing matches. Try an artist name, a catalog number like LOOP 029, or a role like mastered.</p>`:""}`;
