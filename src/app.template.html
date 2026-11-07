@@ -159,6 +159,10 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 #pwin .pwbody{display:grid;grid-template-columns:minmax(0,1fr);gap:20px 24px;align-items:start}
 @media (min-width:900px){#pwin .pwbody{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}}
 .pwth{margin:22px 0 8px;font-size:18px}
+#pwin .pwart{aspect-ratio:1;width:100%;max-width:min(560px,calc(100vh - var(--dockh,72px) - 330px));min-width:min(100%,260px);margin:0 auto 12px;background:var(--surface);border-radius:6px;overflow:hidden;box-shadow:0 24px 40px -24px rgba(0,0,0,.6)}
+#pwin .pwart img{width:100%;height:100%;object-fit:contain;display:block}
+#pwin.withart .pwvid{width:min(100%,400px);margin:0 auto}
+#pwin.withart .pwvid .ytbox{min-height:200px}
 .pwtracks{list-style:none;margin:0;padding:0}
 .pwtracks li{padding:8px 0;border-top:1px solid var(--line);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
 .pwtracks li[aria-current]{font-weight:700}
@@ -448,7 +452,7 @@ a.vthumb{text-decoration:none}
 <section id="pwin" aria-labelledby="pwTitle" hidden>
   <div class="pwhead"><button type="button" class="ico" id="pwClose" aria-label="Close the player window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9l7 7 7-7"/></svg></button><span class="eyebrow">Now playing</span></div>
   <div class="pwbody">
-    <div class="pwmain"><div class="ytbox" id="pwBox"></div>
+    <div class="pwmain"><div class="pwart" id="pwArt" aria-hidden="true" hidden></div><div class="pwvid"><div class="ytbox" id="pwBox"></div></div>
       <h2 id="pwTitle" class="watchtitle" tabindex="-1"></h2>
       <div class="watchmeta" id="pwMeta"></div>
       <div id="pwTracks"></div></div>
@@ -775,6 +779,9 @@ const pwin = (()=>{
     el.hidden=true; if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); }
   function fill(v){
     cur=v; const r=v.r;
+    // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
+    const u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(v.track&&u); el.classList.toggle("withart",!art.hidden);
+    art.innerHTML = !art.hidden ? `<img src="${esc(u)}" alt="">` : "";
     $("pwTitle").textContent = vidName(v);
     $("pwMeta").innerHTML = `<a class="relchip" href="#release-${r.id}">${sleeveThumb(r)}<span><small>${esc(LABELNAME[r.group]||"")}</small><b>${esc(r.title)}</b><span>${esc(artistLine(r))}</span><small>${esc(r.catno)}${r.year?" · "+r.year:""}${v.track?" · track "+esc(v.track.pos):""}</small></span></a>`;
     const tc = v.track && v.track.credits && v.track.credits.length ? `<p class="note">${v.track.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</p>` : "";
