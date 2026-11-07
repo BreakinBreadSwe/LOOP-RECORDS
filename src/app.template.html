@@ -1656,6 +1656,11 @@ let t; q.addEventListener("input",()=>{ clearTimeout(t); t=setTimeout(()=>{ if(l
 (function(){ const f=document.getElementById("searchForm"); let t=null;
   f.addEventListener("focusin",()=>{ clearTimeout(t); f.classList.add("open"); });
   f.addEventListener("focusout",()=>{ clearTimeout(t); t=setTimeout(()=>{ if(!f.contains(document.activeElement)) f.classList.remove("open"); },350); }); })();
+// The logo always goes home: clears a search, closes the player window, back to the top of the releases.
+document.querySelector("header .brand").addEventListener("click", e=>{ e.preventDefault();
+  q.value=""; if(window.pwin) pwin.close(); scope="all";
+  if(location.hash && location.hash!=="#"){ history.pushState(null,"",location.pathname+location.search); }
+  scrollMem["#"]=0; route(); window.scrollTo(0,0); });
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault(); viewReleases(true); const c=document.getElementById("cnt"); if(c){c.tabIndex=-1;c.focus();}});
 window.addEventListener("hashchange",route);
 document.addEventListener("click", async e=>{ const b=e.target.closest(".ytplay"); if(!b || b.id==="stagePlay") return;
