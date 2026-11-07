@@ -76,7 +76,9 @@ nav.views{display:flex;flex-wrap:nowrap;gap:2px}
 
 main{padding-block:24px 64px}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1;letter-spacing:.01em}
-h1{font-size:clamp(40px,7vw,76px);font-weight:900;text-transform:uppercase;margin:0 0 8px}
+h1{font-size:clamp(32px,5.5vw,58px);font-weight:900;text-transform:uppercase;margin:0 0 8px}
+/* The page title gets focus on navigation so screen readers start there; no visible outline for that. */
+[tabindex="-1"]:focus{outline:none}
 h2{font-size:30px;font-weight:800;text-transform:uppercase;margin:36px 0 12px}
 h3{font-size:20px;font-weight:800;margin:0}
 .lede{max-width:65ch;color:var(--muted);margin:0 0 20px}
