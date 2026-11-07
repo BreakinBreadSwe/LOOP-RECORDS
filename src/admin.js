@@ -49,6 +49,7 @@ async function initAdmin(db){
   }
   if(location.hash.startsWith("#admin")) route();
   const cur = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(cur) renderReleaseStaff(cur);
+  revealStaff();
 }
 
 function viewAdmin(h){
@@ -469,8 +470,9 @@ function mountRights(box, r){
 }
 
 // Staff part of a release page: rights and splits right under the release.
+function revealStaff(){ main.querySelectorAll(".staffonly").forEach(x=>{ x.hidden=!staff; }); }
 function renderReleaseStaff(r){
-  main.querySelectorAll(".staffonly").forEach(x=>{ x.hidden=!staff; });
+  revealStaff();
   const box=document.getElementById("staffRelease"); if(!box) return;
   if(!staff){ box.innerHTML=""; box.hidden=true; return; }
   box.hidden=false;

@@ -259,6 +259,25 @@ header.top{transition:transform .25s ease}
 .ytplay{padding:0;cursor:pointer;background:#000}
 .ytplay img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9;transition:opacity .15s}
 .ytplay:hover img{opacity:1}
+.stage{scroll-margin-top:84px;display:grid;gap:14px 24px;margin:4px 0 26px;padding:14px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--stage-c,var(--loop)) 22%,var(--surface)),var(--surface) 70%);border:1px solid var(--line);transition:background .8s}
+@media (min-width:900px){.stage{grid-template-columns:minmax(0,2fr) minmax(240px,1fr);align-items:center;padding:18px}}
+.stage .ytbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stageinfo h2{margin:2px 0 12px;font-size:clamp(22px,2.6vw,30px);text-transform:none}
+.relchip{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-bottom:12px}
+.relchip img,.relchip svg{width:76px;height:76px;flex:none;object-fit:contain;background:var(--surface)}
+.relchip span{display:flex;flex-direction:column;gap:2px;min-width:0}.relchip b{font-weight:700}.relchip small{font:12px var(--mono);color:var(--muted)}
+.vgrid{list-style:none;padding:0;margin:0 0 8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:18px 14px}
+.vthumb{position:relative;display:block;width:100%;aspect-ratio:16/9;padding:0;border:0;border-radius:8px;overflow:hidden;background:#000;cursor:pointer}
+.vthumb>img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92;transition:opacity .15s}.vthumb:hover>img{opacity:1}
+.vsleeve{position:absolute;right:6px;bottom:6px;width:27%;aspect-ratio:1;background:var(--surface);border:2px solid var(--c,var(--loop));border-radius:3px;overflow:hidden}
+.vsleeve img,.vsleeve svg{width:100%;height:100%;object-fit:contain;display:block}
+.vthumb .bigplay{width:42px;height:42px;margin:-21px 0 0 -21px}
+.vthumb .bigplay::after{border-left-width:13px;border-top-width:8px;border-bottom-width:8px;margin-left:4px}
+.vthumb[aria-current="true"]{outline:3px solid var(--loop);outline-offset:3px}
+.nowtag{position:absolute;left:6px;top:6px;font:600 11px var(--mono);background:var(--loop);color:#000;padding:3px 6px;border-radius:4px;text-transform:uppercase}
+.vcard .yttitle{font-size:14px}
+.vyear{margin:28px 0 12px}
+.vrel{font-size:22px;text-transform:none}.vrel a{color:var(--ink);text-decoration:none}.vrel a:hover{text-decoration:underline}.vrel small{display:block;font:500 12px var(--mono);color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
 .bigplay{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--loop);display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.4)}
 .bigplay::after{content:"";border-left:20px solid var(--loop-ink);border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
 .yttitle{margin:8px 0 0;font-weight:600;line-height:1.35}
@@ -281,6 +300,7 @@ header.top{transition:transform .25s ease}
     <div class="tools">
     <nav class="views" aria-label="Views">
       <a class="ico" href="#" id="navReleases" aria-label="Releases" title="Releases"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg></a>
+      <a class="ico" href="#videos" id="navVideos" aria-label="Videos" title="Videos"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor"/></svg></a>
       <a class="ico" href="#people" id="navPeople" aria-label="People" title="People"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><path d="M15.5 4.9a3.2 3.2 0 0 1 0 6.2M17.5 14.3c2.1.8 3.5 2.9 3.5 5.7"/></svg></a>
       <a class="ico" href="#about" id="navAbout" aria-label="About" title="About"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.01" stroke-width="2.6"/></svg></a>
       <a class="ico" href="#admin" id="navAdmin" aria-label="Back office" title="Back office" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></a>
@@ -341,7 +361,7 @@ function sortPeople(list){
   return sortRev?out.reverse():out;
 }
 function sortRow(what){
-  return `<div class="chiprow" role="group" aria-label="Order ${what}">${Object.entries(SORTS).filter(([k])=>what==="releases"||k!=="cat").map(([k,[t,l]])=>`<button type="button" class="chip" data-sort="${k}" aria-pressed="${sortBy===k||(what!=="releases"&&k==="az"&&sortBy==="cat")}" aria-label="${l}">${t}</button>`).join("")}<button type="button" class="chip icochip" data-rev aria-pressed="${sortRev}" aria-label="Reverse order" title="Reverse order">${REV_ICON}</button></div>`;
+  return `<div class="chiprow" role="group" aria-label="Order ${what}">${Object.entries(SORTS).filter(([k])=>what!=="people"||k!=="cat").map(([k,[t,l]])=>`<button type="button" class="chip" data-sort="${k}" aria-pressed="${sortBy===k||(what==="people"&&k==="az"&&sortBy==="cat")}" aria-label="${l}">${t}</button>`).join("")}<button type="button" class="chip icochip" data-rev aria-pressed="${sortRev}" aria-label="Reverse order" title="Reverse order">${REV_ICON}</button></div>`;
 }
 function wireSort(rerender){
   main.querySelectorAll("[data-sort]").forEach(b=>b.onclick=()=>{ sortBy=b.dataset.sort; saveSort(); rerender(); main.querySelector(`[data-sort="${sortBy}"]`).focus(); announce("Ordered by "+SORTS[sortBy][1]+(sortRev?", reversed":"")); });
@@ -419,7 +439,7 @@ document.addEventListener("scroll", e=>{ const t=e.target; if(!t.classList||!t.c
   const k=Math.round(t.scrollLeft/Math.max(1,t.clientWidth));
   if(t.id==="slTrack"){ const r=byId.get(location.hash.slice(9)); if(r) setSlide(r,k); return; }
   const b=t.parentNode.querySelector(".badge"); if(b) b.textContent=(k+1)+"/"+t.children.length; }, true);
-function setNav(v){ for(const [id,val] of [["navReleases","releases"],["navPeople","people"],["navAbout","about"],["navAdmin","admin"]]){ const a=document.getElementById(id); v===val?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current"); } }
+function setNav(v){ for(const [id,val] of [["navReleases","releases"],["navVideos","videos"],["navPeople","people"],["navAbout","about"],["navAdmin","admin"]]){ const a=document.getElementById(id); v===val?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current"); } }
 function announce(t){ live.textContent=""; setTimeout(()=>live.textContent=t,30); }
 let quiet=false;
 function focusMain(){ if(quiet) return; const h=main.querySelector("h1"); if(h){h.setAttribute("tabindex","-1"); h.focus({preventScroll:true});} window.scrollTo(0,0); }
@@ -475,6 +495,104 @@ function videoList(vs){
       <p class="yttitle">${esc(v.title||"Untitled video")}${rel?`<small>${esc(rel.catno)}</small>`:""}</p></li>`; }).join("")}</ul>`;
   return `<ul class="videos">${vs.map(v=>{ const rel=v.release&&byId.get(String(v.release));
     return `<li><a href="${yt(v.id)}" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span>${esc(v.title||"Untitled video")}<small>${rel?esc(rel.catno)+" · ":""}${esc(v.source)} · opens YouTube</small></span></a></li>`;}).join("")}</ul>`;
+}
+
+// ---------- Videos: "Loop TV". A player with the sleeve beside it, and every video below. ----------
+const VIDS = (()=>{ const seen=new Set(), out=[]; R.forEach(r=>(r.videos||[]).forEach(v=>{ if(v.id && !seen.has(v.id)){ seen.add(v.id); out.push({id:v.id, title:v.title||"Untitled video", r}); } })); return out; })();
+let vList=[], vNow=-1, vTV=false, ytPlayer=null, ytReady=null;
+function loadYT(){
+  if(window.YT && YT.Player) return Promise.resolve(true);
+  if(!ytReady) ytReady=new Promise(res=>{ const prev=window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady=()=>{ prev&&prev(); res(true); };
+    const sc=document.createElement("script"); sc.src="https://www.youtube.com/iframe_api"; sc.onerror=()=>res(false); document.head.appendChild(sc); setTimeout(()=>res(!!(window.YT&&YT.Player)),6000); });
+  return ytReady;
+}
+function sortVideos(list){
+  const out=[...list];
+  if(sortBy==="az") out.sort((a,b)=>collator.compare(a.title,b.title));
+  else if(sortBy==="year") out.sort((a,b)=>relDate(a.r).localeCompare(relDate(b.r))||R.indexOf(a.r)-R.indexOf(b.r));
+  return sortRev?out.reverse():out;
+}
+function sleeveThumb(r){ const u=imgUrls(r)[0]; return u?`<img src="${esc(u)}" alt="" loading="lazy">`:placeholder(r,true); }
+function viewVideos(startId){
+  setNav("videos");
+  ytPlayer=null; vNow=-1; vTV=false;
+  if(!STANDALONE){ main.innerHTML=`<h1>Videos</h1><p class="lede">${VIDS.length} videos from the catalog.</p>${videoList(VIDS.map(v=>({id:v.id,title:v.title,source:"YouTube",release:v.r.id})))}`; focusMain(); return; }
+  const chips = ["all","loop","plump","related"].map(g=>`<button type="button" class="chip" data-f="${g}" aria-pressed="${filter===g}"${g==="related"?' aria-label="Licensed and appearances"':""}>${CHIP[g]}</button>`).join("");
+  main.innerHTML = `<h1>Videos</h1>
+    <section class="stage" aria-labelledby="nowH">
+      <div class="ytbox" id="stageBox"></div>
+      <div class="stageinfo">
+        <p class="eyebrow" id="nowLabel">Loop TV</p>
+        <h2 id="nowH" tabindex="-1"></h2>
+        <div id="nowRel"></div>
+        <div class="btnrow"><button type="button" class="btn primary" id="tvBtn" aria-pressed="false">Play all, one after another</button>
+          <button type="button" class="btn" id="prevBtn">Previous</button><button type="button" class="btn" id="nextBtn">Next</button></div>
+      </div>
+    </section>
+    <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div>
+      <div class="rightctl" id="vSort"></div></div>
+    <div id="vlist"></div>`;
+  const draw=()=>{
+    const cur = vNow>=0 ? vList[vNow] : null;
+    vList = sortVideos(VIDS.filter(v=>filter==="all"||v.r.group===filter));
+    vNow = cur ? vList.indexOf(cur) : -1;
+    document.getElementById("vSort").innerHTML = sortRow("videos")+`<p class="count">${vList.length} ${vList.length===1?"video":"videos"}</p>`;
+    const card=(v,i)=>`<li class="vcard"><button type="button" class="vthumb" data-vi="${i}"${i===vNow?' aria-current="true"':""} aria-label="Play ${esc(v.title)}. ${esc(v.r.catno)}, ${esc(v.r.title)}, ${esc(v.r.year||"")}">
+        <img src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy"><span class="vsleeve" style="--c:${esc(v.r.color||"var(--loop)")}">${sleeveThumb(v.r)}</span>
+        <span class="bigplay" aria-hidden="true"></span>${i===vNow?'<span class="nowtag" aria-hidden="true">Playing</span>':""}</button>
+      <p class="yttitle">${esc(v.title)}<small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small></p></li>`;
+    let html="";
+    if(sortBy==="az") html=`<ul class="vgrid">${vList.map(card).join("")}</ul>`;
+    else { let y=null, open=false; vList.forEach((v,i)=>{ const g = sortBy==="year" ? String(v.r.year||"Undated") : String(v.r.id);
+        if(g!==y){ if(open) html+="</ul>"; html += sortBy==="year" ? `<h2 class="vyear">${esc(g)}</h2>` : `<h2 class="vyear vrel"><a href="#release-${v.r.id}"><small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small>${esc(v.r.title)}</a></h2>`; html+='<ul class="vgrid">'; open=true; y=g; }
+        html+=card(v,i); }); if(open) html+="</ul>"; }
+    document.getElementById("vlist").innerHTML = html || `<p class="note">No videos here.</p>`;
+    main.querySelectorAll(".vthumb").forEach(b=>b.onclick=()=>playAt(+b.dataset.vi, true));
+    main.querySelectorAll(".chip[data-f]").forEach(b=>b.onclick=()=>{ filter=b.dataset.f; main.querySelectorAll(".chip[data-f]").forEach(x=>x.setAttribute("aria-pressed",x===b)); draw(); announce(`${vList.length} videos`); });
+    wireSort(draw);
+  };
+  function info(i){
+    const v=vList[i]; if(!v) return;
+    document.getElementById("nowLabel").textContent = vTV ? `Loop TV · ${i+1} of ${vList.length}` : "Loop TV";
+    document.getElementById("nowH").textContent = v.title;
+    document.getElementById("nowRel").innerHTML = `<a class="relchip" href="#release-${v.r.id}">${sleeveThumb(v.r)}<span><small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small><b>${esc(v.r.title)}</b><span>${esc(artistLine(v.r))}</span></span></a>`;
+    document.querySelector(".stage").style.setProperty("--stage-c", v.r.color||"var(--loop)");
+  }
+  function poster(i){ const v=vList[i]; if(!v) return; info(i);
+    document.getElementById("stageBox").innerHTML=`<button type="button" class="ytplay" id="stagePlay" aria-label="Play ${esc(v.title)}"><img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt=""><span class="bigplay" aria-hidden="true"></span></button>`;
+    document.getElementById("stagePlay").onclick=()=>playAt(i, false); }
+  async function playAt(i, fromList){
+    if(!vList.length) return; i=(i+vList.length)%vList.length; vNow=i; const v=vList[i];
+    info(i); brandFor(v.r);
+    main.querySelectorAll(".vthumb").forEach(b=>{ const on=+b.dataset.vi===i; on?b.setAttribute("aria-current","true"):b.removeAttribute("aria-current");
+      const tag=b.querySelector(".nowtag"); if(on&&!tag) b.insertAdjacentHTML("beforeend",'<span class="nowtag" aria-hidden="true">Playing</span>'); if(!on&&tag) tag.remove(); });
+    try{ history.replaceState(null,"","#video-"+v.id); lastKey="#video-"+v.id; }catch(e){}
+    announce(`Playing ${v.title}, ${v.r.catno}`);
+    if(fromList){ document.querySelector(".stage").scrollIntoView({behavior:reducedMotion.matches?"auto":"smooth",block:"start"}); }
+    const ok = await loadYT();
+    if(vList[vNow]!==v) return;
+    const box=document.getElementById("stageBox"); if(!box) return;
+    if(ok){
+      if(ytPlayer && ytPlayer.getIframe && box.contains(ytPlayer.getIframe())){ ytPlayer.loadVideoById(v.id); ytPlayer.getIframe().title="Video player: "+v.title; }
+      else { box.innerHTML='<div id="ytp"></div>';
+        ytPlayer=new YT.Player("ytp",{host:"https://www.youtube-nocookie.com",videoId:v.id,playerVars:{autoplay:1,rel:0,playsinline:1,modestbranding:1},
+          events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video player: "+v.title; if(fromList) f.focus(); },
+                  onStateChange:e=>{ if(e.data===0 && vTV) playAt(vNow+1,false); },
+                  onError:()=>{ if(vTV) setTimeout(()=>playAt(vNow+1,false),800); }}}); }
+    } else {
+      box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&rel=0&playsinline=1" title="Video player: ${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+      if(fromList) box.querySelector("iframe").focus();
+    }
+  }
+  draw();
+  const start = startId ? vList.findIndex(v=>v.id===startId) : -1;
+  poster(start>=0 ? start : 0);
+  if(start>=0){ vNow=start; }
+  document.getElementById("tvBtn").onclick=()=>{ vTV=!vTV; const b=document.getElementById("tvBtn"); b.setAttribute("aria-pressed",vTV); b.textContent=vTV?"Stop playing all":"Play all, one after another";
+    if(vTV){ announce("Loop TV on. Videos play one after another."); playAt(vNow<0?0:vNow,false); } else { announce("Loop TV off"); const l=document.getElementById("nowLabel"); if(l) l.textContent="Loop TV"; } };
+  document.getElementById("prevBtn").onclick=()=>playAt((vNow<0?0:vNow)-1,false);
+  document.getElementById("nextBtn").onclick=()=>playAt((vNow<0?-1:vNow)+1,false);
+  focusMain();
 }
 
 function viewRelease(r){
@@ -597,14 +715,15 @@ function viewPerson(p){
     <h1>${esc(p.name)}</h1>
     ${p.aliases.length?`<p class="note">Also credited as ${p.aliases.map(esc).join(", ")}</p>`:""}
     <ul class="roles" aria-label="Roles">${Object.entries(roles).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<li>${esc(r)} × ${n}</li>`).join("")}</ul>
-    <div class="btnrow">${p.discogs?`<a class="btn" href="${p.discogs}" target="_blank" rel="noopener">Discogs profile</a>`:""}
+    <div class="btnrow staffonly" hidden>${p.discogs?`<a class="btn" href="${p.discogs}" target="_blank" rel="noopener">Discogs profile</a>`:""}
       <a class="btn" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.name)}" target="_blank" rel="noopener">Search YouTube</a></div>
     <h2>Releases</h2>
     <ul class="grid">${rels.map(card).join("")}</ul>
     <h2>Credits in detail</h2>
     <div class="credits">${p.credits.map(c=>{const r=byId.get(String(c.release)); return `<div><span class="role">${esc(c.role)}${c.track?` (track ${esc(c.track)})`:""}</span><span><a href="#release-${r.id}">${esc(r.catno)} ${esc(r.title)}</a></span></div>`;}).join("")}</div>
     <h2>Videos <span class="eyebrow">${p.videos.length}</span></h2>
-    ${p.videos.length?playAll(p.videos)+videoList(p.videos):`<p class="note">No videos found yet. The YouTube search button above runs a fresh search.</p>`}`;
+    ${p.videos.length?playAll(p.videos)+videoList(p.videos):`<p class="note">No videos found yet.</p>`}`;
+  if(typeof revealStaff==="function") revealStaff();
   focusMain();
 }
 
@@ -985,6 +1104,7 @@ function route(){
   else if(h.startsWith("artist-") && byKey.has(h.slice(7))) viewPerson(byKey.get(h.slice(7)));
   else if(h==="admin"||h.startsWith("admin-")) viewAdmin(h);
   else if(h==="people") viewPeople();
+  else if(h==="videos"||h.startsWith("video-")) viewVideos(h.startsWith("video-")?h.slice(6):null);
   else if(h==="about") viewAbout();
   else viewReleases(false);
   if(moved) brandFor(h.startsWith("release-") ? byId.get(h.slice(8)) : null);
