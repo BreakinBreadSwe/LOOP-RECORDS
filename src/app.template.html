@@ -177,7 +177,15 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 @media (min-width:900px){#pwin .pwbody{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}}
 .pwth{margin:22px 0 8px;font-size:18px}
 #pwin .pwart{aspect-ratio:1;width:100%;max-width:min(560px,calc(100vh - var(--dockh,72px) - 330px));min-width:min(100%,260px);margin:0 auto 12px;background:var(--surface);border-radius:6px;overflow:hidden;box-shadow:0 24px 40px -24px rgba(0,0,0,.6)}
-#pwin .pwart img{width:100%;height:100%;object-fit:contain;display:block}
+#pwin .pwart{position:relative}
+#pwin .pwslides{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+#pwin .pwslides::-webkit-scrollbar{display:none}
+#pwin .pwslides img{flex:0 0 100%;width:100%;height:100%;object-fit:contain;display:block;scroll-snap-align:center}
+#pwin .pwslides:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+#pwin .pwnav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+#pwin .pwnav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#pwin .pwnav.prev{left:8px}#pwin .pwnav.next{right:8px}
+#pwin .pwcount{position:absolute;right:10px;bottom:10px;margin:0;font:600 12px var(--mono);background:rgba(0,0,0,.6);color:#fff;padding:3px 8px;border-radius:999px}
 #pwin.withart .pwvid{width:min(100%,400px);margin:0 auto}
 #pwin.withart .pwvid .ytbox{min-height:200px}
 .pwtracks{list-style:none;margin:0;padding:0}
@@ -483,7 +491,7 @@ a.vthumb{text-decoration:none}
 <section id="pwin" aria-labelledby="pwTitle" hidden>
   <div class="pwhead"><button type="button" class="ico" id="pwClose" aria-label="Close the player window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9l7 7 7-7"/></svg></button><span class="eyebrow">Now playing</span></div>
   <div class="pwbody">
-    <div class="pwmain"><div class="pwart" id="pwArt" aria-hidden="true" hidden></div><div class="pwvid"><div class="ytbox" id="pwBox"></div></div>
+    <div class="pwmain"><div class="pwart" id="pwArt" hidden></div><div class="pwvid"><div class="ytbox" id="pwBox"></div></div>
       <h2 id="pwTitle" class="watchtitle" tabindex="-1"></h2>
       <div class="watchmeta" id="pwMeta"></div>
       <div id="pwTracks"></div></div>
@@ -817,7 +825,19 @@ const pwin = (()=>{
     // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
     // Gordon loves it: the square sleeve on top, the video playing underneath.
     const PW_ART=true, u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(PW_ART&&v.track&&u); el.classList.toggle("withart",!art.hidden);
-    art.innerHTML = !art.hidden ? `<img src="${esc(u)}" alt="">` : "";
+    // Every picture of the release, swipe or use the arrows; the video plays underneath.
+    const pics = imgUrls(r);
+    art.innerHTML = art.hidden ? "" : `<div class="pwslides" id="pwSlides" tabindex="0" role="group" aria-roledescription="slideshow" aria-label="Pictures of ${esc(r.title)}">${pics.map((x,k)=>`<img src="${esc(x)}" alt="Picture ${k+1} of ${pics.length}, ${esc(r.title)}"${k?' loading="lazy"':""}>`).join("")}</div>
+      ${pics.length>1?`<button type="button" class="pwnav prev" aria-label="Previous picture"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button type="button" class="pwnav next" aria-label="Next picture"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg></button>
+      <p class="pwcount" id="pwCount" aria-live="polite">1 / ${pics.length}</p>`:""}`;
+    if(!art.hidden && pics.length>1){
+      const sl=$("pwSlides"), cnt=$("pwCount"), idx=()=>Math.round(sl.scrollLeft/sl.clientWidth);
+      const go=k=>{ const n=(k+pics.length)%pics.length; sl.scrollTo({left:n*sl.clientWidth,behavior:reducedMotion.matches?"auto":"smooth"}); };
+      art.querySelector(".prev").onclick=()=>go(idx()-1); art.querySelector(".next").onclick=()=>go(idx()+1);
+      sl.addEventListener("keydown",e=>{ if(e.key==="ArrowRight"){ e.preventDefault(); go(idx()+1); } if(e.key==="ArrowLeft"){ e.preventDefault(); go(idx()-1); } });
+      let t=null; sl.addEventListener("scroll",()=>{ clearTimeout(t); t=setTimeout(()=>{ cnt.textContent=`${idx()+1} / ${pics.length}`; },120); },{passive:true});
+    }
     $("pwTitle").textContent = vidName(v);
     $("pwMeta").innerHTML = `<a class="relchip" href="#release-${r.id}">${sleeveThumb(r)}<span><small>${esc(LABELNAME[r.group]||"")}</small><b>${esc(r.title)}</b><span>${esc(artistLine(r))}</span><small>${esc(r.catno)}${r.year?" · "+r.year:""}${v.track?" · track "+esc(v.track.pos):""}</small></span></a>`;
     const tc = v.track && v.track.credits && v.track.credits.length ? `<p class="note">${v.track.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</p>` : "";
