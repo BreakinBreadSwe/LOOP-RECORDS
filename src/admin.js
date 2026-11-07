@@ -3,7 +3,10 @@ const S = {products:{}, orders:{}, events:{}, sync:{}, rights:{}, settings:{}};
 let staff = false, dlNS = null, loaded = {}, adminChecked = false, adminEmail = "";
 const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-look","Look and feel"],["admin-export","Export"]];
 // The back office (staff only) may name Breakin Bread; the public site never does.
-ADMIN.push(["admin-bb","Breakin Bread"]);
+// Switched off for now (Gordon, 7 Nov 2026): Loop fixes everything first, and the section comes back
+// when Loop agrees to sync with Breakin Bread. Set this to true to show it again.
+const BB_SYNC_ON = false;
+if (BB_SYNC_ON) ADMIN.push(["admin-bb","Breakin Bread"]);
 const TYPES = {digital_release:"Digital release", digital_track:"Digital track", vinyl:"Vinyl", cd:"CD", cassette:"Cassette", merch:"Merch", ticket:"Ticket", bundle:"Bundle"};
 const VAT = {digital_release:25,digital_track:25,vinyl:25,cd:25,cassette:25,merch:25,ticket:6,bundle:25};
 const PHYS = new Set(["vinyl","cd","cassette","merch","bundle","ticket"]);
@@ -12,7 +15,7 @@ const PAIDLIKE = new Set(["paid","packed","shipped","delivered"]);
 const SSTAT = {enquiry:"Enquiry",quoted:"Quoted",negotiating:"Negotiating",licensed:"Licensed",invoiced:"Invoiced",paid:"Paid",declined:"Declined"};
 const MEDIA = {film:"Film",tv:"TV",advert:"Advert",game:"Game",online:"Online",trailer:"Trailer",other:"Other"};
 const CHANNELS = {loop:"Loop web shop", event_door:"Event door", mail:"Mail order", discogs:"Discogs marketplace", bandcamp:"Bandcamp", other:"Other"};
-CHANNELS.breakinbread = "Breakin Bread";
+if (BB_SYNC_ON) CHANNELS.breakinbread = "Breakin Bread";
 const PSTAT = {draft:"Draft", live:"Live", sold_out:"Sold out", archived:"Archived"};
 const ESTAT = {draft:"Draft", on_sale:"On sale", sold_out:"Sold out", done:"Done", cancelled:"Cancelled"};
 const ROLES = ["Artist","Producer","Remixer","Songwriter","Label","Publisher","Other"];
