@@ -167,7 +167,13 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 .pwtracks li{padding:8px 0;border-top:1px solid var(--line);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
 .pwtracks li[aria-current]{font-weight:700}
 .pwtracks .pos{font:500 13px var(--mono);color:var(--muted);min-width:2.5em}
-.pwtracks small{font:12px var(--mono);color:var(--muted);margin-left:auto}
+.pwtracks li{align-items:center;flex-wrap:nowrap}
+.pwtracks .tt{flex:1;min-width:0}
+.pwtracks small{font:12px var(--mono);color:var(--muted);min-width:3.2em;text-align:right}
+.pwplay{display:inline-grid;place-items:center;width:40px;height:40px;flex:none;border-radius:50%;border:1.5px solid var(--muted);background:none;color:var(--ink);cursor:pointer;padding:0}
+.pwplay svg{width:18px;height:18px}
+.pwplay:hover{background:var(--loop);border-color:var(--loop);color:#000}
+.nosound{font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
 .linklike{font:inherit;background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;cursor:pointer;text-align:left}
 .nowtag2{font:600 11px var(--mono);background:var(--loop);color:#000;padding:2px 6px;border-radius:4px;text-transform:uppercase}
 body.pwopen{overflow:hidden}
@@ -767,10 +773,11 @@ const dock = (()=>{
       isMuted:()=>{ try{ return h.player.isMuted(); }catch(e){ return false; } }, toggleMute:()=>{ try{ h.player.isMuted()?h.player.unMute():h.player.mute(); }catch(e){} },
       prev: h.prev||null, next: h.next||null});
   }
-  return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop, idle, audio, current:()=>src };
+  return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop, idle, audio, current:()=>src, playTrack };
 })();
 
 // ---------- Player window: slides up over the page from the footer, video plus everything about the track ----------
+const PLAY_ICON='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/></svg>';
 const pwin = (()=>{
   const el=document.getElementById("pwin"), $=id=>document.getElementById(id);
   let h=null, cur=null, opener=null;
@@ -785,8 +792,14 @@ const pwin = (()=>{
     $("pwTitle").textContent = vidName(v);
     $("pwMeta").innerHTML = `<a class="relchip" href="#release-${r.id}">${sleeveThumb(r)}<span><small>${esc(LABELNAME[r.group]||"")}</small><b>${esc(r.title)}</b><span>${esc(artistLine(r))}</span><small>${esc(r.catno)}${r.year?" · "+r.year:""}${v.track?" · track "+esc(v.track.pos):""}</small></span></a>`;
     const tc = v.track && v.track.credits && v.track.credits.length ? `<p class="note">${v.track.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</p>` : "";
-    $("pwTracks").innerHTML = tc + `<h3 class="pwth">Tracks on ${esc(r.title)}</h3><ol class="pwtracks">${r.tracks.map(t=>{ const tv=VIDS.find(x=>x.r===r&&x.track===t);
-      const now=v.track===t; return `<li${now?' aria-current="true"':""}><span class="pos">${esc(t.pos)}</span> ${tv&&!now?`<button type="button" class="linklike" data-pwv="${esc(tv.id)}">${esc(t.title)}</button>`:`<span>${esc(t.title)}</span>`}${now?' <span class="nowtag2">Playing</span>':""}${t.dur?` <small>${esc(t.dur)}</small>`:""}</li>`; }).join("")}</ol>`;
+    $("pwTracks").innerHTML = tc + `<h3 class="pwth">Tracks on ${esc(r.title)}</h3><ol class="pwtracks">${r.tracks.map(t=>{ const tv=VIDS.find(x=>x.r===r&&x.track===t), snd=SOUND[soundKey(r,t.pos)];
+      // The real sound file wins; until it is uploaded, a track with a matching video plays that video.
+      const now=v.track===t, lab=`${esc(t.pos)} ${esc(t.title)}`;
+      const act = now ? '<span class="nowtag2">Playing</span>'
+        : snd ? `<button type="button" class="pwplay" data-pwa="${esc(t.pos)}" aria-label="Play ${lab}">${PLAY_ICON}</button>`
+        : tv ? `<button type="button" class="pwplay" data-pwv="${esc(tv.id)}" aria-label="Play ${lab}, video">${PLAY_ICON}</button>`
+        : '<span class="nosound">No sound yet</span>';
+      return `<li${now?' aria-current="true"':""}><span class="pos">${esc(t.pos)}</span><span class="tt">${esc(t.title)}</span>${act}${t.dur?`<small>${esc(t.dur)}</small>`:""}</li>`; }).join("")}</ol>`;
     const list=videoOrder(), i=Math.max(0,list.indexOf(v)); let up="";
     for(let k=1;k<=Math.min(12,list.length-1);k++){ const x=list[(i+k)%list.length];
       up+=`<li><button type="button" class="upitem" data-pwv="${esc(x.id)}" aria-label="${esc(vidName(x))}. ${esc(artistLine(x.r))}, ${esc(x.r.catno)}">
@@ -794,6 +807,7 @@ const pwin = (()=>{
         <span class="uptext" aria-hidden="true"><b>${esc(vidName(x))}</b><small>${esc(artistLine(x.r))}</small><small>${esc(x.r.catno)}${x.r.year?" · "+x.r.year:""}</small></span></button></li>`; }
     $("pwUp").innerHTML=up;
     el.querySelectorAll("[data-pwv]").forEach(b=>b.onclick=()=>open(VIDS.find(x=>x.id===b.dataset.pwv),true));
+    el.querySelectorAll("[data-pwa]").forEach(b=>b.onclick=()=>{ try{ h&&h.player&&h.player.pauseVideo(); }catch(e){} dock.playTrack(r,b.dataset.pwa); });
     el.style.setProperty("--stage-c", r.color||"var(--loop)");
   }
   function step(d){ const list=videoOrder(), i=list.indexOf(cur); open(list[((i<0?0:i)+d+list.length)%list.length], true); }
@@ -1076,7 +1090,8 @@ function renderAudio(r, onlyPos){
     const id = "up-" + soundKey(r, pos);
     const tv = !snd && STANDALONE ? VIDS.find(x=>x.r===r && x.track===t) : null;
     let html = snd ? `<button type="button" class="btn small trackplay" data-playtrack="${esc(pos)}" aria-label="Play ${esc(trackLabel(r,t))}">Play</button>`
-      : tv ? `<button type="button" class="btn small trackplay" data-playvideo="${esc(tv.id)}" aria-label="Play ${esc(trackLabel(r,t))}, video">Play video</button>` : "";
+      : tv ? `<button type="button" class="btn small trackplay" data-playvideo="${esc(tv.id)}" aria-label="Play ${esc(trackLabel(r,t))}, video">Play video</button>`
+      : STANDALONE ? `<span class="nosound">No sound yet</span>` : "";
     if(canEditRelease(r) && AB){
       html += `<span class="up"><label for="${id}">${snd ? "Replace sound file for" : "Add sound file for"} ${esc(trackLabel(r,t))}</label>
         <input type="file" id="${id}" accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.aif,.aiff,.ogg" data-up="${esc(pos)}">
