@@ -747,7 +747,7 @@ const dock = (()=>{
     src=s; peaks=null; show();
     $("dTitle").textContent=s.title; $("dSub").textContent=s.sub||""; $("dMeta").href=s.href||"#"; $("dArt").href=s.href||"#";
     $("dArt").innerHTML=s.art||""; $("dPrev").hidden=!s.prev; $("dNext").hidden=!s.next;
-    $("dMeta").setAttribute("aria-label", s.open ? `${s.title}, ${s.sub||""}. Open the player window` : `${s.title}, ${s.sub||""}. Open the release`);
+    $("dMeta").setAttribute("aria-label", s.open ? `${s.title}, ${s.sub||""}. Player window` : `${s.title}, ${s.sub||""}. Open the release`);
     $("dSeek").setAttribute("aria-label", s.kind==="audio"?"Position in the track":"Position in the video");
     if(s.wave) loadPeaks(s.wave).then(p=>{ if(src===s){ peaks=p; draw(); } });
     clearInterval(timer); timer=setInterval(paint,200); paint();
@@ -759,7 +759,8 @@ const dock = (()=>{
       art:u?`<img src="${esc(u)}" alt="">`:placeholder(v.r,true), open:()=>pwin.open(v,false),
       play:()=>pwin.open(v,true), pause:()=>{}, isPlaying:()=>false, cur:()=>0, dur:()=>0, seek:()=>{}, isMuted:()=>false, toggleMute:()=>{},
       prev:null, next:null}); }
-  const openWin=e=>{ if(src&&src.open){ e.preventDefault(); src.open(); } };
+  // The sleeve and the title toggle the player window: open it, or close it again.
+  const openWin=e=>{ if(window.pwin && pwin.isOpen()){ e.preventDefault(); pwin.close(); return; } if(src&&src.open){ e.preventDefault(); src.open(); } };
   $("dArt").onclick=openWin; $("dMeta").onclick=openWin;
   $("dPlay").onclick=()=>{ if(!src) return; src.isPlaying()?src.pause():src.play(); setTimeout(paint,60); };
   $("dPrev").onclick=()=>src&&src.prev&&src.prev(); $("dNext").onclick=()=>src&&src.next&&src.next();
@@ -817,9 +818,10 @@ const PLAY_ICON='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><
 const pwin = (()=>{
   const el=document.getElementById("pwin"), $=id=>document.getElementById(id);
   let h=null, cur=null, opener=null;
-  function show(){ if(!el.hidden) return; opener=document.activeElement; el.hidden=false; document.body.classList.add("pwopen"); requestAnimationFrame(()=>el.classList.add("on")); }
+  function mark(open){ const m=$("dMeta"); m.setAttribute("aria-expanded",open?"true":"false"); m.setAttribute("aria-controls","pwin"); }
+  function show(){ if(!el.hidden) return; opener=document.activeElement; el.hidden=false; document.body.classList.add("pwopen"); mark(true); requestAnimationFrame(()=>el.classList.add("on")); }
   function close(){ if(el.hidden) return; try{ h&&h.player&&h.player.pauseVideo(); }catch(e){} el.classList.remove("on"); document.body.classList.remove("pwopen");
-    el.hidden=true; if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); }
+    el.hidden=true; mark(false); if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); }
   function fill(v){
     cur=v; const r=v.r;
     // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
@@ -875,8 +877,9 @@ const pwin = (()=>{
   $("pwClose").onclick=close;
   el.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); close(); } });
   addEventListener("hashchange",()=>close());
-  return { open, close, show };
+  return { open, close, show, isOpen:()=>!el.hidden };
 })();
+window.pwin = pwin;
 
 // ---------- Level meter: a vertical meter on the far right while a sound file plays ----------
 // It measures the real sound of uploaded files. YouTube's sound can't be measured by a web page,
