@@ -344,8 +344,7 @@ function viewReleases(fromSearch){
   const ppl = term ? P.filter(p=>term.split(/\s+/).every(w=>p._s.includes(w))).slice(0,12) : [];
   const chips = ["all","loop","plump","related"].map(g=>`<button type="button" class="chip" data-f="${g}" aria-pressed="${filter===g}"${g==="related"?' aria-label="Licensed and appearances"':""}>${CHIP[g]}</button>`).join("");
   main.innerHTML = `
-    <h1>${term?"Search":"Loop Records"}</h1>
-    ${term?"":`<p class="lede">Underground techno and experimental house from Stockholm. Loop started in 1993 as a Sunday club night whose flyer was a 7-inch record, then became a label. Every release, every credit, every video we could find.</p>`}
+    <h1${term?"":' class="sr"'}>${term?"Search":"Loop Records releases"}</h1>
     <div class="filters" role="group" aria-label="Filter by label">${chips}</div>
     ${ppl.length?`<h2>People</h2><ul class="people">${ppl.map(personRow).join("")}</ul><h2>Releases</h2>`:""}
     <div class="countrow"><p class="count" id="cnt">${list.length} ${list.length===1?"release":"releases"}${term?` matching “${esc(q.value.trim())}”`:""}</p>
@@ -524,7 +523,8 @@ function viewPeople(){
 function viewAbout(){
   setNav("about");
   main.innerHTML = `<h1>About Loop Records</h1>
-    <p class="lede">${esc("Underground techno label from Stockholm. It began in 1993 as a club night founded by Joachim Hövel and Vito Ingrosso, whose flyer was pressed as a 7-inch record. Local DJs liked it, and the label followed. Sublabels: Plumphouse Records, Loop Music and Wrong Steps Records.")}</p>
+    <p class="lede">Underground techno and experimental house from Stockholm. Loop started in 1993 as a Sunday club night whose flyer was a 7-inch record, then became a label. Every release, every credit, every video we could find.</p>
+    <p>The club night was founded by Joachim Hövel and Vito Ingrosso. Local DJs liked the flyer record, and the label followed. Sublabels: Plumphouse Records, Loop Music and Wrong Steps Records.</p>
     <dl class="facts"><dt>Releases</dt><dd>${R.length} (${R.filter(r=>r.group==="loop").length} Loop, ${R.filter(r=>r.group==="plump").length} Plumphouse, ${R.filter(r=>r.group==="related").length} licensed or appearances)</dd>
       <dt>People</dt><dd>${P.length} credited</dd>
       <dt>Videos</dt><dd>${new Set([...R.flatMap(r=>r.videos.map(v=>v.id)),...P.flatMap(p=>p.videos.map(v=>v.id))]).size} unique</dd></dl>
