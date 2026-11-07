@@ -78,6 +78,9 @@ a.card:hover .sleeve:not(.multi){transform:translateY(-3px) rotate(-.6deg)}
 .dot.plump{background:var(--plump)}.dot.related{background:var(--related)}
 .card .t{font-weight:600;line-height:1.25}
 .card .a{color:var(--muted);font-size:14px;line-height:1.3}
+.pickgrid button.card{display:flex;flex-direction:column;gap:8px;width:100%;padding:0;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;border-radius:6px}
+.pickgrid button.card:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
+.pickgrid .pill{align-self:flex-start}
 
 .people{list-style:none;padding:0;margin:0;columns:3 260px;column-gap:28px}
 .people li{break-inside:avoid;padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}

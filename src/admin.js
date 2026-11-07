@@ -409,19 +409,34 @@ LIVE.rights = () => {
 SECTIONS["admin-rights"] = el => {
   el.innerHTML = `<h1>Rights and splits</h1><p class="lede">Who gets what from each release, plus the codes needed for collecting societies. Credits come from the catalog, so every party links back to their page.</p>
   <div data-live="rights"></div>
-  <div class="field wide"><label for="rRel">Release</label><select id="rRel">${relOptions(rightsRel,"Choose a release")}</select></div>
+  <div id="rPick"></div>
   <div id="rFormWrap"></div>`;
-  const sel=el.querySelector("#rRel"), wrap=el.querySelector("#rFormWrap");
-  const show = () => { const r=byId.get(sel.value); rightsRel=r?r.id:null; wrap.innerHTML=r?rightsForm(r):""; const f=wrap.querySelector("form"); if(f) splitTotal(f); };
-  sel.onchange = show; show();
+  const pick=el.querySelector("#rPick"), wrap=el.querySelector("#rFormWrap");
+  const hasSplits = r => !!(S.rights[r.id]&&(S.rights[r.id].splits||[]).length);
+  const grid = () => `<h2 id="rPickH">Choose a release</h2>
+    <ul class="grid pickgrid" aria-labelledby="rPickH">${R.map(r=>`<li><button type="button" class="card" data-pick="${r.id}">
+      ${sleeve(r)}<span class="cat"><span class="dot ${r.group}" aria-hidden="true"></span>${esc(r.catno)} · ${r.year||"year unknown"}</span>
+      <span class="t">${esc(r.title)}</span><span class="a">${esc(artistLine(r))}</span>
+      <span class="pill ${hasSplits(r)?"ok":"neutral"}">${hasSplits(r)?"Splits set":"No splits yet"}</span></button></li>`).join("")}</ul>`;
+  const show = (focus) => {
+    const r=byId.get(String(rightsRel||""));
+    if(!r){ wrap.innerHTML=""; pick.innerHTML=grid(); if(focus){ const b=pick.querySelector(`[data-pick="${focus}"]`)||pick.querySelector("h2"); b.setAttribute("tabindex","-1"); b.focus(); } return; }
+    pick.innerHTML=`<div class="btnrow"><button type="button" class="btn" data-act="pickother">Choose another release</button></div>
+      <h2 id="rFormH" tabindex="-1">${esc(r.catno)} · ${esc(r.title)} <span class="muted">${esc(artistLine(r))}</span></h2>`;
+    wrap.innerHTML=rightsForm(r); const f=wrap.querySelector("form"); if(f) splitTotal(f);
+    if(focus) document.getElementById("rFormH").focus();
+  };
+  pick.addEventListener("click", e => { const b=e.target.closest("[data-pick]"); if(!b) return; rightsRel=b.dataset.pick; show(true); announce("Rights for "+byId.get(rightsRel).catno); });
+  show(false);
   el.oninput = e => { const f=e.target.form; if(f&&f.id==="rForm"&&e.target.name==="ss") splitTotal(f); };
   el.onclick = e => { const b=e.target.closest("[data-act]"); if(!b) return; const a=b.dataset.act, f=el.querySelector("#rForm"), box=el.querySelector("#splits");
     if(a==="addsplit"){ box.insertAdjacentHTML("beforeend",splitRow()); const s=box.querySelectorAll("[name=sp]"); s[s.length-1].focus(); }
     if(a==="rmsplit"){ b.closest(".itemrow").remove(); splitTotal(f); }
-    if(a==="suggest"){ const r=byId.get(sel.value); const names=r.artists.length?r.artists:[{name:"Various artists"}]; const each=Math.floor(10000/names.length)/100; let rest=Math.round((100-each*names.length)*100)/100;
+    if(a==="pickother"){ const was=rightsRel; rightsRel=null; show(was); return; }
+    if(a==="suggest"){ const r=byId.get(String(rightsRel)); const names=r.artists.length?r.artists:[{name:"Various artists"}]; const each=Math.floor(10000/names.length)/100; let rest=Math.round((100-each*names.length)*100)/100;
       box.innerHTML=names.map((x,i)=>splitRow({name:x.name,role:"Artist",share:i===0?Math.round((each+rest)*100)/100:each})).join(""); splitTotal(f); setStatus("Filled with the credited artists sharing 100 percent. Adjust for the label or producers."); box.querySelector("[name=ss]").focus(); }
   };
-  el.onsubmit = async e => { if(e.target.id!=="rForm") return; e.preventDefault(); const f=e.target, r=byId.get(sel.value);
+  el.onsubmit = async e => { if(e.target.id!=="rForm") return; e.preventDefault(); const f=e.target, r=byId.get(String(rightsRel));
     const splits=[...f.querySelectorAll("#splits .itemrow")].map(row=>{ const name=row.querySelector("[name=sp]").value.trim(); const p=P.find(x=>x.name.toLowerCase()===name.toLowerCase()||x.aliases.some(a=>a.toLowerCase()===name.toLowerCase()));
       return {name, key:p?p.key:null, role:row.querySelector("[name=sr]").value, share:parseFloat(String(row.querySelector("[name=ss]").value).replace(",","."))||0}; }).filter(s=>s.name);
     const tot=splits.reduce((s,x)=>s+x.share,0);
