@@ -1,51 +1,89 @@
 {
  "950": [
-  "art/950-discogs.jpg"
+  "art/950-discogs-1.jpg",
+  "art/950-discogs-2.jpg",
+  "art/950-discogs-3.jpg",
+  "art/950-discogs-4.jpg",
+  "art/950-discogs-5.jpg"
  ],
  "2429": [
-  "art/2429-discogs.jpg"
+  "art/2429-discogs-1.jpg",
+  "art/2429-discogs-2.jpg"
  ],
  "2430": [
-  "art/2430-discogs.jpg"
+  "art/2430-discogs-1.jpg",
+  "art/2430-discogs-2.jpg"
  ],
  "9004": [
-  "art/9004-discogs.jpg"
+  "art/9004-discogs-1.jpg",
+  "art/9004-discogs-2.jpg",
+  "art/9004-discogs-3.jpg"
  ],
  "19433": [
-  "art/19433-discogs.jpg"
+  "art/19433-discogs-1.jpg",
+  "art/19433-discogs-2.jpg",
+  "art/19433-discogs-3.jpg"
  ],
  "25239": [
-  "art/25239-discogs.jpg"
+  "art/25239-discogs-1.jpg",
+  "art/25239-discogs-2.jpg"
  ],
  "27200": [
-  "art/27200-discogs.jpg"
+  "art/27200-discogs-1.jpg",
+  "art/27200-discogs-2.jpg",
+  "art/27200-discogs-3.jpg",
+  "art/27200-discogs-4.jpg",
+  "art/27200-discogs-5.jpg",
+  "art/27200-discogs-6.jpg",
+  "art/27200-discogs-7.jpg",
+  "art/27200-discogs-8.jpg"
  ],
  "28939": [
-  "art/28939-discogs.jpg"
+  "art/28939-discogs-1.jpg",
+  "art/28939-discogs-2.jpg"
  ],
  "30410": [
-  "art/30410-discogs.jpg"
+  "art/30410-discogs-1.jpg",
+  "art/30410-discogs-2.jpg"
  ],
  "38211": [
-  "art/38211-discogs.jpg"
+  "art/38211-1.jpg"
  ],
  "38238": [
-  "art/38238-discogs.jpg"
+  "art/38238-discogs-1.jpg",
+  "art/38238-discogs-2.jpg"
  ],
  "38304": [
-  "art/38304-discogs.jpg"
+  "art/38304-discogs-1.jpg",
+  "art/38304-discogs-2.jpg"
  ],
  "42643": [
-  "art/42643-discogs.jpg"
+  "art/42643-discogs-1.jpg",
+  "art/42643-discogs-2.jpg",
+  "art/42643-discogs-3.jpg",
+  "art/42643-discogs-4.jpg",
+  "art/42643-discogs-5.jpg",
+  "art/42643-discogs-6.jpg"
  ],
  "47295": [
-  "art/47295-discogs.jpg"
+  "art/47295-discogs-1.jpg",
+  "art/47295-discogs-2.jpg",
+  "art/47295-discogs-3.jpg",
+  "art/47295-discogs-4.jpg",
+  "art/47295-discogs-5.jpg"
  ],
  "56587": [
-  "art/56587-discogs.jpg"
+  "art/56587-discogs-1.jpg",
+  "art/56587-discogs-2.jpg",
+  "art/56587-discogs-3.jpg",
+  "art/56587-discogs-4.jpg"
  ],
  "66272": [
-  "art/66272-discogs.jpg"
+  "art/66272-discogs-1.jpg",
+  "art/66272-discogs-2.jpg",
+  "art/66272-discogs-3.jpg",
+  "art/66272-discogs-4.jpg",
+  "art/66272-discogs-5.jpg"
  ],
  "69115": [
   "art/69115-1.jpg",
@@ -54,7 +92,10 @@
   "art/69115-4.jpg"
  ],
  "69620": [
-  "art/69620-discogs.jpg"
+  "art/69620-1.jpg",
+  "art/69620-2.jpg",
+  "art/69620-3.jpg",
+  "art/69620-4.jpg"
  ],
  "73207": [
   "art/73207-1.jpg",
@@ -63,40 +104,63 @@
   "art/73207-4.jpg"
  ],
  "79824": [
-  "art/79824-discogs.jpg"
+  "art/79824-discogs-1.jpg",
+  "art/79824-discogs-2.jpg",
+  "art/79824-discogs-3.jpg"
  ],
  "82698": [
-  "art/82698-discogs.jpg"
+  "art/82698-discogs-1.jpg",
+  "art/82698-discogs-2.jpg"
  ],
  "84447": [
-  "art/84447-discogs-1.jpg",
-  "art/84447-discogs-2.jpg"
+  "art/84447-1.jpg",
+  "art/84447-2.jpg"
  ],
  "87426": [
-  "art/87426-discogs.jpg"
+  "art/87426-discogs-1.jpg",
+  "art/87426-discogs-2.jpg",
+  "art/87426-discogs-3.jpg",
+  "art/87426-discogs-4.jpg"
  ],
  "87427": [
-  "art/87427-discogs.jpg"
+  "art/87427-discogs-1.jpg",
+  "art/87427-discogs-2.jpg",
+  "art/87427-discogs-3.jpg",
+  "art/87427-discogs-4.jpg"
  ],
  "87431": [
-  "art/87431-discogs-1.jpg",
-  "art/87431-discogs-2.jpg",
-  "art/87431-discogs-3.jpg"
+  "art/87431-1.jpg",
+  "art/87431-2.jpg",
+  "art/87431-3.jpg"
  ],
  "88404": [
-  "art/88404-discogs.jpg"
+  "art/88404-1.jpg",
+  "art/88404-2.jpg",
+  "art/88404-3.jpg",
+  "art/88404-4.jpg"
  ],
  "88416": [
-  "art/88416-discogs.jpg"
+  "art/88416-discogs-1.jpg",
+  "art/88416-discogs-2.jpg",
+  "art/88416-discogs-3.jpg"
  ],
  "90406": [
-  "art/90406-discogs.jpg"
+  "art/90406-1.jpg",
+  "art/90406-2.jpg",
+  "art/90406-3.jpg",
+  "art/90406-4.jpg"
  ],
  "93003": [
-  "art/93003-discogs.jpg"
+  "art/93003-discogs-1.jpg",
+  "art/93003-discogs-2.jpg",
+  "art/93003-discogs-3.jpg",
+  "art/93003-discogs-4.jpg",
+  "art/93003-discogs-5.jpg"
  ],
  "93010": [
-  "art/93010-discogs.jpg"
+  "art/93010-discogs-1.jpg",
+  "art/93010-discogs-2.jpg",
+  "art/93010-discogs-3.jpg"
  ],
  "94086": [
   "art/94086-1.jpg",
@@ -112,54 +176,83 @@
   "art/94089-5.jpg"
  ],
  "99220": [
-  "art/99220-discogs.jpg"
+  "art/99220-discogs-1.jpg",
+  "art/99220-discogs-2.jpg"
  ],
  "104128": [
-  "art/104128-discogs-1.jpg"
+  "art/104128-1.jpg"
  ],
  "107032": [
-  "art/107032-discogs.jpg"
+  "art/107032-discogs-1.jpg",
+  "art/107032-discogs-2.jpg",
+  "art/107032-discogs-3.jpg",
+  "art/107032-discogs-4.jpg"
  ],
  "111345": [
-  "art/111345-discogs.jpg"
+  "art/111345-discogs-1.jpg",
+  "art/111345-discogs-2.jpg",
+  "art/111345-discogs-3.jpg",
+  "art/111345-discogs-4.jpg"
  ],
  "113915": [
-  "art/113915-discogs-1.jpg",
-  "art/113915-discogs-2.jpg",
-  "art/113915-discogs-3.jpg"
+  "art/113915-1.jpg",
+  "art/113915-2.jpg",
+  "art/113915-3.jpg"
  ],
  "114655": [
   "art/114655-1.jpg",
-  "art/114655-2.jpg"
+  "art/114655-2.jpg",
+  "art/114655-3.jpg",
+  "art/114655-4.jpg",
+  "art/114655-5.jpg"
  ],
  "136825": [
-  "art/136825-discogs-1.jpg",
-  "art/136825-discogs-2.jpg",
-  "art/136825-discogs-3.jpg"
+  "art/136825-1.jpg",
+  "art/136825-2.jpg",
+  "art/136825-3.jpg"
  ],
  "136830": [
-  "art/136830-discogs.jpg"
+  "art/136830-discogs-1.jpg",
+  "art/136830-discogs-2.jpg",
+  "art/136830-discogs-3.jpg"
  ],
  "137272": [
-  "art/137272-discogs.jpg"
+  "art/137272-discogs-1.jpg",
+  "art/137272-discogs-2.jpg"
  ],
  "137274": [
-  "art/137274-discogs.jpg"
+  "art/137274-discogs-1.jpg",
+  "art/137274-discogs-2.jpg",
+  "art/137274-discogs-3.jpg"
  ],
  "143050": [
-  "art/143050-discogs.jpg"
+  "art/143050-discogs-1.jpg",
+  "art/143050-discogs-2.jpg",
+  "art/143050-discogs-3.jpg",
+  "art/143050-discogs-4.jpg",
+  "art/143050-discogs-5.jpg",
+  "art/143050-discogs-6.jpg"
  ],
  "151460": [
-  "art/151460-discogs.jpg"
+  "art/151460-discogs-1.jpg",
+  "art/151460-discogs-2.jpg"
  ],
  "151462": [
-  "art/151462-discogs.jpg"
+  "art/151462-discogs-1.jpg",
+  "art/151462-discogs-2.jpg",
+  "art/151462-discogs-3.jpg",
+  "art/151462-discogs-4.jpg",
+  "art/151462-discogs-5.jpg"
  ],
  "161657": [
-  "art/161657-discogs.jpg"
+  "art/161657-discogs-1.jpg",
+  "art/161657-discogs-2.jpg"
  ],
  "176252": [
-  "art/176252-discogs.jpg"
+  "art/176252-discogs-1.jpg",
+  "art/176252-discogs-2.jpg",
+  "art/176252-discogs-3.jpg",
+  "art/176252-discogs-4.jpg"
  ],
  "176309": [
   "art/176309-1.jpg",
@@ -168,10 +261,22 @@
   "art/176309-4.jpg"
  ],
  "184246": [
-  "art/184246-discogs.jpg"
+  "art/184246-discogs-1.jpg",
+  "art/184246-discogs-2.jpg",
+  "art/184246-discogs-3.jpg",
+  "art/184246-discogs-4.jpg"
  ],
  "194084": [
-  "art/194084-discogs.jpg"
+  "art/194084-discogs-1.jpg",
+  "art/194084-discogs-2.jpg",
+  "art/194084-discogs-3.jpg",
+  "art/194084-discogs-4.jpg",
+  "art/194084-discogs-5.jpg",
+  "art/194084-discogs-6.jpg",
+  "art/194084-discogs-7.jpg",
+  "art/194084-discogs-8.jpg",
+  "art/194084-discogs-9.jpg",
+  "art/194084-discogs-10.jpg"
  ],
  "197959": [
   "art/197959-1.jpg",
@@ -179,13 +284,22 @@
   "art/197959-3.jpg"
  ],
  "204200": [
-  "art/204200-discogs.jpg"
+  "art/204200-discogs-1.jpg",
+  "art/204200-discogs-2.jpg",
+  "art/204200-discogs-3.jpg",
+  "art/204200-discogs-4.jpg",
+  "art/204200-discogs-5.jpg"
  ],
  "237229": [
-  "art/237229-discogs.jpg"
+  "art/237229-discogs-1.jpg",
+  "art/237229-discogs-2.jpg",
+  "art/237229-discogs-3.jpg",
+  "art/237229-discogs-4.jpg"
  ],
  "309459": [
-  "art/309459-discogs.jpg"
+  "art/309459-discogs-1.jpg",
+  "art/309459-discogs-2.jpg",
+  "art/309459-discogs-3.jpg"
  ],
  "1957185": [
   "art/1957185-1.jpg",
