@@ -258,7 +258,10 @@ const byId = new Map(R.map(r=>[String(r.id),r]));
 const byKey = new Map(P.map(p=>[p.key,p]));
 const art = {}, artImgs = {}; // release id -> main cover url / all images
 const STANDALONE = !!window.__STANDALONE__;
-R.forEach(r=>{ if(r.images&&r.images.length){ artImgs[r.id]=r.images.map(u=>({url:u})); art[r.id]=r.images[0]; } });
+// Covers built into the site; images staff add in the back office (database "artwork") replace these per release.
+function baseArt(){ for(const k in art) delete art[k]; for(const k in artImgs) delete artImgs[k];
+  R.forEach(r=>{ if(r.images&&r.images.length){ artImgs[r.id]=r.images.map(u=>({url:u})); art[r.id]=r.images[0]; } }); }
+baseArt();
 let assetsNS = null, dbNS = null, canEditArt = false;
 let filter = "all";
 let mosaic = false; try{ mosaic = localStorage.getItem("loop-mosaic")==="1"; }catch(e){}
@@ -804,7 +807,7 @@ quiet=true; route(); quiet=false;
     if(!db) return;
     initAdmin(db);
     db.collection("artwork").onSnapshot(snap=>{
-      for(const k in art) delete art[k]; for(const k in artImgs) delete artImgs[k];
+      baseArt();
       snap.docs.forEach(d=>{ const v=d.exists&&d.data(); if(!v) return;
         const imgs = Array.isArray(v.images) ? v.images.filter(x=>x&&x.url) : (v.url?[{url:v.url,assetId:v.assetId,at:v.at}]:[]);
         if(imgs.length){ artImgs[d.id]=imgs.map(x=>({...x})); art[d.id]=imgs[0].url; } });
