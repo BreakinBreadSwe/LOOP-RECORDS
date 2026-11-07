@@ -165,9 +165,9 @@ html.tinted body{background:color-mix(in srgb,var(--tint-c,var(--loop)) 12%,var(
 #saver{position:fixed;inset:0;z-index:9999;background:#000;display:grid;gap:0;opacity:0;transition:opacity .8s;cursor:pointer}
 #saver.on{opacity:1}
 #saver .st{position:relative;overflow:hidden;background:#111;perspective:800px}
-#saver .st img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:transform 9s linear;transform:scale(1.04);backface-visibility:hidden;z-index:1}
+#saver .st img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;backface-visibility:hidden;z-index:1;will-change:transform,opacity}
 #saver .st img.top{z-index:2}
-#saver .st img.on{opacity:1;transform:scale(1.14)}
+#saver .st img.on{opacity:1}
 @media (prefers-reduced-motion:reduce){#saver .st img{transition:none;transform:none}#saver .st img.on{transform:none}}
 .staffonly{display:contents}.staffonly[hidden]{display:none}
 .staffrel{margin:28px 0;padding:16px;border:2px solid var(--loop);border-radius:10px}
@@ -1100,7 +1100,7 @@ function showSaver(){
       if(tick%22===0){ // now and then a wave: a whole row or column turns over, one after another
         const cols=getComputedStyle(el).gridTemplateColumns.split(" ").length, all=[...el.children];
         const byRow=Math.random()<.5, line=Math.floor(Math.random()*(byRow?Math.ceil(all.length/cols):cols));
-        const fx=["flip","swivel","pageflip","turn"][Math.floor(Math.random()*4)];
+        const fx=["flip","swivel","pageflip","slide"][Math.floor(Math.random()*4)];
         all.filter((t,i)=>byRow?Math.floor(i/cols)===line:i%cols===line).forEach((t,k)=>setTimeout(()=>swapTile(t,fx),k*120));
         return;
       }
@@ -1111,26 +1111,26 @@ function showSaver(){
   function swapTile(t, fx){
     if(!t || t.dataset.busy) return; t.dataset.busy="1";
     const [a,b]=t.querySelectorAll("img"), on=a.classList.contains("on")?a:b, off=on===a?b:a;
-    off.onload=()=>{ saverFx(fx||SAVER_FX[Math.floor(Math.random()*SAVER_FX.length)], on, off).then(()=>{ delete t.dataset.busy; }); };
+    off.onload=()=>{ (off.decode?off.decode():Promise.resolve()).catch(()=>{}).then(()=>requestAnimationFrame(()=>saverFx(fx||SAVER_FX[Math.floor(Math.random()*SAVER_FX.length)], on, off).then(()=>{ delete t.dataset.busy; }))); };
     off.onerror=()=>{ delete t.dataset.busy; };
     const shown=new Set([...el.querySelectorAll("img.on")].map(i=>i.getAttribute("src"))), fresh=urls.filter(u=>!shown.has(u)), pool=fresh.length?fresh:urls;
     off.src=pool[Math.floor(Math.random()*pool.length)];
   }
 }
-// Transition effects between two sleeves in a tile: fade, flip, swivel, page flip, turn, zoom, slide, iris.
-const SAVER_FX=["fade","flip","swivel","pageflip","turn","zoom","slide","iris","fade","flip","pageflip"];
+// Transition effects between two sleeves in a tile: fade, flip (sideways), swivel (top to bottom), page flip, slide.
+// No zooming and no spinning flat on the screen, as Gordon asked.
+const SAVER_FX=["fade","flip","swivel","pageflip","slide","slide","flip","fade"];
 function saverFx(kind, outEl, inEl){
-  const T=kind==="fade"?1400:kind==="pageflip"?1100:900, ease="cubic-bezier(.45,.05,.25,1)";
+  // Exponential ease in and out: starts slowly, glides through the middle, settles softly.
+  const T=kind==="fade"?1800:1600, ease="cubic-bezier(.87,0,.13,1)";
   const anim=(el,k,o)=>el.animate(k,Object.assign({duration:T,easing:ease,fill:"both"},o||{})).finished.catch(()=>{});
   inEl.classList.add("on"); outEl.classList.remove("top"); inEl.classList.add("top");
   let p;
   if(kind==="flip"||kind==="swivel"){ const ax=kind==="flip"?"rotateY":"rotateX";
-    p=Promise.all([anim(outEl,[{transform:`${ax}(0deg)`,opacity:1},{transform:`${ax}(90deg)`,opacity:1}],{duration:T/2,easing:"ease-in"}),
-                   anim(inEl,[{transform:`${ax}(-90deg)`,opacity:1},{transform:`${ax}(0deg)`,opacity:1}],{duration:T/2,delay:T/2,easing:"ease-out"})]); }
+    p=Promise.all([anim(outEl,[{transform:`${ax}(0deg)`,opacity:1},{transform:`${ax}(90deg)`,opacity:1}],{duration:T/2,easing:"cubic-bezier(.7,0,.84,0)"}),
+                   anim(inEl,[{transform:`${ax}(-90deg)`,opacity:1},{transform:`${ax}(0deg)`,opacity:1}],{duration:T/2,delay:T/2,easing:"cubic-bezier(.16,1,.3,1)"})]); }
   else if(kind==="pageflip"){ inEl.classList.remove("top"); outEl.classList.add("top"); inEl.style.opacity=1;
-    p=anim(outEl,[{transform:"rotateY(0deg)",transformOrigin:"0% 50%",opacity:1,filter:"brightness(1)"},{transform:"rotateY(-95deg)",transformOrigin:"0% 50%",opacity:1,filter:"brightness(.4)",offset:.85},{transform:"rotateY(-110deg)",transformOrigin:"0% 50%",opacity:0,filter:"brightness(.3)"}]); }
-  else if(kind==="turn") p=Promise.all([anim(outEl,[{transform:"rotate(0) scale(1)",opacity:1},{transform:"rotate(120deg) scale(.2)",opacity:0}]),anim(inEl,[{transform:"rotate(-120deg) scale(.2)",opacity:0},{transform:"rotate(0) scale(1)",opacity:1}])]);
-  else if(kind==="zoom") p=Promise.all([anim(outEl,[{opacity:1},{opacity:0}]),anim(inEl,[{transform:"scale(1.8)",opacity:0},{transform:"scale(1)",opacity:1}])]);
+    p=anim(outEl,[{transform:"rotateY(0deg)",transformOrigin:"0% 50%",opacity:1},{transform:"rotateY(-90deg)",transformOrigin:"0% 50%",opacity:1}]); }
   else if(kind==="slide"){ const [x,y]=[[1,0],[-1,0],[0,1],[0,-1]][Math.floor(Math.random()*4)], tr=(k)=>`translate(${x*k}%,${y*k}%)`;
     p=Promise.all([anim(outEl,[{transform:tr(0),opacity:1},{transform:tr(-100),opacity:1}]),anim(inEl,[{transform:tr(100),opacity:1},{transform:tr(0),opacity:1}])]); }
   else if(kind==="iris") p=Promise.all([anim(inEl,[{clipPath:"circle(0% at 50% 50%)",opacity:1},{clipPath:"circle(75% at 50% 50%)",opacity:1}]),anim(outEl,[{opacity:1},{opacity:1}])]);
