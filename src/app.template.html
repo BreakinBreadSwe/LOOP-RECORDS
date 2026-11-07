@@ -815,8 +815,8 @@ const pwin = (()=>{
   function fill(v){
     cur=v; const r=v.r;
     // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
-    // Switched off for now (Gordon): show the video as the main picture until the real sound files arrive.
-    const PW_ART=false, u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(PW_ART&&v.track&&u); el.classList.toggle("withart",!art.hidden);
+    // Gordon loves it: the square sleeve on top, the video playing underneath.
+    const PW_ART=true, u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(PW_ART&&v.track&&u); el.classList.toggle("withart",!art.hidden);
     art.innerHTML = !art.hidden ? `<img src="${esc(u)}" alt="">` : "";
     $("pwTitle").textContent = vidName(v);
     $("pwMeta").innerHTML = `<a class="relchip" href="#release-${r.id}">${sleeveThumb(r)}<span><small>${esc(LABELNAME[r.group]||"")}</small><b>${esc(r.title)}</b><span>${esc(artistLine(r))}</span><small>${esc(r.catno)}${r.year?" · "+r.year:""}${v.track?" · track "+esc(v.track.pos):""}</small></span></a>`;
