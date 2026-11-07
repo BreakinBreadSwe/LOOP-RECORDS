@@ -272,7 +272,11 @@ header.top{transition:transform .25s ease}
 .ytplay img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9;transition:opacity .15s}
 .ytplay:hover img{opacity:1}
 .stage{scroll-margin-top:84px;display:grid;gap:14px 24px;margin:4px 0 26px;padding:14px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--stage-c,var(--loop)) 22%,var(--surface)),var(--surface) 70%);border:1px solid var(--line);transition:background .8s}
-@media (min-width:900px){.stage{grid-template-columns:minmax(0,2fr) minmax(240px,1fr);align-items:center;padding:18px}}
+/* Like YouTube and Vimeo: the picture first, then title and release underneath it. */
+@media (min-width:900px){.stage{padding:18px}}
+.stageinfo .inforow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.stageinfo .inforow .relchip{margin:0}
+.stageinfo .inforow .btnrow{margin:0}
 .stage .ytbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 /* Clean player: YouTube's own title bar, buttons and suggestions are kept out of sight. The iframe is
    taller than its box, so YouTube's top and bottom bars fall outside; a transparent shield takes the
@@ -285,9 +289,19 @@ header.top{transition:transform .25s ease}
 .ytbox.clean.playing .ytposter{opacity:0}
 .ytbox.clean .ythint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;margin:0;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.75);color:#fff;font:600 14px var(--body);pointer-events:none}
 .ytbox.clean:fullscreen{border-radius:0}
-.ytbar{display:flex;align-items:center;gap:6px;margin-top:8px}
-.ytbar .ytseek{flex:1;min-width:0;accent-color:var(--loop);height:28px}
+/* Our controls under the video: the timeline runs the full width right under the picture,
+   then one row with play and time on the left, sound and full screen on the right. */
+.ytbar{display:grid;grid-template-columns:auto auto 1fr auto auto;grid-template-areas:"seek seek seek seek seek" "play time . mute full";align-items:center;column-gap:4px;margin-top:2px}
+.ytbar [data-c="play"]{grid-area:play}.ytbar .yttime{grid-area:time;padding-left:6px}.ytbar [data-c="mute"]{grid-area:mute}.ytbar [data-c="full"]{grid-area:full}
+.ytbar .ytseek{grid-area:seek;-webkit-appearance:none;appearance:none;width:100%;height:24px;margin:0;background:transparent;cursor:pointer;--p:0%}
+.ytbar .ytseek::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(to right,var(--loop) var(--p),var(--line) var(--p))}
+.ytbar .ytseek::-moz-range-track{height:4px;border-radius:2px;background:linear-gradient(to right,var(--loop) var(--p),var(--line) var(--p))}
+.ytbar .ytseek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-5px;border-radius:50%;background:var(--loop);border:0}
+.ytbar .ytseek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--loop);border:0}
+.ytbar .ytseek:focus-visible{outline:3px solid var(--focus,#1F16B2);outline-offset:2px}
 .ytbar .yttime{font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
+.stage{--pw:max(320px,calc((100vh - 400px) * 16 / 9))}
+.stage .player,.stage .stageinfo{min-width:0;width:100%;max-width:var(--pw);margin-inline:auto}
 .ytbar .ico svg{width:20px;height:20px}
 .stageinfo h2{margin:2px 0 12px;font-size:clamp(22px,2.6vw,30px);text-transform:none}
 .relchip{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-bottom:12px}
@@ -567,7 +581,7 @@ function cleanPlayer(box, o){
   const h={ player:null, box, bar, iframe:()=>h.player&&h.player.getIframe&&h.player.getIframe() };
   const dur=()=>{ try{ return h.player.getDuration()||0; }catch(e){ return 0; } };
   const cur=()=>{ try{ return h.player.getCurrentTime()||0; }catch(e){ return 0; } };
-  function paint(){ const d=dur(), c=cur(); if(!dragging){ seek.value=d?Math.round(c/d*1000):0; }
+  function paint(){ const d=dur(), c=cur(); if(!dragging){ seek.value=d?Math.round(c/d*1000):0; } seek.style.setProperty("--p",(seek.value/10)+"%");
     time.textContent=`${ytClock(c)} / ${ytClock(d)}`; seek.setAttribute("aria-valuetext",`${ytSpoken(c)} of ${ytSpoken(d)}`); }
   function setPlaying(on){ box.classList.toggle("playing",on); playB.innerHTML=ytIcon(on?"pause":"play"); playB.setAttribute("aria-label",on?"Pause":"Play");
     clearInterval(ticker); if(on) ticker=setInterval(paint,250); paint(); }
@@ -579,7 +593,7 @@ function cleanPlayer(box, o){
   playB.onclick=toggle;
   muteB.onclick=()=>{ if(!h.player) return; const m=h.player.isMuted(); m?h.player.unMute():h.player.mute(); muteB.innerHTML=ytIcon(m?"sound":"muted"); muteB.setAttribute("aria-label",m?"Mute":"Turn sound on"); announce(m?"Sound on":"Muted"); };
   if(fullB) fullB.onclick=()=>{ document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen&&box.requestFullscreen().catch(()=>{}); };
-  seek.addEventListener("input",()=>{ dragging=true; const d=dur(); if(d){ time.textContent=`${ytClock(seek.value/1000*d)} / ${ytClock(d)}`; } });
+  seek.addEventListener("input",()=>{ dragging=true; seek.style.setProperty("--p",(seek.value/10)+"%"); const d=dur(); if(d){ time.textContent=`${ytClock(seek.value/1000*d)} / ${ytClock(d)}`; } });
   seek.addEventListener("change",()=>{ const d=dur(); if(d&&h.player) h.player.seekTo(seek.value/1000*d,true); dragging=false; paint(); });
   h.player=new YT.Player(box.querySelector(".ytcrop > div"),{host:"https://www.youtube-nocookie.com",videoId:o.id,
     playerVars:{autoplay:1,controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
@@ -614,15 +628,15 @@ function viewVideos(startId){
   ytPlayer=null; vNow=-1; vTV=false;
   if(!STANDALONE){ main.innerHTML=`<h1>Videos</h1><p class="lede">${VIDS.length} videos from the catalog.</p>${videoList(VIDS.map(v=>({id:v.id,title:v.title,source:"YouTube",release:v.r.id})))}`; focusMain(); return; }
   const chips = ["all","loop","plump","related"].map(g=>`<button type="button" class="chip" data-f="${g}" aria-pressed="${filter===g}"${g==="related"?' aria-label="Licensed and appearances"':""}>${CHIP[g]}</button>`).join("");
-  main.innerHTML = `<h1>Videos</h1>
+  main.innerHTML = `<h1 class="sr">Videos</h1>
     <section class="stage" aria-labelledby="nowH">
-      <div class="ytbox" id="stageBox"></div>
+      <div class="player"><div class="ytbox" id="stageBox"></div></div>
       <div class="stageinfo">
         <p class="eyebrow" id="nowLabel">Loop TV</p>
         <h2 id="nowH" tabindex="-1"></h2>
-        <div id="nowRel"></div>
-        <div class="btnrow"><button type="button" class="btn primary" id="tvBtn" aria-pressed="false">Play all, one after another</button>
-          <button type="button" class="btn" id="prevBtn">Previous</button><button type="button" class="btn" id="nextBtn">Next</button></div>
+        <div class="inforow"><div id="nowRel"></div>
+        <div class="btnrow"><button type="button" class="btn primary" id="tvBtn" aria-pressed="false" aria-label="Play all, one after another">Play all</button>
+          <button type="button" class="btn" id="prevBtn">Previous</button><button type="button" class="btn" id="nextBtn">Next</button></div></div>
       </div>
     </section>
     <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div>
@@ -683,7 +697,7 @@ function viewVideos(startId){
   const start = startId ? vList.findIndex(v=>v.id===startId) : -1;
   poster(start>=0 ? start : 0);
   if(start>=0){ vNow=start; }
-  document.getElementById("tvBtn").onclick=()=>{ vTV=!vTV; const b=document.getElementById("tvBtn"); b.setAttribute("aria-pressed",vTV); b.textContent=vTV?"Stop playing all":"Play all, one after another";
+  document.getElementById("tvBtn").onclick=()=>{ vTV=!vTV; const b=document.getElementById("tvBtn"); b.setAttribute("aria-pressed",vTV); b.textContent=vTV?"Playing all":"Play all";
     if(vTV){ announce("Loop TV on. Videos play one after another."); playAt(vNow<0?0:vNow,false); } else { announce("Loop TV off"); const l=document.getElementById("nowLabel"); if(l) l.textContent="Loop TV"; } };
   document.getElementById("prevBtn").onclick=()=>playAt((vNow<0?0:vNow)-1,false);
   document.getElementById("nextBtn").onclick=()=>playAt((vNow<0?-1:vNow)+1,false);
