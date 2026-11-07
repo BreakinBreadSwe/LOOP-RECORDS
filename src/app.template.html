@@ -97,6 +97,11 @@ a.card:hover .sleeve:not(.multi){transform:translateY(-3px) rotate(-.6deg)}
 .tracks .pos{font:500 14px var(--mono);color:var(--muted)}
 .tracks .dur{font:14px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
 .tracks .tc{grid-column:2/4;font-size:14px;color:var(--muted)}
+.tracks .ta{grid-column:2/4}.tracks .ta:empty{display:none}
+.tracks audio{width:100%;max-width:520px;height:40px;margin:4px 0}
+.tracks .up{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:14px;margin-top:4px}
+.tracks .up input[type=file]{font:inherit;font-size:14px;max-width:100%}
+.tracks .up input[type=file]:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .credits{display:grid;grid-template-columns:minmax(0,1fr);gap:0;border-top:2px solid var(--ink)}
 .credits div{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
 @media (max-width:520px){.credits div{grid-template-columns:minmax(0,1fr);gap:2px}}
@@ -417,16 +422,72 @@ function viewRelease(r){
         ${r.styles.length?`<ul class="tags" aria-label="Styles">${[...r.genres,...r.styles].map(s=>`<li>${esc(s)}</li>`).join("")}</ul>`:""}
         <h2>Tracklist</h2>
         <ol class="tracks">${r.tracks.map(t=>`<li><span class="pos">${esc(t.pos)}</span><span>${t.artists.length?t.artists.map(plink).join(", ")+" – ":""}${esc(t.title)}</span><span class="dur">${esc(t.dur)}</span>
-          ${t.credits.length?`<span class="tc">${t.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</span>`:""}</li>`).join("")}</ol>
+          ${t.credits.length?`<span class="tc">${t.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</span>`:""}<span class="ta" data-track="${esc(t.pos)}"></span></li>`).join("")}</ol>
         <h2>Credits</h2>
         ${Object.keys(grouped).length?`<div class="credits">${Object.entries(grouped).map(([role,cs])=>`<div><span class="role">${esc(role)}</span><span>${cs.map(plink).join(", ")}</span></div>`).join("")}</div>`:`<p class="note">Discogs lists no release-level credits for this one. Track credits, if any, are in the tracklist above.</p>`}
         <h2>Videos <span class="eyebrow">${r.videos.length}</span></h2>
         ${r.videos.length?playAll(r.videos)+videoList(r.videos):`<p class="note">No videos found yet for this release.</p>`}
       </div>
     </div>`;
-  renderSlides(r); renderArtTools(r);
+  renderSlides(r); renderArtTools(r); renderAudio(r);
   focusMain();
 }
+
+// ---------- track sound files ----------
+// SOUND: "<release id>_<pos>" -> {release, pos, url, path, name, size, type, at}. Filled from the
+// "audio" collection; anyone can play, label staff can add, replace or remove a file per track.
+const SOUND = {}; let audioStaff = false, soundFocus = null;
+const soundKey = (r, pos) => String(r.id) + "_" + String(pos).replace(/[^\w-]+/g, "-");
+function trackLabel(r, t){ return `${t.pos} ${t.title}`; }
+function renderAudio(r, onlyPos){
+  const AB = window.LoopBackend && window.LoopBackend.audio;
+  main.querySelectorAll(".tracks .ta[data-track]").forEach(slot => {
+    const pos = slot.dataset.track; if(onlyPos!=null && pos!==onlyPos) return;
+    const t = r.tracks.find(x => x.pos === pos); if(!t) return;
+    const snd = SOUND[soundKey(r, pos)];
+    const id = "up-" + soundKey(r, pos);
+    let html = snd ? `<audio controls preload="none" tabindex="0" src="${esc(snd.url)}" aria-label="Play ${esc(trackLabel(r,t))}"></audio>` : "";
+    if(audioStaff && AB){
+      html += `<span class="up"><label for="${id}">${snd ? "Replace sound file for" : "Add sound file for"} ${esc(trackLabel(r,t))}</label>
+        <input type="file" id="${id}" accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.aif,.aiff,.ogg" data-up="${esc(pos)}">
+        ${snd ? `<button type="button" class="btn small" data-rmsnd="${esc(pos)}">Remove sound file</button>` : ""}</span>`;
+    }
+    const hadFocus = slot.contains(document.activeElement);
+    slot.innerHTML = html;
+    if(hadFocus || soundFocus === pos){ const el = slot.querySelector("audio") || slot.querySelector("input"); if(el){ el.focus(); if(soundFocus === pos && el.tagName === "AUDIO") soundFocus = null; } }
+  });
+}
+document.addEventListener("change", async e => {
+  const inp = e.target.closest && e.target.closest("input[data-up]"); if(!inp || !inp.files || !inp.files[0]) return;
+  const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(!r) return;
+  const pos = inp.dataset.up, t = r.tracks.find(x => x.pos === pos), file = inp.files[0], key = soundKey(r, pos), old = SOUND[key];
+  const mb = (file.size/1048576).toFixed(1);
+  inp.disabled = true; setArtMsg(r, `Uploading ${file.name} (${mb} MB) for ${trackLabel(r,t)}. This can take a minute for big files.`);
+  try{
+    const up = await window.LoopBackend.audio.upload(file, r.id, pos);
+    const data = {release: r.id, catno: r.catno, pos, title: t.title, url: up.url, path: up.path, name: file.name, size: file.size, type: file.type || "", at: new Date().toISOString()};
+    await dbNS.doc("audio/" + key).set(data);
+    soundFocus = pos; SOUND[key] = data; renderAudio(r, pos);
+    if(old && old.path) window.LoopBackend.audio.remove(old.path).catch(()=>{});
+    const msg = `Sound file added to ${trackLabel(r,t)}. It plays on the release page now.`; setArtMsg(r, msg);
+  }catch(err){
+    const m = String(err && (err.message || err.error) || err);
+    const msg = /size|large|413/i.test(m) ? `${file.name} is too big to upload (${mb} MB). Try an MP3 or FLAC version.` : `Couldn't upload ${file.name}: ${m}`;
+    setArtMsg(r, msg); inp.disabled = false; inp.focus();
+  }
+});
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-rmsnd]"); if(!b) return;
+  const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(!r) return;
+  const pos = b.dataset.rmsnd, t = r.tracks.find(x => x.pos === pos), key = soundKey(r, pos), snd = SOUND[key];
+  if(b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Press again to remove"; announce("Press again to remove the sound file"); setTimeout(()=>{ if(b.isConnected){ b.dataset.armed=""; b.textContent="Remove sound file"; } }, 5000); return; }
+  try{
+    await dbNS.doc("audio/" + key).delete();
+    if(snd && snd.path) await window.LoopBackend.audio.remove(snd.path).catch(()=>{});
+    soundFocus = pos; delete SOUND[key]; renderAudio(r, pos); soundFocus = null;
+    const msg = `Sound file removed from ${trackLabel(r,t)}.`; setArtMsg(r, msg);
+  }catch(err){ const msg = "Couldn't remove the sound file: " + (err && err.message || err); setArtMsg(r, msg); }
+});
 
 function viewPerson(p){
   setNav("people");
@@ -739,7 +800,13 @@ quiet=true; route(); quiet=false;
       if(location.hash.startsWith("#admin")) return;
       quiet=true; route(); quiet=false; window.scrollTo(0,y); if(f&&document.getElementById(f)) document.getElementById(f).focus();
     }, ()=>{});
-    const cur = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(cur){ renderSlides(cur); renderArtTools(cur); }
+    db.collection("audio").onSnapshot(snap=>{
+      for(const k in SOUND) delete SOUND[k];
+      snap.docs.forEach(d=>{ const v=d.exists&&d.data(); if(v&&v.url) SOUND[d.id]={...v}; });
+      const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(r) renderAudio(r);
+    }, ()=>{});
+    if(window.LoopBackend && window.LoopBackend.audio){ window.LoopBackend.isStaff().then(ok=>{ audioStaff=!!ok; const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(r) renderAudio(r); }).catch(()=>{}); }
+    const cur = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(cur){ renderSlides(cur); renderArtTools(cur); renderAudio(cur); }
   }catch(e){}
 })();
 })();

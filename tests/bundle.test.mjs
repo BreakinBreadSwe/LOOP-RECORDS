@@ -82,6 +82,17 @@ test("bundle stays well under Vercel's 4.5 MB request limit", () => {
   assert.ok(size < 3_000_000, `bundle is ${size} bytes`);
 });
 
+test("uploaded sound files travel with their tracks", () => {
+  const r = catalog.releases.find(x => x.catno === "LOOP 001"), t = r.tracks[0];
+  const docs = groupDocs([{ collection: "audio", id: `${r.id}_${t.pos}`, data: { url: "https://x.supabase.co/storage/v1/object/public/audio/a.mp3", name: "a.mp3", type: "audio/mpeg" } }]);
+  const b = buildBundle({ catalog, docs, siteUrl: site });
+  const rel = b.releases.find(x => x.discogsId === r.id);
+  assert.match(rel.tracks[0].audioUrl, /a\.mp3$/);
+  assert.equal(rel.tracks[1].audioUrl, undefined);
+  assert.equal(b.works.find(w => w.workId === rel.tracks[0].workId).sourceUrl, rel.tracks[0].audioUrl);
+  assert.equal(b.counts.tracksWithAudio, 1);
+});
+
 test("slugify handles Swedish letters", () => {
   assert.equal(slugify("Loop Söndagar 21-03 Sturecompagniet"), "loop-sondagar-21-03-sturecompagniet");
   assert.equal(slugify("Åke Ärlig"), "ake-arlig");

@@ -103,6 +103,19 @@
     delete: async function (id) { var r = await sb.storage.from("artwork").remove([id]); if (r.error) throw r.error; }
   };
 
+  // ---- track sound files (bucket "audio", staff only) ----
+  function safeName(n) { return String(n || "track").normalize("NFKD").replace(/[^\w.\-]+/g, "_").slice(-80); }
+  var audio = {
+    upload: async function (file, releaseId, pos) {
+      if (!(await isStaff())) throw new Error("Only label staff can add sound files.");
+      var path = releaseId + "/" + safeName(pos) + "-" + Date.now().toString(36) + "-" + safeName(file.name);
+      var r = await sb.storage.from("audio").upload(path, file, { contentType: file.type || "audio/mpeg", upsert: false });
+      if (r.error) throw r.error;
+      return { path: path, url: sb.storage.from("audio").getPublicUrl(path).data.publicUrl };
+    },
+    remove: async function (path) { var r = await sb.storage.from("audio").remove([path]); if (r.error) throw r.error; }
+  };
+
   // ---- downloads ----
   var downloads = {
     save: async function (o) {
@@ -122,7 +135,7 @@
       return null;
     }
   };
-  window.LoopBackend = { client: sb, token: token, isStaff: isStaff, ready: ready };
+  window.LoopBackend = { client: sb, token: token, isStaff: isStaff, ready: ready, audio: audio };
 
   // ---- staff sign-in (magic link) ----
   function el(tag, attrs, html) { var e = document.createElement(tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; }
