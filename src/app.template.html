@@ -943,7 +943,7 @@ function showSaver(){
   const urls=R.flatMap(r=>imgUrls(r).slice(0,1)).filter(Boolean); if(!urls.length) return;
   let el=document.getElementById("saver");
   if(!el){ el=document.createElement("div"); el.id="saver"; el.setAttribute("aria-hidden","true"); document.body.appendChild(el); }
-  const w=innerWidth, h=innerHeight, size=w<600?w/3:w/6, cols=Math.ceil(w/size), rows=Math.ceil(h/size), n=cols*rows;
+  const w=innerWidth, h=innerHeight, size=w<600?w/4:w<1000?w/6:w/8, cols=Math.round(w/size), rows=Math.max(1,Math.round(h/size)), n=cols*rows;
   el.style.gridTemplateColumns=`repeat(${cols},1fr)`; el.style.gridTemplateRows=`repeat(${rows},1fr)`;
   const shuffled=[...urls].sort(()=>Math.random()-0.5);
   el.innerHTML=Array.from({length:n},(_,i)=>`<div class="st"><img src="${esc(shuffled[i%shuffled.length])}" alt="" class="on"><img alt=""></div>`).join("");
