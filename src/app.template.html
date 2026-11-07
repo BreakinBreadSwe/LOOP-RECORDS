@@ -622,14 +622,15 @@ function viewReleases(fromSearch){
   setNav("releases");
   const term = norm(q.value.trim());
   const found = sortReleases(R.filter(r=>(filter==="all"||r.group===filter) && (!term || term.split(/\s+/).every(w=>r._s.includes(w)))));
-  const pplAll = term ? sortPeople(P.filter(p=>term.split(/\s+/).every(w=>p._s.includes(w)))) : [];
+  const inLabel = p => filter==="all" || p.releases.some(id=>{ const x=byId.get(String(id)); return x && x.group===filter; });
+  const pplAll = term ? sortPeople(P.filter(p=>inLabel(p) && term.split(/\s+/).every(w=>p._s.includes(w)))) : [];
   if(!term) scope="all";
   const list = scope==="people" ? [] : found;
   const ppl = scope==="releases" ? [] : pplAll.slice(0, scope==="people"?200:12);
-  const scopes = term ? `<div class="chiprow" role="group" aria-label="Show in results" style="margin-top:10px">${[["all","Everything"],["releases",`Releases (${found.length})`],["people",`People (${pplAll.length})`]].map(([k,t])=>`<button type="button" class="chip" data-scope="${k}" aria-pressed="${scope===k}">${t}</button>`).join("")}</div>` : "";
+  const scopes = term ? `<div class="chiprow" role="group" aria-label="Show in results" style="margin-top:10px">${[["all","Everything"],["releases","Releases"],["people","People"]].map(([k,t])=>`<button type="button" class="chip" data-scope="${k}" aria-pressed="${scope===k}">${t}</button>`).join("")}</div>` : "";
   const chips = ["all","loop","plump","related"].map(g=>`<button type="button" class="chip" data-f="${g}" aria-pressed="${filter===g}"${g==="related"?' aria-label="Licensed and appearances"':""}>${CHIP[g]}</button>`).join("");
   main.innerHTML = `
-    <h1${term?"":' class="sr"'}>${term?"Search":"Loop Records releases"}</h1>
+    <h1 class="${term?"pagetitle":"sr"}">${term?"Search":"Loop Records releases"}</h1>
     <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div>
       <div class="rightctl">${sortRow("releases")}<p class="count sr" id="cnt">${scope==="people"?`${ppl.length} ${ppl.length===1?"person":"people"}`:`${list.length} ${list.length===1?"release":"releases"}`}${term?` matching “${esc(q.value.trim())}”`:""}</p></div>
       <span class="ctls">${mosaic && list.some(r=>imgUrls(r).length>1)?`<button type="button" class="chip icochip" id="fxSel" aria-label="Slideshow transition: ${FX[fxMode]}. Change" title="Slideshow transition: ${FX[fxMode]}">${FX_ICON}</button>`:""}
@@ -658,7 +659,9 @@ function card(r){
     <span class="cat"><span class="dot ${r.group}" aria-hidden="true"></span>${esc(r.catno)} · ${r.year||"year unknown"}</span>
     <span class="t">${esc(r.title)}</span><span class="a">${esc(artistLine(r))}</span></a></li>`;
 }
-function personRow(p){ return `<li><a href="#artist-${p.key}">${esc(p.name)}</a><span class="meta">${p.releases.length} rel${p.videos.length?` · ${p.videos.length} vid`:""}</span></li>`; }
+// A person in a list: name, then what they mostly did on Loop (no numbers; Gordon: numbers feel wrong).
+function topRoles(p){ const n={}; (p.credits||[]).forEach(c=>{ n[c.role]=(n[c.role]||0)+1; }); return Object.entries(n).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]); }
+function personRow(p){ const roles=topRoles(p); return `<li><a href="#artist-${p.key}">${esc(p.name)}</a>${roles.length?`<span class="meta">${roles.map(esc).join(" · ")}</span>`:""}</li>`; }
 function plink(x){ return byKey.has(x.key)?`<a class="plink" href="#artist-${x.key}">${esc(x.name)}</a>`:esc(x.name); }
 
 function playAll(vs, who){ if(STANDALONE) return ""; const ids=[...new Set(vs.map(v=>v.id))].slice(0,50); if(ids.length<2) return "";
