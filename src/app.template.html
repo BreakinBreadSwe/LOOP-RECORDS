@@ -220,7 +220,9 @@ table.tbl{border-collapse:collapse;width:100%;font-size:14px}
 .rightctl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-left:auto;justify-content:flex-end}
 .rightctl .count{margin:0}
 .ctls{display:flex;gap:6px;align-items:center}
-@media (max-width:640px){.rightctl{margin-left:0;flex:1 1 100%;justify-content:space-between;flex-wrap:nowrap;gap:6px}.rightctl .count{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+.filters.top > .ctls{order:3}.filters.top > .rightctl{order:2}
+@media (max-width:640px){.filters.top > .ctls{order:2;margin-left:auto}.filters.top > .rightctl{order:3;margin-left:0;flex:1 1 100%;justify-content:flex-start;flex-wrap:nowrap;gap:6px}}
+@media (max-width:390px){.filters.top > .chiprow{flex:1 1 100%}.filters.top > .ctls{order:4}.filters.top > .rightctl{flex:0 1 auto}}
 .countrow .count{margin:0}
 .mosaic{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
 @media (min-width:640px){.mosaic{grid-template-columns:repeat(5,minmax(0,1fr))}}
@@ -496,9 +498,9 @@ function viewReleases(fromSearch){
   main.innerHTML = `
     <h1${term?"":' class="sr"'}>${term?"Search":"Loop Records releases"}</h1>
     <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div>
-      <div class="rightctl">${sortRow("releases")}<p class="count" id="cnt">${scope==="people"?`${ppl.length} ${ppl.length===1?"person":"people"}`:`${list.length} ${list.length===1?"release":"releases"}`}${term?` matching “${esc(q.value.trim())}”`:""}</p>
+      <div class="rightctl">${sortRow("releases")}<p class="count sr" id="cnt">${scope==="people"?`${ppl.length} ${ppl.length===1?"person":"people"}`:`${list.length} ${list.length===1?"release":"releases"}`}${term?` matching “${esc(q.value.trim())}”`:""}</p></div>
       <span class="ctls">${mosaic && list.some(r=>imgUrls(r).length>1)?`<button type="button" class="chip icochip" id="fxSel" aria-label="Slideshow transition: ${FX[fxMode]}. Change" title="Slideshow transition: ${FX[fxMode]}">${FX_ICON}</button>`:""}
-      <button type="button" class="chip icochip" id="mosaicBtn" aria-pressed="${mosaic}" aria-label="Mosaic" title="Mosaic">${MOSAIC_ICON}</button></span></div></div>
+      <button type="button" class="chip icochip" id="mosaicBtn" aria-pressed="${mosaic}" aria-label="Mosaic" title="Mosaic">${MOSAIC_ICON}</button></span></div>
     ${scopes}
     ${ppl.length?`<h2>People</h2><ul class="people">${ppl.map(personRow).join("")}</ul>${scope==="all"&&pplAll.length>12?`<p><button type="button" class="btn small" data-scope="people">Show all ${pplAll.length} people</button></p>`:""}${list.length?"<h2>Releases</h2>":""}`:""}
     ${scope==="people"?"":mosaic?`<ul class="mosaic">${list.map(tile).join("")}</ul>`:`<ul class="grid">${list.map(card).join("")}</ul>`}
@@ -628,7 +630,7 @@ function viewVideos(startId){
     const cur = vNow>=0 ? vList[vNow] : null;
     vList = sortVideos(VIDS.filter(v=>filter==="all"||v.r.group===filter));
     vNow = cur ? vList.indexOf(cur) : -1;
-    document.getElementById("vSort").innerHTML = sortRow("videos")+`<p class="count">${vList.length} ${vList.length===1?"video":"videos"}</p>`;
+    document.getElementById("vSort").innerHTML = sortRow("videos")+`<p class="count sr">${vList.length} ${vList.length===1?"video":"videos"}</p>`;
     const card=(v,i)=>`<li class="vcard"><button type="button" class="vthumb" data-vi="${i}"${i===vNow?' aria-current="true"':""} aria-label="Play ${esc(v.title)}. ${esc(v.r.catno)}, ${esc(v.r.title)}, ${esc(v.r.year||"")}">
         <img src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy"><span class="vsleeve" style="--c:${esc(v.r.color||"var(--loop)")}">${sleeveThumb(v.r)}</span>
         <span class="bigplay" aria-hidden="true"></span>${i===vNow?'<span class="nowtag" aria-hidden="true">Playing</span>':""}</button>
