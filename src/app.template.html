@@ -45,8 +45,8 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 .brand{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--ink)}
 /* The real Loop logo, vectorized from the sleeves: spiral (LOOP 012 label) and lettering (LOOP 001 sleeve). */
 .brand .mark{display:block;flex:none;background:currentColor;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
-.brand .mk-spiral{width:38px;height:40px;color:var(--loop);-webkit-mask-image:url("__LOGO_SPIRAL__");mask-image:url("__LOGO_SPIRAL__")}
-.brand .mk-word{width:203px;height:18px;margin-right:8px;color:var(--ink);-webkit-mask-image:url("__LOGO_WORD__");mask-image:url("__LOGO_WORD__")}
+.brand .mk-spiral{width:38px;height:40px;color:var(--logo-spiral,var(--loop));transition:color .8s;-webkit-mask-image:url("__LOGO_SPIRAL__");mask-image:url("__LOGO_SPIRAL__")}
+.brand .mk-word{width:203px;height:18px;margin-right:8px;color:var(--logo-word,var(--ink));transition:color .8s;-webkit-mask-image:url("__LOGO_WORD__");mask-image:url("__LOGO_WORD__")}
 @media (max-width:420px){.brand .mk-spiral{width:30px;height:32px}.brand .mk-word{width:158px;height:14px}}
 @media (forced-colors:active){.brand .mark{background:CanvasText}}
 .brand .era{font:500 12px/1.2 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
@@ -148,6 +148,13 @@ h2.galh{font-size:22px;margin:20px 0 8px}
 .viewer .btn{color:#fff;border-color:#fff}
 .viewer :focus-visible{outline:3px solid #8f88ff;outline-offset:3px}
 #slides img{cursor:zoom-in}
+html.tinted body{background:color-mix(in srgb,var(--tint-c,var(--loop)) 12%,var(--bg));transition:background-color .8s}
+#saver{position:fixed;inset:0;z-index:9999;background:#000;display:grid;gap:0;opacity:0;transition:opacity .8s;cursor:pointer}
+#saver.on{opacity:1}
+#saver .st{position:relative;overflow:hidden;background:#111}
+#saver .st img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity 1.6s ease,transform 9s linear;transform:scale(1.04)}
+#saver .st img.on{opacity:1;transform:scale(1.14)}
+@media (prefers-reduced-motion:reduce){#saver .st img{transition:none;transform:none}#saver .st img.on{transform:none}}
 .staffonly{display:contents}.staffonly[hidden]{display:none}
 .staffrel{margin:28px 0;padding:16px;border:2px solid var(--loop);border-radius:10px}
 .subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
@@ -827,8 +834,89 @@ document.addEventListener("paste", e=>{
 /*__ADMIN__*/
 // Remember the scroll position of each page, so going back returns to the same spot.
 const scrollMem = {}; let lastKey = location.hash || "#";
+// ---------- look and feel (set by admins in Back office, Look and feel) ----------
+const LOOK_DEFAULT = {bgLight:"", bgDark:"", spiralMode:"release", spiralColor:"#FF4400", wordMode:"release", wordColor:"#FF4400",
+  tintBg:false, saver:true, saverDelay:9, css:""};
+let LOOK = {...LOOK_DEFAULT};
+const PALETTE = [...new Set(R.map(r=>r.color).filter(Boolean))];
+function hexRgb(h){ h=String(h||"").replace("#",""); if(h.length===3) h=h.split("").map(c=>c+c).join(""); const n=parseInt(h,16); return [n>>16&255,n>>8&255,n&255]; }
+function lum(h){ return hexRgb(h).map(v=>{ v/=255; return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4); }).reduce((a,v,i)=>a+v*[0.2126,0.7152,0.0722][i],0); }
+function contrast(a,b){ const x=lum(a), y=lum(b); return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05); }
+function cssColor(name){ const v=getComputedStyle(document.documentElement).getPropertyValue(name).trim(); return /^#[0-9a-f]{3,6}$/i.test(v)?v:"#12141a"; }
+let lookStyle=null, favSrc=null, brandNow=null;
+function applyLook(){
+  if(!lookStyle){ lookStyle=document.createElement("style"); lookStyle.id="lookCss"; document.head.appendChild(lookStyle); }
+  let css="";
+  if(/^#[0-9a-f]{6}$/i.test(LOOK.bgLight)) css+=`@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:${LOOK.bgLight}}}:root[data-theme="light"]{--bg:${LOOK.bgLight}}`;
+  if(/^#[0-9a-f]{6}$/i.test(LOOK.bgDark)) css+=`@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:${LOOK.bgDark}}}:root[data-theme="dark"]{--bg:${LOOK.bgDark}}`;
+  lookStyle.textContent = css + "\n" + String(LOOK.css||"");
+  document.documentElement.classList.toggle("tinted", !!LOOK.tintBg);
+  brandFor(brandNow, true); armSaver();
+}
+// Colours for the logo, the tab icon and (if on) the background tint. On a release page they come
+// from its sleeve; elsewhere a colour from the catalog, picked anew each time you move around.
+function brandFor(r, keep){
+  const pick = r && r.color ? r.color : (keep && brandNow && brandNow.color) || PALETTE[Math.floor(Math.random()*PALETTE.length)] || "#FF4400";
+  brandNow = r || {color:pick};
+  const bg = cssColor("--bg"), ink = cssColor("--ink"), root = document.documentElement.style;
+  const sp = LOOK.spiralMode==="fixed" ? LOOK.spiralColor : LOOK.spiralMode==="release" ? pick : "";
+  const wd = LOOK.wordMode==="fixed" ? LOOK.wordColor : LOOK.wordMode==="release" ? pick : "";
+  if(sp && contrast(sp,bg)>=1.5) root.setProperty("--logo-spiral", sp); else root.removeProperty("--logo-spiral");
+  if(wd && contrast(wd,bg)>=3) root.setProperty("--logo-word", wd); else root.removeProperty("--logo-word");   // keep the name readable
+  root.setProperty("--tint-c", pick);
+  setFavicon(sp || "#FF4400");
+}
+async function setFavicon(color){
+  try{
+    if(favSrc===null) favSrc = await (await fetch("__LOGO_SPIRAL__")).text();
+    const link=document.querySelector('link[rel="icon"]') || Object.assign(document.head.appendChild(document.createElement("link")),{rel:"icon"});
+    link.type="image/svg+xml"; link.href="data:image/svg+xml,"+encodeURIComponent(favSrc.replace(/currentColor/g,color));
+  }catch(e){}
+}
+
+// ---------- screensaver: after a while with no touch, a full-screen moving mosaic of the sleeves ----------
+// It is hidden from screen readers and steps aside the moment anyone touches, types, scrolls or moves focus.
+let saverTimer=null, saverSwap=null;
+function saverAllowed(){
+  if(!LOOK.saver) return false;
+  if(document.querySelector("dialog[open]")) return false;
+  const a=document.activeElement; if(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return false;
+  if([...document.querySelectorAll("audio,video")].some(m=>!m.paused)) return false;
+  if(document.querySelector("main iframe")) return false;          // a video is open
+  return true;
+}
+function armSaver(){ clearTimeout(saverTimer); const s=Math.max(3, Number(LOOK.saverDelay)||9); if(LOOK.saver) saverTimer=setTimeout(showSaver, s*1000); }
+function showSaver(){
+  if(!saverAllowed()){ armSaver(); return; }
+  const urls=R.flatMap(r=>imgUrls(r).slice(0,1)).filter(Boolean); if(!urls.length) return;
+  let el=document.getElementById("saver");
+  if(!el){ el=document.createElement("div"); el.id="saver"; el.setAttribute("aria-hidden","true"); document.body.appendChild(el); }
+  const w=innerWidth, h=innerHeight, size=w<600?w/3:w/6, cols=Math.ceil(w/size), rows=Math.ceil(h/size), n=cols*rows;
+  el.style.gridTemplateColumns=`repeat(${cols},1fr)`; el.style.gridTemplateRows=`repeat(${rows},1fr)`;
+  const shuffled=[...urls].sort(()=>Math.random()-0.5);
+  el.innerHTML=Array.from({length:n},(_,i)=>`<div class="st"><img src="${esc(shuffled[i%shuffled.length])}" alt="" class="on"><img alt=""></div>`).join("");
+  el.hidden=false; requestAnimationFrame(()=>el.classList.add("on"));
+  clearInterval(saverSwap);
+  if(!reducedMotion.matches) saverSwap=setInterval(()=>{
+    const t=el.children[Math.floor(Math.random()*el.children.length)]; if(!t) return;
+    const [a,b]=t.querySelectorAll("img"), on=a.classList.contains("on")?a:b, off=on===a?b:a;
+    off.src=urls[Math.floor(Math.random()*urls.length)]; off.onload=()=>{ off.classList.add("on"); on.classList.remove("on"); };
+  }, 900);
+}
+function hideSaver(){ const el=document.getElementById("saver"); clearInterval(saverSwap); if(el && !el.hidden){ el.classList.remove("on"); el.hidden=true; el.innerHTML=""; return true; } return false; }
+let swallowUntil=0;
+function wake(e){
+  const was=hideSaver();
+  if(was){ swallowUntil=Date.now()+700;                                     // the touch (or the click right after) only wakes the site
+    if(e && (e.type==="pointerdown"||e.type==="touchstart"||e.type==="mousedown")){ e.preventDefault(); e.stopPropagation(); } }
+  armSaver();
+}
+["pointerdown","pointermove","keydown","wheel","touchstart","scroll","focusin"].forEach(t=>document.addEventListener(t, wake, {capture:true, passive:t!=="pointerdown"&&t!=="touchstart"}));
+["click","pointerup","mouseup","touchend"].forEach(t=>document.addEventListener(t, e=>{ if(Date.now()<swallowUntil){ e.preventDefault(); e.stopPropagation(); } }, {capture:true}));
+document.addEventListener("visibilitychange", ()=>{ if(document.hidden){ clearTimeout(saverTimer); hideSaver(); } else armSaver(); });
 function route(){
   const key = location.hash || "#", prev = lastKey, moved = key !== prev;
+  const vw=document.getElementById("viewer"); if(vw && vw.open && moved) vw.close();
   if(moved) scrollMem[prev] = window.scrollY;
   lastKey = key;
   const h = location.hash.slice(1);
@@ -838,6 +926,7 @@ function route(){
   else if(h==="people") viewPeople();
   else if(h==="about") viewAbout();
   else viewReleases(false);
+  if(moved) brandFor(h.startsWith("release-") ? byId.get(h.slice(8)) : null);
   if(moved && scrollMem[key]!=null){
     const y = scrollMem[key];
     const back = main.querySelector(`a[href="${prev.replace(/"/g,"")}"]`);
@@ -860,7 +949,7 @@ let savedTheme="system"; try{ savedTheme=localStorage.getItem("loop-theme")||"sy
 themeSel.value=savedTheme; if(savedTheme!=="system") applyTheme(savedTheme);
 themeSel.onchange=()=>{ applyTheme(themeSel.value); try{ localStorage.setItem("loop-theme",themeSel.value); }catch(e){} announce("Theme set to "+themeSel.options[themeSel.selectedIndex].text); };
 document.getElementById("peopleList").innerHTML=P.map(p=>`<option value="${esc(p.name)}">`).join("");
-quiet=true; route(); quiet=false;
+quiet=true; route(); quiet=false; applyLook();
 
 // runtime: shared artwork overrides
 (async()=>{
@@ -878,6 +967,9 @@ quiet=true; route(); quiet=false;
       const y = window.scrollY, f = document.activeElement && document.activeElement.id;
       if(location.hash.startsWith("#admin")) return;
       quiet=true; route(); quiet=false; window.scrollTo(0,y); if(f&&document.getElementById(f)) document.getElementById(f).focus();
+    }, ()=>{});
+    db.collection("site").onSnapshot(snap=>{
+      const d=snap.docs.find(x=>x.id==="look"); LOOK={...LOOK_DEFAULT, ...((d&&d.exists&&d.data())||{})}; applyLook();
     }, ()=>{});
     db.collection("audio").onSnapshot(snap=>{
       for(const k in SOUND) delete SOUND[k];

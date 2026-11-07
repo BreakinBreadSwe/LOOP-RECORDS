@@ -1,7 +1,7 @@
 // ===================== Back office =====================
 const S = {products:{}, orders:{}, events:{}, sync:{}, rights:{}, settings:{}};
 let staff = false, dlNS = null, loaded = {}, adminChecked = false, adminEmail = "";
-const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-export","Export"]];
+const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-look","Look and feel"],["admin-export","Export"]];
 // The back office (staff only) may name Breakin Bread; the public site never does.
 ADMIN.push(["admin-bb","Breakin Bread"]);
 const TYPES = {digital_release:"Digital release", digital_track:"Digital track", vinyl:"Vinyl", cd:"CD", cassette:"Cassette", merch:"Merch", ticket:"Ticket", bundle:"Bundle"};
@@ -107,6 +107,7 @@ const TILE_INFO = {
   "admin-rights": ["Who gets what from each release, plus ISRC, STIM and SAMI.", () => { const n=R.filter(r=>S.rights[r.id]&&(S.rights[r.id].splits||[]).length).length; return `${n} of ${R.length} releases have splits`; }],
   "admin-royalties": ["Statements per person and period, from sales and sync.", () => "By year or quarter"],
   "admin-access": ["Who can sign in and what they can do: customer, artist or admin.", () => accounts ? `${accounts.length} ${accounts.length===1?"account":"accounts"}` : "Accounts and access levels"],
+  "admin-look": ["Background colours, logo colours, the screensaver and your own CSS.", () => LOOK.saver ? `Screensaver after ${LOOK.saverDelay} seconds` : "Screensaver off"],
   "admin-export": ["Everything in one file, or orders and products as spreadsheets.", () => "JSON and CSV"],
   "admin-bb": ["Send the whole label to Breakin Bread in one go.", () => { const s=S.settings.breakinbread; return s&&s.lastStatus==="ok"?"Last sent "+new Date(s.at).toLocaleDateString("sv-SE"):"Not sent yet"; }],
 };
@@ -510,6 +511,51 @@ SECTIONS["admin-access"] = el => {
     const a=accounts.find(x=>x.user_id===uid); if(a){ a.role=role; a.person_key=p?p.key:null; }
     setStatus(`Saved. ${a?a.email:"The account"} is now ${ROLE[role].toLowerCase()}${role==="artist"?", linked to "+p.name:""}. It takes effect the next time they open the site.`);
   };
+};
+
+// ---------- Look and feel ----------
+const LOGO_MODE = {release:"Changes with the releases' colours", fixed:"One colour I choose", loop:"Loop orange"};
+const WORD_MODE = {release:"Changes with the releases' colours", fixed:"One colour I choose", ink:"Text colour"};
+function colourField(name, label, value, hint){
+  const id="f-"+name;
+  return `<div class="field"><label for="${id}">${label}</label><input id="${id}" name="${name}" type="color" value="${esc(value||"#ffffff")}"${hint?` aria-describedby="${id}-h"`:""}>${hint?`<span class="note" id="${id}-h">${hint}</span>`:""}</div>`;
+}
+SECTIONS["admin-look"] = el => {
+  const L = {...LOOK};
+  el.innerHTML = `<h1>Look and feel</h1><p class="lede">How the site looks for everyone. Changes show for all visitors as soon as you save.</p>
+  <form class="form" id="lookForm">
+    <h2 class="full">Background</h2>
+    <div class="field full"><input type="checkbox" id="f-bgOn" name="bgOn"${L.bgLight||L.bgDark?" checked":""}><label for="f-bgOn">Use my own background colours</label></div>
+    ${colourField("bgLight","Background in light mode",L.bgLight||"#eceef1")}
+    ${colourField("bgDark","Background in dark mode",L.bgDark||"#0d0f15")}
+    <p class="note full" id="bgCheck" role="status"></p>
+    <div class="field full"><input type="checkbox" id="f-tintBg" name="tintBg"${L.tintBg?" checked":""}><label for="f-tintBg">Tint the background with the colour of the release you are looking at</label></div>
+    <h2 class="full">Logo</h2>
+    ${field("Spiral colour","spiralMode",`<S>${opt(LOGO_MODE,L.spiralMode)}</select>`)}
+    ${colourField("spiralColor","Spiral colour, when you choose one",L.spiralColor)}
+    ${field("LOOP RECORDS lettering colour","wordMode",`<S>${opt(WORD_MODE,L.wordMode)}</select>`)}
+    ${colourField("wordColor","Lettering colour, when you choose one",L.wordColor)}
+    <p class="note full">With the releases' colours, the logo and the browser tab icon take the main colour of the sleeve you open, and a colour from another sleeve each time you move to a new page. If a colour would be hard to read on the background, the lettering stays in the text colour.</p>
+    <h2 class="full">Screensaver</h2>
+    <div class="field full"><input type="checkbox" id="f-saver" name="saver"${L.saver?" checked":""}><label for="f-saver">Show a moving mosaic of the sleeves when nobody touches the site</label></div>
+    ${field("Start after, in seconds","saverDelay",`<X type="number" min="3" max="3600" step="1" value="${esc(L.saverDelay)}" inputmode="numeric">`)}
+    <p class="note full">The mosaic is hidden from screen readers and goes away the moment anyone touches the screen, types, scrolls or moves focus. It does not start while sound or a video is playing, or while someone is typing.</p>
+    <h2 class="full">Custom CSS</h2>
+    ${field("CSS added to every page","css",`<T rows="8" spellcheck="false" style="font-family:var(--mono)">${esc(L.css||"")}</textarea>`,"full")}
+    <div class="btnrow full"><button class="btn primary" type="submit">Save look</button><button class="btn" type="button" data-act="reset">Back to the original look</button></div>
+  </form>`;
+  const f=el.querySelector("#lookForm");
+  const check=()=>{ const msgs=[]; if(f.elements.bgOn.checked){ for(const [k,ink,mode] of [["bgLight","#12141a","light"],["bgDark","#e9ebf1","dark"]]){ const c=contrast(f.elements[k].value, ink); if(c<4.5) msgs.push(`Text may be hard to read on the ${mode} background (contrast ${c.toFixed(1)} to 1, needs 4.5).`); } }
+    el.querySelector("#bgCheck").textContent = msgs.join(" ") || (f.elements.bgOn.checked?"Text is readable on both backgrounds.":""); };
+  f.oninput=check; check();
+  el.onclick=async e=>{ const b=e.target.closest("[data-act=reset]"); if(!b) return; if(!armed(b)) return;
+    try{ await put("site","look",{...LOOK_DEFAULT}); setStatus("Back to the original look."); SECTIONS["admin-look"](el); }catch(err){ setStatus("Couldn't save: "+(err&&err.message||err)); } };
+  f.onsubmit=async e=>{ e.preventDefault();
+    const bgOn=f.elements.bgOn.checked, delay=Math.max(3, Math.min(3600, toInt(fval(f,"saverDelay"))||9));
+    const look={ bgLight: bgOn?fval(f,"bgLight"):"", bgDark: bgOn?fval(f,"bgDark"):"", tintBg:f.elements.tintBg.checked,
+      spiralMode:fval(f,"spiralMode"), spiralColor:fval(f,"spiralColor"), wordMode:fval(f,"wordMode"), wordColor:fval(f,"wordColor"),
+      saver:f.elements.saver.checked, saverDelay:delay, css:f.elements.css.value };
+    try{ await put("site","look",look); LOOK={...LOOK_DEFAULT,...look}; applyLook(); setStatus("Saved. The new look shows for everyone."); }catch(err){ setStatus("Couldn't save: "+(err&&err.message||err)); } };
 };
 
 // ---------- Royalties ----------
