@@ -164,8 +164,9 @@ h2.galh{font-size:22px;margin:20px 0 8px}
 html.tinted body{background:color-mix(in srgb,var(--tint-c,var(--loop)) 12%,var(--bg));transition:background-color .8s}
 #saver{position:fixed;inset:0;z-index:9999;background:#000;display:grid;gap:0;opacity:0;transition:opacity .8s;cursor:pointer}
 #saver.on{opacity:1}
-#saver .st{position:relative;overflow:hidden;background:#111}
-#saver .st img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity 1.6s ease,transform 9s linear;transform:scale(1.04)}
+#saver .st{position:relative;overflow:hidden;background:#111;perspective:800px}
+#saver .st img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:transform 9s linear;transform:scale(1.04);backface-visibility:hidden;z-index:1}
+#saver .st img.top{z-index:2}
 #saver .st img.on{opacity:1;transform:scale(1.14)}
 @media (prefers-reduced-motion:reduce){#saver .st img{transition:none;transform:none}#saver .st img.on{transform:none}}
 .staffonly{display:contents}.staffonly[hidden]{display:none}
@@ -1077,11 +1078,50 @@ function showSaver(){
   el.innerHTML=Array.from({length:n},(_,i)=>`<div class="st"><img src="${esc(shuffled[i%shuffled.length])}" alt="" class="on"><img alt=""></div>`).join("");
   el.hidden=false; requestAnimationFrame(()=>el.classList.add("on"));
   clearInterval(saverSwap);
-  if(!reducedMotion.matches) saverSwap=setInterval(()=>{
-    const t=el.children[Math.floor(Math.random()*el.children.length)]; if(!t) return;
+  if(!reducedMotion.matches){
+    let tick=0;
+    saverSwap=setInterval(()=>{
+      tick++;
+      const tiles=[...el.children].filter(t=>!t.dataset.busy); if(!tiles.length) return;
+      if(tick%22===0){ // now and then a wave: a whole row or column turns over, one after another
+        const cols=getComputedStyle(el).gridTemplateColumns.split(" ").length, all=[...el.children];
+        const byRow=Math.random()<.5, line=Math.floor(Math.random()*(byRow?Math.ceil(all.length/cols):cols));
+        const fx=["flip","swivel","pageflip","turn"][Math.floor(Math.random()*4)];
+        all.filter((t,i)=>byRow?Math.floor(i/cols)===line:i%cols===line).forEach((t,k)=>setTimeout(()=>swapTile(t,fx),k*120));
+        return;
+      }
+      swapTile(tiles[Math.floor(Math.random()*tiles.length)]);
+      if(Math.random()<.45) swapTile(tiles[Math.floor(Math.random()*tiles.length)]);
+    }, 380);
+  }
+  function swapTile(t, fx){
+    if(!t || t.dataset.busy) return; t.dataset.busy="1";
     const [a,b]=t.querySelectorAll("img"), on=a.classList.contains("on")?a:b, off=on===a?b:a;
-    off.src=urls[Math.floor(Math.random()*urls.length)]; off.onload=()=>{ off.classList.add("on"); on.classList.remove("on"); };
-  }, 900);
+    off.onload=()=>{ saverFx(fx||SAVER_FX[Math.floor(Math.random()*SAVER_FX.length)], on, off).then(()=>{ delete t.dataset.busy; }); };
+    off.onerror=()=>{ delete t.dataset.busy; };
+    const shown=new Set([...el.querySelectorAll("img.on")].map(i=>i.getAttribute("src"))), fresh=urls.filter(u=>!shown.has(u)), pool=fresh.length?fresh:urls;
+    off.src=pool[Math.floor(Math.random()*pool.length)];
+  }
+}
+// Transition effects between two sleeves in a tile: fade, flip, swivel, page flip, turn, zoom, slide, iris.
+const SAVER_FX=["fade","flip","swivel","pageflip","turn","zoom","slide","iris","fade","flip","pageflip"];
+function saverFx(kind, outEl, inEl){
+  const T=kind==="fade"?1400:kind==="pageflip"?1100:900, ease="cubic-bezier(.45,.05,.25,1)";
+  const anim=(el,k,o)=>el.animate(k,Object.assign({duration:T,easing:ease,fill:"both"},o||{})).finished.catch(()=>{});
+  inEl.classList.add("on"); outEl.classList.remove("top"); inEl.classList.add("top");
+  let p;
+  if(kind==="flip"||kind==="swivel"){ const ax=kind==="flip"?"rotateY":"rotateX";
+    p=Promise.all([anim(outEl,[{transform:`${ax}(0deg)`,opacity:1},{transform:`${ax}(90deg)`,opacity:1}],{duration:T/2,easing:"ease-in"}),
+                   anim(inEl,[{transform:`${ax}(-90deg)`,opacity:1},{transform:`${ax}(0deg)`,opacity:1}],{duration:T/2,delay:T/2,easing:"ease-out"})]); }
+  else if(kind==="pageflip"){ inEl.classList.remove("top"); outEl.classList.add("top"); inEl.style.opacity=1;
+    p=anim(outEl,[{transform:"rotateY(0deg)",transformOrigin:"0% 50%",opacity:1,filter:"brightness(1)"},{transform:"rotateY(-95deg)",transformOrigin:"0% 50%",opacity:1,filter:"brightness(.4)",offset:.85},{transform:"rotateY(-110deg)",transformOrigin:"0% 50%",opacity:0,filter:"brightness(.3)"}]); }
+  else if(kind==="turn") p=Promise.all([anim(outEl,[{transform:"rotate(0) scale(1)",opacity:1},{transform:"rotate(120deg) scale(.2)",opacity:0}]),anim(inEl,[{transform:"rotate(-120deg) scale(.2)",opacity:0},{transform:"rotate(0) scale(1)",opacity:1}])]);
+  else if(kind==="zoom") p=Promise.all([anim(outEl,[{opacity:1},{opacity:0}]),anim(inEl,[{transform:"scale(1.8)",opacity:0},{transform:"scale(1)",opacity:1}])]);
+  else if(kind==="slide"){ const [x,y]=[[1,0],[-1,0],[0,1],[0,-1]][Math.floor(Math.random()*4)], tr=(k)=>`translate(${x*k}%,${y*k}%)`;
+    p=Promise.all([anim(outEl,[{transform:tr(0),opacity:1},{transform:tr(-100),opacity:1}]),anim(inEl,[{transform:tr(100),opacity:1},{transform:tr(0),opacity:1}])]); }
+  else if(kind==="iris") p=Promise.all([anim(inEl,[{clipPath:"circle(0% at 50% 50%)",opacity:1},{clipPath:"circle(75% at 50% 50%)",opacity:1}]),anim(outEl,[{opacity:1},{opacity:1}])]);
+  else p=Promise.all([anim(outEl,[{opacity:1},{opacity:0}]),anim(inEl,[{opacity:0},{opacity:1}])]);
+  return p.then(()=>{ outEl.classList.remove("on"); [outEl,inEl].forEach(e=>{ e.getAnimations().forEach(x=>x.cancel()); e.style.opacity=""; }); });
 }
 function hideSaver(){ const el=document.getElementById("saver"); clearInterval(saverSwap); if(el && !el.hidden){ el.classList.remove("on"); el.hidden=true; el.innerHTML=""; return true; } return false; }
 let swallowUntil=0;
