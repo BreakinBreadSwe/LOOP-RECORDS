@@ -175,6 +175,15 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 #dock .dmeta,#dock .dart{cursor:pointer}
 #pwin{position:fixed;left:0;right:0;top:0;bottom:var(--dockh,72px);z-index:7;background:var(--bg);overflow:auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 24px;transform:translateY(100%);transition:transform .32s cubic-bezier(.65,0,.35,1)}
 @media (prefers-reduced-motion:reduce){#pwin{transition:none}}
+#pwin .pwmini-open,#pwin .pwmini-stop{display:none}
+#pwin.mini{top:auto;left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(var(--dockh,72px) + 8px);width:min(372px,calc(100vw - 16px));padding:6px 8px 8px;overflow:hidden;border-radius:12px;background:var(--surface);box-shadow:0 12px 40px -8px rgba(0,0,0,.6);border:1px solid var(--line)}
+#pwin.mini .pwhead{margin:0 0 4px}
+#pwin.mini #pwClose{display:none}
+#pwin.mini .pwmini-open{display:grid;margin-left:auto}#pwin.mini .pwmini-stop{display:grid}
+#pwin.mini .pwbody{display:block}
+#pwin.mini .pwart,#pwin.mini .upnext,#pwin.mini #pwTitle,#pwin.mini #pwMeta,#pwin.mini #pwTracks,#pwin.mini .ytbar{display:none}
+#pwin.mini .pwvid,#pwin.mini.withart .pwvid{width:100%;margin:0}
+#pwin.mini .pwvid .ytbox{min-height:200px}
 #pwin.on{transform:none}
 #pwin[hidden]{display:none}
 #pwin .pwhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -494,7 +503,9 @@ a.vthumb{text-decoration:none}
   <button type="button" class="ico dvol" id="dMute" aria-label="Mute"></button></div>
 </section>
 <section id="pwin" aria-labelledby="pwTitle" hidden>
-  <div class="pwhead"><button type="button" class="ico" id="pwClose" aria-label="Close the player window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9l7 7 7-7"/></svg></button><span class="eyebrow">Now playing</span></div>
+  <div class="pwhead"><button type="button" class="ico" id="pwClose" aria-label="Make the player small"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9l7 7 7-7"/></svg></button><span class="eyebrow">Now playing</span>
+    <button type="button" class="ico pwmini-open" id="pwExpand" aria-label="Open the player window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 15l7-7 7 7"/></svg></button>
+    <button type="button" class="ico pwmini-stop" id="pwStop" aria-label="Stop and close the player"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="pwbody">
     <div class="pwmain"><div class="pwart" id="pwArt" hidden></div><div class="pwvid"><div class="ytbox" id="pwBox"></div></div>
       <h2 id="pwTitle" class="watchtitle" tabindex="-1"></h2>
@@ -825,13 +836,20 @@ const pwin = (()=>{
   let h=null, cur=null, opener=null;
   function mark(open){ const m=$("dMeta"); m.setAttribute("aria-expanded",open?"true":"false"); m.setAttribute("aria-controls","pwin"); }
   let closing=null;
-  function show(){ if(!el.hidden && !closing) return; clearTimeout(closing); closing=null;
+  function show(){ if(el.classList.contains("mini")){ el.classList.remove("mini","on"); document.body.classList.add("pwopen"); mark(true); requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); return; }
+    if(!el.hidden && !closing) return; clearTimeout(closing); closing=null;
     if(el.hidden) opener=document.activeElement; el.hidden=false; document.body.classList.add("pwopen"); mark(true);
     requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); }
-  // Slides down on the same quick S-curve it slides up on, then hides.
-  function close(){ if(el.hidden || closing) return; try{ h&&h.player&&h.player.pauseVideo(); }catch(e){} el.classList.remove("on"); document.body.classList.remove("pwopen"); mark(false);
-    if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus();
-    closing=setTimeout(()=>{ closing=null; el.hidden=true; }, reducedMotion.matches?0:320); }
+  // Closing while a video plays makes the window small instead: a mini player above the footer that keeps
+  // playing while you browse (YouTube must stay visible while it plays). Closing when nothing plays hides it.
+  const playingNow=()=>{ try{ const st=h&&h.player&&h.player.getPlayerState(); return st===1||st===3; }catch(e){ return false; } };
+  function toMini(){ el.classList.add("mini"); el.classList.remove("on"); document.body.classList.remove("pwopen"); mark(false);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); announce("Player made small. It keeps playing."); }
+  function close(force){ if(el.hidden || closing) return;
+    if(!force && playingNow()){ if(!el.classList.contains("mini")){ toMini(); if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); } return; }
+    try{ h&&h.player&&h.player.pauseVideo(); }catch(e){} el.classList.remove("on"); document.body.classList.remove("pwopen"); mark(false);
+    if(!el.classList.contains("mini")){ if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); }
+    closing=setTimeout(()=>{ closing=null; el.hidden=true; el.classList.remove("mini"); }, reducedMotion.matches?0:320); }
   function fill(v){
     cur=v; const r=v.r;
     // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
@@ -884,10 +902,12 @@ const pwin = (()=>{
       onEnd:()=>{ if(autoNext) step(1); }}); h.inWindow=true; }
     if(play) announce(`Playing ${vidName(v)}, ${artistLine(v.r)}`);
   }
-  $("pwClose").onclick=close;
+  $("pwClose").onclick=()=>close(); $("pwExpand").onclick=()=>{ show(); $("pwTitle").focus(); }; $("pwStop").onclick=()=>close(true);
   el.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); close(); } });
-  addEventListener("hashchange",()=>close());
-  return { open, close, show, isOpen:()=>!el.hidden && !closing };
+  addEventListener("hashchange",()=>close()); // browsing on: a playing video goes small and carries on
+  // Carry a page video on in the small player from the same moment.
+  async function carry(v, at){ await open(v, true); try{ if(at>1) h.player.seekTo(at,true); }catch(e){} setTimeout(()=>{ if(!el.hidden) toMini(); },60); }
+  return { open, close, show, carry, isOpen:()=>!el.hidden && !closing && !el.classList.contains("mini") };
 })();
 window.pwin = pwin;
 
@@ -1631,6 +1651,12 @@ function wake(e){
 ["click","pointerup","mouseup","touchend"].forEach(t=>document.addEventListener(t, e=>{ if(Date.now()<swallowUntil){ e.preventDefault(); e.stopPropagation(); } }, {capture:true}));
 document.addEventListener("visibilitychange", ()=>{ if(document.hidden){ clearTimeout(saverTimer); hideSaver(); } else armSaver(); });
 function route(){
+  // A video playing on the page (not in the player window) carries on in the small player when you move on.
+  let carry=null;
+  try{ cleanPlayers.forEach(x=>{ if(carry||x.inWindow) return; const st=x.player&&x.player.getPlayerState&&x.player.getPlayerState();
+    if(st===1||st===3){ carry={vid:x.vid, at:x.player.getCurrentTime()||0}; try{ x.player.pauseVideo(); }catch(e){} } }); }catch(e){}
+  if(carry){ const v=VIDS.find(x=>x.id===carry.vid); const h2=location.hash.slice(1);
+    if(v && h2!=="video-"+v.id) setTimeout(()=>pwin.carry(v, carry.at),0); }
   const key = location.hash || "#", prev = lastKey, moved = key !== prev;
   const vw=document.getElementById("viewer"); if(vw && vw.open && moved) vw.close();
   if(moved) scrollMem[prev] = window.scrollY;
