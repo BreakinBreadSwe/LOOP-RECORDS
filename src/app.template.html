@@ -129,6 +129,13 @@ h2.galh{font-size:22px;margin:20px 0 8px}
 .gallery li{display:flex;flex-direction:column;gap:6px}
 .gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;border:1px solid var(--line);background:var(--surface)}
 .gbtns{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;list-style:none;padding:0;margin:0 0 28px}
+.tile{display:flex;flex-direction:column;gap:6px;height:100%;box-sizing:border-box;padding:18px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);text-decoration:none}
+.tile:hover{border-color:var(--loop)}.tile:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.tile .tt{font:800 24px/1.05 var(--display);text-transform:uppercase}
+.tile .td{font-size:15px;line-height:1.4;color:var(--muted)}
+.tile .ts{margin-top:auto;font:600 13px var(--mono);color:var(--loop-text)}
+.staffrel{margin:28px 0;padding:16px;border:2px solid var(--loop);border-radius:10px}
 .subnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
 .subnav a{font:600 14px/1 var(--body);padding:9px 14px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--surface)}
 .subnav a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -430,11 +437,13 @@ function viewRelease(r){
           ${t.credits.length?`<span class="tc">${t.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</span>`:""}<span class="ta" data-track="${esc(t.pos)}"></span></li>`).join("")}</ol>
         <h2>Credits</h2>
         ${Object.keys(grouped).length?`<div class="credits">${Object.entries(grouped).map(([role,cs])=>`<div><span class="role">${esc(role)}</span><span>${cs.map(plink).join(", ")}</span></div>`).join("")}</div>`:`<p class="note">Discogs lists no release-level credits for this one. Track credits, if any, are in the tracklist above.</p>`}
+        <section id="staffRelease" class="staffrel" hidden aria-label="Staff: rights and splits"></section>
         <h2>Videos <span class="eyebrow">${r.videos.length}</span></h2>
         ${r.videos.length?playAll(r.videos)+videoList(r.videos):`<p class="note">No videos found yet for this release.</p>`}
       </div>
     </div>`;
   renderSlides(r); renderArtTools(r); renderAudio(r);
+  if(typeof renderReleaseStaff==="function") renderReleaseStaff(r);
   focusMain();
 }
 

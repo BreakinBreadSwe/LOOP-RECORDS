@@ -48,6 +48,7 @@ async function initAdmin(db){
       err=>setStatus("Couldn't load "+k+": "+(err&&err.message||err)));
   }
   if(location.hash.startsWith("#admin")) route();
+  const cur = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(cur) renderReleaseStaff(cur);
 }
 
 function viewAdmin(h){
@@ -58,7 +59,7 @@ function viewAdmin(h){
       : "The back office is for label staff. Use Staff sign in at the top of the page.";
     main.innerHTML=`<h1>Back office</h1><p class="note" role="status">${note}</p>`; focusMain(); return; }
   const sec = ADMIN.some(a=>a[0]===h) ? h : "admin";
-  main.innerHTML = `<nav class="subnav" aria-label="Back office sections">${ADMIN.map(([k,l])=>`<a href="#${k}"${k===sec?' aria-current="page"':""}>${l}</a>`).join("")}</nav>
+  main.innerHTML = `${sec==="admin"?"":`<a class="back" href="#admin">Back office</a>`}
     <div id="adm"></div><p class="status" id="admStatus" role="status"></p>`;
   const el=document.getElementById("adm");
   SECTIONS[sec](el);
@@ -97,9 +98,24 @@ LIVE.overview = () => {
   ${low.length?`<h2>Low stock</h2><ul>${low.map(p=>`<li>${esc(p.title)} (${esc(TYPES[p.type])}): ${p.stock} left</li>`).join("")}</ul>`:""}`;
 };
 const SECTIONS = {};
+// Front page of the back office: one big tile per part, like the release covers on the homepage.
+const TILE_INFO = {
+  "admin-products": ["Digital, vinyl, CD, cassette, merch and tickets, with prices and stock.", () => { const n=all("products").length; return n?`${n} ${n===1?"product":"products"}`:"No products yet"; }],
+  "admin-orders": ["Orders taken by hand, packing, shipping and stock.", () => { const n=all("orders").length, ship=all("orders").filter(o=>o.status==="paid"||o.status==="packed").length; return n?`${n} ${n===1?"order":"orders"}${ship?`, ${ship} to ship`:""}`:"No orders yet"; }],
+  "admin-events": ["Club nights and launches, ticket tiers and the door list.", () => { const up=all("events").filter(e=>e.start&&e.start>=new Date().toISOString()&&e.status!=="cancelled").length; return up?`${up} upcoming`:"No upcoming events"; }],
+  "admin-sync": ["Film, TV, adverts and games, from enquiry to paid deal.", () => { const open=all("sync").filter(d=>!["paid","declined"].includes(d.status)).length; return open?`${open} open ${open===1?"deal":"deals"}`:"No open deals"; }],
+  "admin-rights": ["Who gets what from each release, plus ISRC, STIM and SAMI.", () => { const n=R.filter(r=>S.rights[r.id]&&(S.rights[r.id].splits||[]).length).length; return `${n} of ${R.length} releases have splits`; }],
+  "admin-royalties": ["Statements per person and period, from sales and sync.", () => "By year or quarter"],
+  "admin-export": ["Everything in one file, or orders and products as spreadsheets.", () => "JSON and CSV"],
+  "admin-bb": ["Send the whole label to Breakin Bread in one go.", () => { const s=S.settings.breakinbread; return s&&s.lastStatus==="ok"?"Last sent "+new Date(s.at).toLocaleDateString("sv-SE"):"Not sent yet"; }],
+};
+LIVE.tiles = () => `<ul class="tiles">${ADMIN.filter(([k])=>k!=="admin").map(([k,l])=>{ const [d,stat]=TILE_INFO[k]||["",()=>""];
+  return `<li><a class="tile" href="#${k}"><span class="tt">${esc(l)}</span><span class="td">${esc(d)}</span><span class="ts">${esc(stat())}</span></a></li>`; }).join("")}</ul>`;
 SECTIONS["admin"] = el => {
   el.innerHTML = `<h1>Back office</h1>
-  <p class="lede">Catalog, store, orders, events, sync and royalties for Loop Records and Plumphouse. Only label staff can see this.</p>
+  <p class="lede">Loop Records and Plumphouse, for label staff only. Rights and splits for a single release are also on that release's own page.</p>
+  <nav aria-label="Back office parts" data-live="tiles"></nav>
+  <h2>At a glance</h2>
   <div data-live="overview"></div>`;
 };
 
@@ -423,27 +439,42 @@ SECTIONS["admin-rights"] = el => {
     if(!r){ wrap.innerHTML=""; pick.innerHTML=grid(); if(focus){ const b=pick.querySelector(`[data-pick="${focus}"]`)||pick.querySelector("h2"); b.setAttribute("tabindex","-1"); b.focus(); } return; }
     pick.innerHTML=`<div class="btnrow"><button type="button" class="btn" data-act="pickother">Choose another release</button></div>
       <h2 id="rFormH" tabindex="-1">${esc(r.catno)} · ${esc(r.title)} <span class="muted">${esc(artistLine(r))}</span></h2>`;
-    wrap.innerHTML=rightsForm(r); const f=wrap.querySelector("form"); if(f) splitTotal(f);
+    mountRights(wrap, r);
     if(focus) document.getElementById("rFormH").focus();
   };
   pick.addEventListener("click", e => { const b=e.target.closest("[data-pick]"); if(!b) return; rightsRel=b.dataset.pick; show(true); announce("Rights for "+byId.get(rightsRel).catno); });
   show(false);
-  el.oninput = e => { const f=e.target.form; if(f&&f.id==="rForm"&&e.target.name==="ss") splitTotal(f); };
-  el.onclick = e => { const b=e.target.closest("[data-act]"); if(!b) return; const a=b.dataset.act, f=el.querySelector("#rForm"), box=el.querySelector("#splits");
-    if(a==="addsplit"){ box.insertAdjacentHTML("beforeend",splitRow()); const s=box.querySelectorAll("[name=sp]"); s[s.length-1].focus(); }
+  pick.addEventListener("click", e => { const b=e.target.closest('[data-act="pickother"]'); if(!b) return; const was=rightsRel; rightsRel=null; show(was); });
+};
+
+// Renders the rights and splits form for one release into box and wires it up.
+function mountRights(box, r){
+  box.innerHTML=rightsForm(r); const f0=box.querySelector("form"); if(f0) splitTotal(f0);
+  box.oninput = e => { const f=e.target.form; if(f&&f.id==="rForm"&&e.target.name==="ss") splitTotal(f); };
+  box.onclick = e => { const b=e.target.closest("[data-act]"); if(!b) return; const a=b.dataset.act, f=box.querySelector("#rForm"), sp=box.querySelector("#splits");
+    if(a==="addsplit"){ sp.insertAdjacentHTML("beforeend",splitRow()); const x=sp.querySelectorAll("[name=sp]"); x[x.length-1].focus(); }
     if(a==="rmsplit"){ b.closest(".itemrow").remove(); splitTotal(f); }
-    if(a==="pickother"){ const was=rightsRel; rightsRel=null; show(was); return; }
-    if(a==="suggest"){ const r=byId.get(String(rightsRel)); const names=r.artists.length?r.artists:[{name:"Various artists"}]; const each=Math.floor(10000/names.length)/100; let rest=Math.round((100-each*names.length)*100)/100;
-      box.innerHTML=names.map((x,i)=>splitRow({name:x.name,role:"Artist",share:i===0?Math.round((each+rest)*100)/100:each})).join(""); splitTotal(f); setStatus("Filled with the credited artists sharing 100 percent. Adjust for the label or producers."); box.querySelector("[name=ss]").focus(); }
+    if(a==="suggest"){ const names=r.artists.length?r.artists:[{name:"Various artists"}]; const each=Math.floor(10000/names.length)/100; let rest=Math.round((100-each*names.length)*100)/100;
+      sp.innerHTML=names.map((x,i)=>splitRow({name:x.name,role:"Artist",share:i===0?Math.round((each+rest)*100)/100:each})).join(""); splitTotal(f); setStatus("Filled with the credited artists sharing 100 percent. Adjust for the label or producers."); sp.querySelector("[name=ss]").focus(); }
   };
-  el.onsubmit = async e => { if(e.target.id!=="rForm") return; e.preventDefault(); const f=e.target, r=byId.get(String(rightsRel));
+  box.onsubmit = async e => { if(e.target.id!=="rForm") return; e.preventDefault(); const f=e.target;
     const splits=[...f.querySelectorAll("#splits .itemrow")].map(row=>{ const name=row.querySelector("[name=sp]").value.trim(); const p=P.find(x=>x.name.toLowerCase()===name.toLowerCase()||x.aliases.some(a=>a.toLowerCase()===name.toLowerCase()));
-      return {name, key:p?p.key:null, role:row.querySelector("[name=sr]").value, share:parseFloat(String(row.querySelector("[name=ss]").value).replace(",","."))||0}; }).filter(s=>s.name);
-    const tot=splits.reduce((s,x)=>s+x.share,0);
+      return {name, key:p?p.key:null, role:row.querySelector("[name=sr]").value, share:parseFloat(String(row.querySelector("[name=ss]").value).replace(",","."))||0}; }).filter(x=>x.name);
+    const tot=splits.reduce((n,x)=>n+x.share,0);
     if(splits.length && Math.abs(tot-100)>0.001){ setStatus(`The splits add up to ${tot} percent. They need to add up to 100.`); return; }
     const tracks={}; f.querySelectorAll("[data-pos]").forEach(i=>{ (tracks[i.dataset.pos]=tracks[i.dataset.pos]||{})[i.dataset.k]=i.value.trim(); });
     try{ await put("rights",String(r.id),{catno:r.catno,upc:fval(f,"upc"),status:fval(f,"rstatus"),splits,tracks,note:fval(f,"rnote")}); setStatus("Saved rights for "+r.catno+"."); }catch(err){ setStatus("Couldn't save: "+(err&&err.message||err)); } };
-};
+}
+
+// Staff part of a release page: rights and splits right under the release.
+function renderReleaseStaff(r){
+  const box=document.getElementById("staffRelease"); if(!box) return;
+  if(!staff){ box.innerHTML=""; box.hidden=true; return; }
+  box.hidden=false;
+  box.innerHTML=`<h2>Rights and splits <span class="eyebrow">Staff</span></h2><div id="relRights"></div><p class="status" id="admStatus" role="status"></p>`;
+  mountRights(document.getElementById("relRights"), r);
+  const dup=box.querySelector("#rForm > h2"); if(dup) dup.remove();   // the release's own heading is right above
+}
 
 // ---------- Royalties ----------
 let royPeriod="all";

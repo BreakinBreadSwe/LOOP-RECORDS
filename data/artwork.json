@@ -46,6 +46,16 @@
   "art/30410-discogs-1.jpg",
   "art/30410-discogs-2.jpg"
  ],
+ "33782": [
+  "art/33782-discogs-1.jpg",
+  "art/33782-discogs-2.jpg",
+  "art/33782-discogs-3.jpg",
+  "art/33782-discogs-4.jpg",
+  "art/33782-discogs-5.jpg",
+  "art/33782-discogs-6.jpg",
+  "art/33782-discogs-7.jpg",
+  "art/33782-discogs-8.jpg"
+ ],
  "38211": [
   "art/38211-1.jpg"
  ],
@@ -296,10 +306,35 @@
   "art/237229-discogs-3.jpg",
   "art/237229-discogs-4.jpg"
  ],
+ "259370": [
+  "art/259370-discogs-1.jpg",
+  "art/259370-discogs-2.jpg",
+  "art/259370-discogs-3.jpg",
+  "art/259370-discogs-4.jpg",
+  "art/259370-discogs-5.jpg",
+  "art/259370-discogs-6.jpg",
+  "art/259370-discogs-7.jpg",
+  "art/259370-discogs-8.jpg",
+  "art/259370-discogs-9.jpg"
+ ],
  "309459": [
   "art/309459-discogs-1.jpg",
   "art/309459-discogs-2.jpg",
   "art/309459-discogs-3.jpg"
+ ],
+ "430576": [
+  "art/430576-discogs-1.jpg",
+  "art/430576-discogs-2.jpg",
+  "art/430576-discogs-3.jpg",
+  "art/430576-discogs-4.jpg",
+  "art/430576-discogs-5.jpg",
+  "art/430576-discogs-6.jpg",
+  "art/430576-discogs-7.jpg",
+  "art/430576-discogs-8.jpg"
+ ],
+ "1659620": [
+  "art/1659620-discogs-1.jpg",
+  "art/1659620-discogs-2.jpg"
  ],
  "1957185": [
   "art/1957185-1.jpg",
@@ -309,5 +344,16 @@
   "art/2264437-1.jpg",
   "art/2264437-2.jpg",
   "art/2264437-3.jpg"
+ ],
+ "20356129": [
+  "art/20356129-discogs-1.jpg",
+  "art/20356129-discogs-2.jpg",
+  "art/20356129-discogs-3.jpg",
+  "art/20356129-discogs-4.jpg"
+ ],
+ "24031382": [
+  "art/24031382-discogs-1.jpg",
+  "art/24031382-discogs-2.jpg",
+  "art/24031382-discogs-3.jpg"
  ]
 }

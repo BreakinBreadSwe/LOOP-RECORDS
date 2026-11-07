@@ -6,7 +6,8 @@ any release Gordon pasted covers for by hand: only releases with no images, or w
 Discogs images, are (re)filled. Files land in public/art/<id>-discogs-<n>.jpg and are listed
 in data/artwork.json in Discogs's order (primary image first).
 
-  python3 scripts/fetch_discogs_art.py
+  python3 scripts/fetch_discogs_art.py                      Loop and Plumphouse
+  python3 scripts/fetch_discogs_art.py --include-related   also the six releases on other labels
 """
 import json, os, sys, time, urllib.request
 here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +27,7 @@ def save_art():
 done = imgs = fail = 0
 for r in cat["releases"]:
     rid = str(r["id"])
-    if r.get("group") == "related":
+    if r.get("group") == "related" and "--include-related" not in sys.argv:
         continue
     have = art.get(rid, [])
     if any("discogs" not in p for p in have):      # hand-pasted covers: leave alone
