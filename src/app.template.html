@@ -351,8 +351,8 @@ header.top{transition:transform .25s ease}
 .stageinfo h2{font-size:clamp(22px,2.4vw,30px)}
 .upnext h2{margin:0;font-size:20px}
 .watchpage{display:grid;grid-template-columns:minmax(0,1fr);gap:20px 24px;align-items:start;margin-top:10px}
-@media (min-width:900px){.watchpage{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}
-  .watchpage .upnext{position:sticky;top:96px;max-height:calc(100vh - 116px);overflow:auto;padding-right:4px}}
+@media (min-width:900px){.watchpage{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}}
+.upnext{min-width:0;overflow:hidden}
 .watchtitle{font-size:clamp(22px,2.4vw,30px);text-transform:none;margin:14px 0 12px;line-height:1.15}
 .watchmeta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 .watchmeta .relchip{margin:0}.watchmeta .btnrow{margin:0}
@@ -362,7 +362,7 @@ header.top{transition:transform .25s ease}
 .upitem{text-decoration:none}
 a.vthumb{text-decoration:none}
 .upnext ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-.upitem{display:grid;grid-template-columns:minmax(140px,45%) 1fr;gap:10px;align-items:start;width:100%;padding:4px;border:0;border-radius:10px;background:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.upitem{box-sizing:border-box;display:grid;grid-template-columns:minmax(140px,45%) 1fr;gap:10px;align-items:start;width:100%;padding:4px;border:0;border-radius:10px;background:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
 .upitem:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}
 .upthumb{display:block;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#000}
 .upthumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -741,7 +741,8 @@ const dock = (()=>{
     brandFor(q.r);
   }
   audio.addEventListener("ended",()=>{ if(qi<queue.length-1){ qi++; startQueued(false); } else paint(); });
-  document.addEventListener("click",e=>{ const b=e.target.closest("[data-playtrack]"); if(!b) return;
+  document.addEventListener("click",e=>{ const bv=e.target.closest("[data-playvideo]"); if(bv){ pwin.open(VIDS.find(x=>x.id===bv.dataset.playvideo), true); return; }
+    const b=e.target.closest("[data-playtrack]"); if(!b) return;
     const r=location.hash.startsWith("#release-")&&byId.get(location.hash.slice(9)); if(r) playTrack(r,b.dataset.playtrack); });
 
   // ---- the video playing on the page
@@ -1064,7 +1065,9 @@ function renderAudio(r, onlyPos){
     const t = r.tracks.find(x => x.pos === pos); if(!t) return;
     const snd = SOUND[soundKey(r, pos)];
     const id = "up-" + soundKey(r, pos);
-    let html = snd ? `<button type="button" class="btn small trackplay" data-playtrack="${esc(pos)}" aria-label="Play ${esc(trackLabel(r,t))}">Play</button>` : "";
+    const tv = !snd && STANDALONE ? VIDS.find(x=>x.r===r && x.track===t) : null;
+    let html = snd ? `<button type="button" class="btn small trackplay" data-playtrack="${esc(pos)}" aria-label="Play ${esc(trackLabel(r,t))}">Play</button>`
+      : tv ? `<button type="button" class="btn small trackplay" data-playvideo="${esc(tv.id)}" aria-label="Play ${esc(trackLabel(r,t))}, video">Play video</button>` : "";
     if(canEditRelease(r) && AB){
       html += `<span class="up"><label for="${id}">${snd ? "Replace sound file for" : "Add sound file for"} ${esc(trackLabel(r,t))}</label>
         <input type="file" id="${id}" accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.aif,.aiff,.ogg" data-up="${esc(pos)}">
