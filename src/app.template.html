@@ -190,6 +190,11 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 #pwin .pwbody{display:grid;grid-template-columns:minmax(0,1fr);gap:20px 24px;align-items:start}
 @media (min-width:900px){#pwin .pwbody{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}}
 .pwth{margin:22px 0 8px;font-size:18px}
+#partyDlg{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:20px;max-width:min(440px,calc(100vw - 32px))}
+#partyDlg::backdrop{background:var(--scrim)}
+#partyDlg h2{font-size:24px;margin:0 0 10px;text-transform:none}
+.partycode{font:700 40px var(--mono);letter-spacing:.2em;margin:0 0 12px;color:var(--loop-text)}
+#dock .dparty{position:absolute;top:-28px;left:50%;transform:translateX(-50%);font:600 12px var(--mono);background:var(--loop);color:#000;border:0;border-radius:999px;padding:5px 12px;cursor:pointer;white-space:nowrap}
 #pwin .pwart{aspect-ratio:1;width:100%;max-width:min(560px,calc(100vh - var(--dockh,72px) - 330px));min-width:min(100%,260px);margin:0 auto 12px;background:var(--surface);border-radius:6px;overflow:hidden;box-shadow:0 24px 40px -24px rgba(0,0,0,.6)}
 #pwin .pwart{position:relative}
 #pwin .pwslides{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
@@ -218,9 +223,12 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 body.pwopen{overflow:hidden}
 #vu{position:fixed;right:max(4px,env(safe-area-inset-right,0px));top:96px;bottom:calc(var(--dockh,72px) + 12px);z-index:6;display:flex;gap:3px;pointer-events:none}
 #vu[hidden]{display:none}
-#vu span{position:relative;width:6px;border-radius:3px;background:color-mix(in srgb,var(--muted) 25%,transparent);overflow:hidden}
-#vu span::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--loop) 0 70%,#ffd400 85%,#ff1a1a 100%);clip-path:inset(calc((1 - var(--v,0)) * 100%) 0 0 0)}
-#vu span::after{content:"";position:absolute;left:0;right:0;height:2px;bottom:calc(var(--p,0) * 100%);background:var(--ink)}
+#vu span{width:7px;display:flex;flex-direction:column-reverse;gap:2px}
+#vu i{flex:1;border-radius:1px;background:color-mix(in srgb,var(--muted) 22%,transparent)}
+#vu i.on{background:var(--loop)}
+#vu i.on[style*="--k:0.9"],#vu i.pk[style*="--k:0.9"]{background:#ffd400}
+#vu i.on[style*="--k:1"],#vu i.pk[style*="--k:1"]{background:#ff1a1a}
+#vu i.pk{background:var(--ink)}
 body.docked{padding-bottom:calc(var(--dockh,84px) + 12px)}
 #dock .dline{display:contents}
 #dock .dart{grid-area:art;width:48px;height:48px;border-radius:4px;overflow:hidden;background:var(--bg);display:block}
@@ -495,6 +503,7 @@ a.vthumb{text-decoration:none}
 <section id="dock" aria-label="Player" hidden>
   <a class="dart" id="dArt" href="#" tabindex="-1" aria-hidden="true"></a>
   <a class="dmeta" id="dMeta" href="#"><b id="dTitle"></b><small id="dSub"></small></a>
+  <button type="button" class="dparty" id="dParty" hidden></button>
   <div class="dctl"><button type="button" class="ico" id="dPrev" aria-label="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5v14"/><path d="M19 5.5v13L9 12z" fill="currentColor" stroke="none"/></svg></button>
     <button type="button" class="ico dplay" id="dPlay" aria-label="Play"></button>
     <button type="button" class="ico" id="dNext" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 5v14"/><path d="M5 5.5v13L15 12z" fill="currentColor" stroke="none"/></svg></button></div>
@@ -514,6 +523,7 @@ a.vthumb{text-decoration:none}
     <aside class="upnext" aria-labelledby="pwUpH"><div class="uphead"><h2 id="pwUpH">Up next</h2></div><ol id="pwUp"></ol></aside>
   </div>
 </section>
+<dialog id="partyDlg" aria-labelledby="partyTitle"><div id="partyBody"></div><p class="staffmsg" id="partyMsg" role="status" aria-live="polite"></p></dialog>
 <div id="vu" aria-hidden="true" hidden><span class="vul"></span><span class="vur"></span></div>
 <footer><div class="wrap">Catalog data from Discogs, label 179847, retrieved 3 Nov 2026. <span id="vidNote">Videos link out to YouTube.</span> A generated Loop sleeve shows until each real cover is added.</div></footer>
 
@@ -771,7 +781,7 @@ const dock = (()=>{
   function stop(){ src=null; peaks=null; if(idleV) idle(idleV); else hide(); }
   // Ready to play: the footer shows a track from the videos; Play opens the player window and starts it.
   function idle(v){ idleV=v; const u=imgUrls(v.r)[0];
-    attach({kind:"video", owner:"idle", title:vidPos(v)+vidName(v), sub:`${artistLine(v.r)} · ${v.r.catno}`, href:"#video-"+v.id,
+    attach({kind:"video", owner:"idle", ref:{kind:"video",vid:v.id}, title:vidPos(v)+vidName(v), sub:`${artistLine(v.r)} · ${v.r.catno}`, href:"#video-"+v.id,
       art:u?`<img src="${esc(u)}" alt="">`:placeholder(v.r,true), open:()=>pwin.open(v,false),
       play:()=>pwin.open(v,true), pause:()=>{}, isPlaying:()=>false, cur:()=>0, dur:()=>0, seek:()=>{}, isMuted:()=>false, toggleMute:()=>{},
       prev:null, next:null}); }
@@ -795,7 +805,7 @@ const dock = (()=>{
     const q=queue[qi]; if(!q) return;
     audio.src=q.snd.url; audio.play().catch(()=>{});
     const u=imgUrls(q.r)[0];
-    attach({kind:"audio", owner:audio, title:`${q.t.title}`, sub:`${artistLine(q.r)} · ${q.r.catno}`, href:"#release-"+q.r.id,
+    attach({kind:"audio", owner:audio, ref:{kind:"audio",rid:q.r.id,pos:q.t.pos}, title:`${q.t.title}`, sub:`${artistLine(q.r)} · ${q.r.catno}`, href:"#release-"+q.r.id,
       art:u?`<img src="${esc(u)}" alt="">`:placeholder(q.r,true), wave:q.snd.url,
       play:()=>audio.play().catch(()=>{}), pause:()=>audio.pause(), isPlaying:()=>!audio.paused&&!audio.ended,
       cur:()=>audio.currentTime||0, dur:()=>isFinite(audio.duration)?audio.duration:0, seek:t=>{ audio.currentTime=t; },
@@ -816,7 +826,7 @@ const dock = (()=>{
     audio.pause();
     const u=r&&imgUrls(r)[0], v=VIDS.find(x=>x.id===h.vid);
     if(v){ idleV=v; title=vidPos(v)+vidName(v); }
-    attach({kind:"video", owner:h, title, open:()=>pwin.open(v||idleV, false, h), sub:r?`${artistLine(r)} · ${r.catno}`:"Video", href:r?"#release-"+r.id:location.hash||"#",
+    attach({kind:"video", owner:h, ref:{kind:"video",vid:h.vid}, title, open:()=>pwin.open(v||idleV, false, h), sub:r?`${artistLine(r)} · ${r.catno}`:"Video", href:r?"#release-"+r.id:location.hash||"#",
       art:u?`<img src="${esc(u)}" alt="">`:(r?placeholder(r,true):""),
       alive:()=>{ const f=h.iframe(); return !!(f&&document.contains(f)); },
       play:()=>{ if(h.inWindow) pwin.show(); h.play(); }, pause:()=>{ try{ h.player.pauseVideo(); }catch(e){} },
@@ -915,26 +925,126 @@ window.pwin = pwin;
 // It measures the real sound of uploaded files. YouTube's sound can't be measured by a web page,
 // so for videos the meter stays away rather than pretend.
 const vu = (()=>{
-  const el=document.getElementById("vu"), bl=el.querySelector(".vul"), br=el.querySelector(".vur");
-  let ctx=null, aL=null, aR=null, raf=0, pl=0, pr=0, tries=0;
+  // Like the Breakin Bread player's strip: 32 LED segments a side, RMS from -40 to 0 dBFS, instant rise,
+  // slow controlled fall, peak hold 1.4 s. It only moves with sound it can really measure (our own sound
+  // files); for YouTube videos it stays still rather than pretend.
+  const el=document.getElementById("vu"), bars=[el.querySelector(".vul"), el.querySelector(".vur")];
+  const SEG=32, MIN_DB=-40, ATTACK=1, RELEASE=0.28, HOLD=1400;
+  bars.forEach(b=>{ b.innerHTML=Array.from({length:SEG},(_,i)=>`<i style="--k:${i/(SEG-1)}"></i>`).join(""); });
+  let ctx=null, an=[null,null], raf=0, tries=0, lvl=[0,0], pk=[0,0], pkAt=[0,0];
   function connect(){
     if(ctx||tries++) return !!ctx;
     try{ const AC=window.AudioContext||window.webkitAudioContext; ctx=new AC();
       const srcN=ctx.createMediaElementSource(dock.audio), sp=ctx.createChannelSplitter(2);
-      aL=ctx.createAnalyser(); aR=ctx.createAnalyser(); aL.fftSize=aR.fftSize=1024;
-      srcN.connect(ctx.destination); srcN.connect(sp); sp.connect(aL,0); sp.connect(aR,1);
+      an=[ctx.createAnalyser(), ctx.createAnalyser()]; an.forEach(a=>a.fftSize=2048);
+      srcN.connect(ctx.destination); srcN.connect(sp); sp.connect(an[0],0); sp.connect(an[1],1);
     }catch(e){ ctx=null; } return !!ctx;
   }
-  const level=a=>{ const b=new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let m=0; for(const x of b) m=Math.max(m,Math.abs(x)); const db=20*Math.log10(m||1e-6); return Math.max(0,Math.min(1,(db+48)/48)); };
-  function tick(){ if(!ctx||dock.audio.paused){ stop(); return; }
-    const l=level(aL); let r=level(aR); if(r<0.01 && l>0.02) r=l; // a mono file plays the same on both sides
-    pl=Math.max(l,pl*0.9); pr=Math.max(r,pr*0.9);
-    bl.style.setProperty("--v",l); br.style.setProperty("--v",r); bl.style.setProperty("--p",pl); br.style.setProperty("--p",pr);
-    raf=requestAnimationFrame(tick); }
-  function start(){ if(!connect()) return; if(ctx.state==="suspended") ctx.resume(); el.hidden=false; cancelAnimationFrame(raf); raf=requestAnimationFrame(tick); }
-  function stop(){ cancelAnimationFrame(raf); el.hidden=true; }
-  dock.audio.addEventListener("play",start); dock.audio.addEventListener("pause",stop); dock.audio.addEventListener("ended",stop);
-  return {start, stop};
+  const rms=a=>{ const buf=new Float32Array(a.fftSize); a.getFloatTimeDomainData(buf); let s=0; for(const x of buf) s+=x*x; const db=10*Math.log10(s/buf.length||1e-12); return Math.max(0,Math.min(1,(db-MIN_DB)/-MIN_DB)); };
+  function paint(){ const now=performance.now();
+    bars.forEach((b,i)=>{ const on=Math.round(lvl[i]*SEG), p=Math.round(pk[i]*SEG)-1;
+      [...b.children].forEach((seg,k)=>{ seg.className = k<on ? "on" : k===p && p>=0 ? "pk" : ""; }); }); }
+  function tick(){
+    const live = ctx && !dock.audio.paused;
+    const now=performance.now();
+    for(let i=0;i<2;i++){
+      let v = live ? rms(an[i]) : 0;
+      if(i===1 && live && v<0.01 && lvl[0]>0.02) v=rms(an[0]); // a mono file shows the same on both sides
+      lvl[i] = v>lvl[i] ? lvl[i]+(v-lvl[i])*ATTACK : lvl[i]+(v-lvl[i])*RELEASE;
+      if(lvl[i]>=pk[i]){ pk[i]=lvl[i]; pkAt[i]=now; } else if(now-pkAt[i]>HOLD){ pk[i]=Math.max(lvl[i], pk[i]-0.015); }
+    }
+    paint();
+    if(live || lvl[0]>0.002 || lvl[1]>0.002) raf=requestAnimationFrame(tick); else { raf=0; pk=[0,0]; paint(); }
+  }
+  function start(){ if(!connect()) return; if(ctx.state==="suspended") ctx.resume(); if(!raf) raf=requestAnimationFrame(tick); }
+  // Shown whenever the footer player is; still when nothing measurable plays.
+  const showWithDock=()=>{ el.hidden=document.getElementById("dock").hidden; };
+  new MutationObserver(showWithDock).observe(document.getElementById("dock"),{attributes:true,attributeFilter:["hidden"]}); showWithDock();
+  dock.audio.addEventListener("play",start); dock.audio.addEventListener("pause",()=>{ if(!raf) raf=requestAnimationFrame(tick); });
+  return {start};
+})();
+
+// ---------- Listening party: several phones play the same track in step ----------
+// Like Breakin Bread's party: one phone hosts, the others join with a code or link. The host's player drives
+// everyone; members measure the clock difference to the host (NTP-style ping) and keep within a third of a
+// second, correcting every two seconds. Runs over a Supabase Realtime broadcast channel, nothing is stored.
+const party = (()=>{
+  const dlg=document.getElementById("partyDlg"), body=document.getElementById("partyBody"), msg=document.getElementById("partyMsg"), chip=document.getElementById("dParty");
+  const me=Math.random().toString(36).slice(2,10);
+  let ch=null, code=null, host=false, offset=0, offs=[], timer=null, members=1, synced=false;
+  const sb=()=>window.LoopBackend&&window.LoopBackend.client;
+  const newCode=()=>Array.from({length:6},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
+  const link=()=>location.href.split("#")[0]+"#party-"+code;
+  function render(){
+    chip.hidden=!code; chip.textContent=code?`Party ${code} · ${members}`:""; chip.setAttribute("aria-label", code?`Listening party ${code}, ${members} ${members===1?"phone":"phones"}. Open the party`:"");
+    if(!code){ body.innerHTML=`<h2 id="partyTitle">Listening party</h2>
+      <p>Play the same track on several phones at the same time. One phone starts the party and the others join with its code or link.</p>
+      <div class="btnrow"><button type="button" class="btn primary" data-p="start">Start a party</button></div>
+      <form class="staffform" id="partyJoin"><label for="partyCode">Party code</label><input id="partyCode" autocomplete="off" autocapitalize="characters" maxlength="6" inputmode="text">
+      <div class="btnrow"><button class="btn" type="submit">Join</button><button class="btn" type="button" data-p="close">Close</button></div></form>`; }
+    else if(host){ body.innerHTML=`<h2 id="partyTitle">You're hosting a listening party</h2>
+      <p>Party code</p><p class="partycode" aria-label="Party code ${code.split("").join(" ")}">${code}</p>
+      <p>${members} ${members===1?"phone":"phones"} in the party. What you play, everyone hears.</p>
+      <div class="btnrow"><button type="button" class="btn primary" data-p="share">Share the link</button><button type="button" class="btn" data-p="end">End the party</button><button type="button" class="btn" data-p="close">Close</button></div>`; }
+    else { body.innerHTML=`<h2 id="partyTitle">In listening party ${code}</h2>
+      <p>${synced?"In step with the host.":"Getting in step with the host…"} ${members} ${members===1?"phone":"phones"} in the party.</p>
+      <div class="btnrow"><button type="button" class="btn" data-p="leave">Leave the party</button><button type="button" class="btn" data-p="close">Close</button></div>`; }
+    const f=document.getElementById("partyJoin"); if(f) f.onsubmit=e=>{ e.preventDefault(); const c=document.getElementById("partyCode").value.trim().toUpperCase(); if(c.length<4){ msg.textContent="Type the party code first."; return; } join(c,false); };
+  }
+  body.addEventListener("click",async e=>{ const b=e.target.closest("[data-p]"); if(!b) return; const a=b.dataset.p;
+    if(a==="close") dlg.close();
+    if(a==="start") join(newCode(),true);
+    if(a==="end"||a==="leave"){ leave(); msg.textContent=a==="end"?"Party ended.":"You left the party."; render(); }
+    if(a==="share"){ try{ if(navigator.share){ await navigator.share({title:"Loop Records listening party",text:"Listen with me, party code "+code,url:link()}); return; } }catch(err){ if(err&&err.name==="AbortError") return; }
+      try{ await navigator.clipboard.writeText(link()); msg.textContent="Link copied."; }catch(err){ prompt("Copy this link", link()); } } });
+  function open(){ msg.textContent=""; render(); if(!dlg.open) dlg.showModal(); const h=document.getElementById("partyTitle"); if(h){ h.tabIndex=-1; h.focus(); } }
+  function state(){ const s=dock.current(); if(!s||!s.ref) return null; return {ref:s.ref, playing:s.isPlaying(), pos:s.cur(), ht:Date.now()}; }
+  function send(ev,payload){ try{ ch&&ch.send({type:"broadcast",event:ev,payload}); }catch(e){} }
+  function hostTick(){ const st=state(); if(st) send("state",st); }
+  async function apply(p){
+    const hostNow=Date.now()+offset, target=p.pos+(p.playing?(hostNow-p.ht)/1000:0);
+    let s=dock.current(); const same=s&&s.ref&&JSON.stringify(s.ref)===JSON.stringify(p.ref);
+    if(!same){
+      if(p.ref.kind==="video"){ const v=VIDS.find(x=>x.id===p.ref.vid); if(!v) return; await pwin.open(v,p.playing); }
+      else { const r=byId.get(String(p.ref.rid)); if(!r) return; dock.playTrack(r,p.ref.pos); }
+      setTimeout(()=>{ const s2=dock.current(); if(s2) s2.seek(target+0.8); },800); return;
+    }
+    if(p.playing && !s.isPlaying()) s.play(); if(!p.playing && s.isPlaying()) s.pause();
+    const drift=s.cur()-target; if(p.playing && Math.abs(drift)>0.35) s.seek(target);
+    if(!synced && p.playing && Math.abs(drift)<=0.35){ synced=true; render(); announce("In step with the party."); }
+  }
+  function join(c, asHost){
+    const client=sb(); if(!client){ msg.textContent="Listening parties work on the live site, not in this preview."; return; }
+    leave(true); code=c; host=asHost; offset=0; offs=[]; synced=false; members=1;
+    ch=client.channel("loop-party-"+code,{config:{broadcast:{self:false},presence:{key:me}}});
+    ch.on("broadcast",{event:"state"},({payload})=>{ if(!host) apply(payload); });
+    ch.on("broadcast",{event:"ping"},({payload})=>{ if(host) send("pong",{to:payload.from,t0:payload.t0,ht:Date.now()}); });
+    ch.on("broadcast",{event:"pong"},({payload})=>{ if(payload.to!==me) return; const t1=Date.now(); offs.push(payload.ht-(payload.t0+t1)/2); offs.sort((a,b)=>a-b); offset=offs[Math.floor(offs.length/2)]; });
+    ch.on("broadcast",{event:"hello"},()=>{ if(host) hostTick(); });
+    ch.on("broadcast",{event:"end"},()=>{ if(!host){ leave(); announce("The host ended the party."); render(); } });
+    ch.on("presence",{event:"sync"},()=>{ members=Object.keys(ch.presenceState()).length||1; render(); });
+    ch.subscribe(async status=>{
+      if(status!=="SUBSCRIBED") return;
+      await ch.track({host:asHost});
+      if(asHost){ clearInterval(timer); timer=setInterval(hostTick,2000); hostTick(); announce("Party started. Code "+code.split("").join(" ")); }
+      else { for(let i=0;i<5;i++){ send("ping",{from:me,t0:Date.now()}); await new Promise(r=>setTimeout(r,250)); } send("hello",{}); announce("Joined party "+code); }
+      render();
+    });
+    render();
+  }
+  function leave(quiet){ if(ch){ if(host) send("end",{}); try{ ch.unsubscribe(); }catch(e){} } ch=null; clearInterval(timer); timer=null; if(!quiet){ code=null; host=false; } render(); }
+  // the host's own presses go out at once, not only every two seconds
+  ["dPlay","dPrev","dNext"].forEach(id=>document.getElementById(id).addEventListener("click",()=>{ if(host) setTimeout(hostTick,400); }));
+  document.getElementById("dSeek").addEventListener("change",()=>{ if(host) setTimeout(hostTick,200); });
+  chip.onclick=open;
+  // Long press on Play opens the party (screen readers: double tap and hold, or the context menu).
+  const play=document.getElementById("dPlay"); let lp=null, swallow=false;
+  play.addEventListener("pointerdown",()=>{ clearTimeout(lp); lp=setTimeout(()=>{ swallow=true; if(navigator.vibrate) navigator.vibrate(20); open(); },550); });
+  ["pointerup","pointerleave","pointercancel"].forEach(t=>play.addEventListener(t,()=>clearTimeout(lp)));
+  play.addEventListener("click",e=>{ if(swallow){ swallow=false; e.preventDefault(); e.stopImmediatePropagation(); } },true);
+  play.addEventListener("contextmenu",e=>{ e.preventDefault(); clearTimeout(lp); open(); });
+  play.setAttribute("aria-description","Long press for a listening party");
+  return { open, join, prompt:c=>{ code=null; open(); const i=document.getElementById("partyCode"); if(i){ i.value=c; msg.textContent="Press Join to listen along with party "+c+"."; } } };
 })();
 
 // ---------- Clean YouTube player: no YouTube overlays, our own controls underneath ----------
@@ -1666,6 +1776,7 @@ function route(){
   else if(h.startsWith("artist-") && byKey.has(h.slice(7))) viewPerson(byKey.get(h.slice(7)));
   else if(h==="admin"||h.startsWith("admin-")) viewAdmin(h);
   else if(h==="people") viewPeople();
+  else if(h.startsWith("party-")){ viewReleases(false); setTimeout(()=>party.prompt(h.slice(6).toUpperCase()),50); }
   else if(h==="videos"||h.startsWith("video-")) viewVideos(h.startsWith("video-")?h.slice(6):null);
   else if(h==="about") viewAbout();
   else viewReleases(false);
