@@ -76,7 +76,7 @@ nav.views{display:flex;flex-wrap:nowrap;gap:2px}
 
 main{padding-block:24px 64px}
 /* The release list starts close under the header: the filters are the first thing there. */
-main > .filters.top:nth-child(2){margin-top:-12px}
+main > h1.sr + .filters.top{margin-top:-12px}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1;letter-spacing:.01em}
 h1{font-size:clamp(32px,5.5vw,58px);font-weight:900;text-transform:uppercase;margin:0 0 8px}
 /* The page title gets focus on navigation so screen readers start there; no visible outline for that. */
@@ -328,7 +328,18 @@ header.top{transition:transform .25s ease}
 .stage .watch{min-width:0}
 .stage .stageinfo{margin-top:10px}
 .stageinfo h2{font-size:clamp(22px,2.4vw,30px)}
-.upnext h2{margin:0 0 10px;font-size:20px}
+.upnext h2{margin:0;font-size:20px}
+.watchpage{display:grid;grid-template-columns:minmax(0,1fr);gap:20px 24px;align-items:start;margin-top:10px}
+@media (min-width:900px){.watchpage{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}
+  .watchpage .upnext{position:sticky;top:96px;max-height:calc(100vh - 116px);overflow:auto;padding-right:4px}}
+.watchtitle{font-size:clamp(22px,2.4vw,30px);text-transform:none;margin:14px 0 12px;line-height:1.15}
+.watchmeta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.watchmeta .relchip{margin:0}.watchmeta .btnrow{margin:0}
+.uphead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.autonext{display:flex;align-items:center;gap:8px;font:600 14px var(--body)}
+.autonext input{width:20px;height:20px;accent-color:var(--loop)}
+.upitem{text-decoration:none}
+a.vthumb{text-decoration:none}
 .upnext ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .upitem{display:grid;grid-template-columns:minmax(140px,45%) 1fr;gap:10px;align-items:start;width:100%;padding:4px;border:0;border-radius:10px;background:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
 .upitem:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}
@@ -649,7 +660,7 @@ const dock = (()=>{
     peakCache.set(url, job); return job;
   }
   function attach(s){
-    if(src && src!==s && src.pause) try{ src.pause(); }catch(e){}
+    if(src && src!==s && src.owner!==s.owner && src.pause) try{ src.pause(); }catch(e){}
     src=s; peaks=null; show();
     $("dTitle").textContent=s.title; $("dSub").textContent=s.sub||""; $("dMeta").href=s.href||"#"; $("dArt").href=s.href||"#";
     $("dArt").innerHTML=s.art||""; $("dPrev").hidden=!s.prev; $("dNext").hidden=!s.next;
@@ -675,7 +686,7 @@ const dock = (()=>{
     const q=queue[qi]; if(!q) return;
     audio.src=q.snd.url; audio.play().catch(()=>{});
     const u=imgUrls(q.r)[0];
-    attach({kind:"audio", title:`${q.t.title}`, sub:`${artistLine(q.r)} · ${q.r.catno}`, href:"#release-"+q.r.id,
+    attach({kind:"audio", owner:audio, title:`${q.t.title}`, sub:`${artistLine(q.r)} · ${q.r.catno}`, href:"#release-"+q.r.id,
       art:u?`<img src="${esc(u)}" alt="">`:placeholder(q.r,true), wave:q.snd.url,
       play:()=>audio.play().catch(()=>{}), pause:()=>audio.pause(), isPlaying:()=>!audio.paused&&!audio.ended,
       cur:()=>audio.currentTime||0, dur:()=>isFinite(audio.duration)?audio.duration:0, seek:t=>{ audio.currentTime=t; },
@@ -694,7 +705,7 @@ const dock = (()=>{
   function followVideo(h, title, r){
     audio.pause();
     const u=r&&imgUrls(r)[0];
-    attach({kind:"video", title, sub:r?`${artistLine(r)} · ${r.catno}`:"Video", href:r?"#release-"+r.id:location.hash||"#",
+    attach({kind:"video", owner:h, title, sub:r?`${artistLine(r)} · ${r.catno}`:"Video", href:r?"#release-"+r.id:location.hash||"#",
       art:u?`<img src="${esc(u)}" alt="">`:(r?placeholder(r,true):""),
       alive:()=>{ const f=h.iframe(); return !!(f&&document.contains(f)); },
       play:()=>h.play(), pause:()=>{ try{ h.player.pauseVideo(); }catch(e){} },
@@ -785,102 +796,82 @@ function sortVideos(list){
   return undatedLast(sortRev?out.reverse():out);
 }
 function sleeveThumb(r){ const u=imgUrls(r)[0]; return u?`<img src="${esc(u)}" alt="" loading="lazy">`:placeholder(r,true); }
+// Two views, like YouTube: #videos is a grid of thumbnails with filters on top; #video-<id> is the watch
+// page with the player, an "Up next" column beside it and the title, release and Share underneath.
+const LABELNAME = {loop:"Loop Records", plump:"Plumphouse Records", related:"Licensed and appearances"};
+function videoOrder(){ return sortVideos(VIDS.filter(v=>filter==="all"||v.r.group===filter)); }
 function viewVideos(startId){
   setNav("videos");
-  ytPlayer=null; vNow=-1; vTV=false;
-  if(!STANDALONE){ main.innerHTML=`<h1>Videos</h1><p class="lede">${VIDS.length} videos from the catalog.</p>${videoList(VIDS.map(v=>({id:v.id,title:v.title,source:"YouTube",release:v.r.id})))}`; focusMain(); return; }
+  if(!STANDALONE){ main.innerHTML=`<h1>Videos</h1>${videoList(VIDS.map(v=>({id:v.id,title:v.title,source:"YouTube",release:v.r.id})))}`; focusMain(); return; }
+  if(startId) return watchVideo(startId);
+  ytPlayer=null; vNow=-1;
   const chips = ["all","loop","plump","related"].map(g=>`<button type="button" class="chip" data-f="${g}" aria-pressed="${filter===g}"${g==="related"?' aria-label="Licensed and appearances"':""}>${CHIP[g]}</button>`).join("");
   main.innerHTML = `<h1 class="pagetitle">Videos</h1>
-    <section class="stage" aria-labelledby="nowH">
-      <div class="watch"><div class="player"><div class="ytbox" id="stageBox"></div></div>
-      <div class="stageinfo">
-        <p class="eyebrow" id="nowLabel">Loop TV</p>
-        <h2 id="nowH" tabindex="-1"></h2>
-        <div class="inforow"><div id="nowRel"></div>
-        <div class="btnrow"><button type="button" class="btn primary" id="tvBtn" aria-pressed="false" aria-label="Play all, one after another">Play all</button>
-          <button type="button" class="btn" id="prevBtn">Previous</button><button type="button" class="btn" id="nextBtn">Next</button></div></div>
-      </div></div>
-      <aside class="upnext" aria-labelledby="upH"><h2 id="upH">Up next</h2><ol id="upList"></ol></aside>
-    </section>
-    <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div>
-      <div class="rightctl" id="vSort"></div></div>
+    <div class="filters top"><div class="chiprow" role="group" aria-label="Filter by label">${chips}</div><div class="rightctl" id="vSort"></div></div>
     <div id="vlist"></div>`;
   const draw=()=>{
-    const cur = vNow>=0 ? vList[vNow] : null;
-    vList = sortVideos(VIDS.filter(v=>filter==="all"||v.r.group===filter));
-    vNow = cur ? vList.indexOf(cur) : -1;
+    vList = videoOrder();
     document.getElementById("vSort").innerHTML = sortRow("videos")+`<p class="count sr">${vList.length} ${vList.length===1?"video":"videos"}</p>`;
-    const card=(v,i)=>`<li class="vcard"><button type="button" class="vthumb" data-vi="${i}"${i===vNow?' aria-current="true"':""} aria-label="Play ${esc(v.title)}. ${esc(v.r.catno)}, ${esc(v.r.title)}, ${esc(v.r.year||"")}">
-        <img src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy"><span class="vsleeve" style="--c:${esc(v.r.color||"var(--loop)")}">${sleeveThumb(v.r)}</span>
-        <span class="bigplay" aria-hidden="true"></span>${i===vNow?'<span class="nowtag" aria-hidden="true">Playing</span>':""}</button>
-      <p class="yttitle">${esc(v.title)}<small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small></p></li>`;
-    let html="";
-    if(sortBy==="az") html=`<ul class="vgrid">${vList.map(card).join("")}</ul>`;
-    else { let y=null, open=false; vList.forEach((v,i)=>{ const g = sortBy==="year" ? String(v.r.year||"Undated") : String(v.r.id);
-        if(g!==y){ if(open) html+="</ul>"; html += sortBy==="year" ? `<h2 class="vyear">${esc(g)}</h2>` : `<h2 class="vyear vrel"><a href="#release-${v.r.id}"><small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small>${esc(v.r.title)}</a></h2>`; html+='<ul class="vgrid">'; open=true; y=g; }
-        html+=card(v,i); }); if(open) html+="</ul>"; }
-    document.getElementById("vlist").innerHTML = html || `<p class="note">No videos here.</p>`;
-    main.querySelectorAll(".vthumb").forEach(b=>b.onclick=()=>playAt(+b.dataset.vi, true));
+    const card=v=>`<li class="vcard"><a class="vthumb" href="#video-${esc(v.id)}" aria-label="${esc(v.title)}. ${esc(v.r.catno)}, ${esc(v.r.title)}${v.r.year?", "+v.r.year:""}">
+        <img src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="" loading="lazy"><span class="vsleeve" style="--c:${esc(v.r.color||"var(--loop)")}">${sleeveThumb(v.r)}</span></a>
+      <p class="yttitle" aria-hidden="true">${esc(v.title)}<small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small></p></li>`;
+    // One continuous grid, like YouTube's front page.
+    document.getElementById("vlist").innerHTML = vList.length ? `<ul class="vgrid">${vList.map(card).join("")}</ul>` : `<p class="note">No videos here.</p>`;
     main.querySelectorAll(".chip[data-f]").forEach(b=>b.onclick=()=>{ filter=b.dataset.f; main.querySelectorAll(".chip[data-f]").forEach(x=>x.setAttribute("aria-pressed",x===b)); draw(); announce(`${vList.length} videos`); });
     wireSort(draw);
   };
-  function info(i){
-    const v=vList[i]; if(!v) return;
-    document.getElementById("nowLabel").textContent = vTV ? `Loop TV · ${i+1} of ${vList.length}` : "Loop TV";
-    document.getElementById("nowH").textContent = v.title;
-    document.getElementById("nowRel").innerHTML = `<a class="relchip" href="#release-${v.r.id}">${sleeveThumb(v.r)}<span><small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small><b>${esc(v.r.title)}</b><span>${esc(artistLine(v.r))}</span></span></a>`;
-    document.querySelector(".stage").style.setProperty("--stage-c", v.r.color||"var(--loop)");
-    upNext(i);
-  }
-  function upNext(i){
-    const ul=document.getElementById("upList"); if(!ul) return; const n=Math.min(8, vList.length-1); let html="";
-    for(let k=1;k<=n;k++){ const j=(i+k)%vList.length, x=vList[j];
-      html+=`<li><button type="button" class="upitem" data-up="${j}" aria-label="Play ${esc(x.title)}. ${esc(x.r.catno)}, ${esc(x.r.title)}">
-        <span class="upthumb"><img src="https://i.ytimg.com/vi/${esc(x.id)}/mqdefault.jpg" alt="" loading="lazy"></span>
-        <span class="uptext"><b>${esc(x.title)}</b><small>${esc(x.r.catno)}${x.r.year?" · "+x.r.year:""}</small><small>${esc(artistLine(x.r))}</small></span></button></li>`; }
-    ul.innerHTML=html;
-    ul.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>playAt(+b.dataset.up,false));
-  }
-  function poster(i){ const v=vList[i]; if(!v) return; info(i);
-    document.getElementById("stageBox").innerHTML=`<button type="button" class="ytplay" id="stagePlay" aria-label="Play ${esc(v.title)}"><img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt=""><span class="bigplay" aria-hidden="true"></span></button>`;
-    document.getElementById("stagePlay").onclick=()=>playAt(i, false); }
-  async function playAt(i, fromList){
-    if(!vList.length) return; i=(i+vList.length)%vList.length; vNow=i; const v=vList[i];
-    info(i); brandFor(v.r);
-    main.querySelectorAll(".vthumb").forEach(b=>{ const on=+b.dataset.vi===i; on?b.setAttribute("aria-current","true"):b.removeAttribute("aria-current");
-      const tag=b.querySelector(".nowtag"); if(on&&!tag) b.insertAdjacentHTML("beforeend",'<span class="nowtag" aria-hidden="true">Playing</span>'); if(!on&&tag) tag.remove(); });
-    try{ history.replaceState(null,"","#video-"+v.id); lastKey="#video-"+v.id; }catch(e){}
-    announce(`Playing ${v.title}, ${v.r.catno}`);
-    if(fromList){ document.querySelector(".stage").scrollIntoView({behavior:reducedMotion.matches?"auto":"smooth",block:"start"}); }
-    const ok = await loadYT();
-    if(vList[vNow]!==v) return;
-    const box=document.getElementById("stageBox"); if(!box) return;
-    if(ok){
-      const f = ytPlayer && ytPlayer.iframe && ytPlayer.iframe();
-      if(f && box.contains(f)) ytPlayer.load(v.id, v.title, v.r);
-      else ytPlayer = cleanPlayer(box, {id:v.id, title:v.title, focus:fromList, release:v.r,
-          prev:()=>playAt(vNow-1,false), next:()=>playAt(vNow+1,false),
-          onEnd:()=>{ if(vTV) playAt(vNow+1,false); },
-          onError:()=>{ if(vTV) setTimeout(()=>playAt(vNow+1,false),800); }});
-    } else {
-      box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&rel=0&playsinline=1" title="Video player: ${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
-      if(fromList) box.querySelector("iframe").focus();
-    }
-  }
   draw();
-  const start = startId ? vList.findIndex(v=>v.id===startId) : -1;
-  poster(start>=0 ? start : 0);
-  if(start>=0){ vNow=start; }
-  if(STANDALONE) loadYT().then(ok=>{ const box=document.getElementById("stageBox"), i0=start>=0?start:0, v=vList[i0];
-    if(!ok||!box||ytPlayer||!v||!box.querySelector("#stagePlay")) return;
-    ytPlayer=cleanPlayer(box,{id:v.id,title:v.title,autoplay:false,release:v.r,
-      prev:()=>playAt(vNow-1,false), next:()=>playAt(vNow+1,false),
-      onEnd:()=>{ if(vTV) playAt(vNow+1,false); }, onError:()=>{ if(vTV) setTimeout(()=>playAt(vNow+1,false),800); }});
-    vNow=i0; });
-  document.getElementById("tvBtn").onclick=()=>{ vTV=!vTV; const b=document.getElementById("tvBtn"); b.setAttribute("aria-pressed",vTV); b.textContent=vTV?"Playing all":"Play all";
-    if(vTV){ announce("Loop TV on. Videos play one after another."); playAt(vNow<0?0:vNow,false); } else { announce("Loop TV off"); const l=document.getElementById("nowLabel"); if(l) l.textContent="Loop TV"; } };
-  document.getElementById("prevBtn").onclick=()=>playAt((vNow<0?0:vNow)-1,false);
-  document.getElementById("nextBtn").onclick=()=>playAt((vNow<0?-1:vNow)+1,false);
+  focusMain();
+}
+let autoNext=true; try{ autoNext=localStorage.getItem("loop-autonext")!=="0"; }catch(e){}
+function watchVideo(id){
+  vList = videoOrder();
+  if(!vList.some(v=>v.id===id)){ filter="all"; vList=videoOrder(); }
+  const i = vList.findIndex(v=>v.id===id); if(i<0){ location.hash="#videos"; return; }
+  const v = vList[i]; vNow=i;
+  const nextId = () => vList[(vNow+1)%vList.length].id, prevId = () => vList[(vNow-1+vList.length)%vList.length].id;
+  const go = vid => { location.hash = "#video-"+vid; };
+  // Already on a watch page: switch the video in place, the player stays.
+  const page=document.getElementById("watchPage"), f = ytPlayer && ytPlayer.iframe && ytPlayer.iframe();
+  if(page && f && page.contains(f)){ fill(); ytPlayer.load(v.id, v.title, v.r); window.scrollTo(0,0); announce(`Playing ${v.title}, ${v.r.catno}`); brandFor(v.r); return; }
+  main.innerHTML = `<a class="back" href="#videos">All videos</a>
+    <div class="watchpage" id="watchPage">
+      <div class="watch">
+        <div class="player"><div class="ytbox" id="stageBox"></div></div>
+        <h1 class="watchtitle" id="nowH" tabindex="-1"></h1>
+        <div class="watchmeta"><div id="nowRel"></div>
+          <div class="btnrow"><button type="button" class="btn" id="shareBtn">Share</button></div></div>
+      </div>
+      <aside class="upnext" aria-labelledby="upH">
+        <div class="uphead"><h2 id="upH">Up next</h2>
+          <label class="autonext"><input type="checkbox" id="autoNext"${autoNext?" checked":""}> Autoplay</label></div>
+        <ol id="upList"></ol></aside>
+    </div>`;
+  function fill(){
+    const v=vList[vNow];
+    document.getElementById("nowH").textContent=v.title;
+    document.getElementById("nowRel").innerHTML=`<a class="relchip" href="#release-${v.r.id}">${sleeveThumb(v.r)}<span><small>${esc(LABELNAME[v.r.group]||"")}</small><b>${esc(v.r.title)}</b><span>${esc(artistLine(v.r))}</span><small>${esc(v.r.catno)}${v.r.year?" · "+v.r.year:""}</small></span></a>`;
+    const ul=document.getElementById("upList"), n=Math.min(20, vList.length-1); let html="";
+    for(let k=1;k<=n;k++){ const x=vList[(vNow+k)%vList.length];
+      html+=`<li><a class="upitem" href="#video-${esc(x.id)}" aria-label="${esc(x.title)}. ${esc(x.r.catno)}, ${esc(x.r.title)}">
+        <span class="upthumb"><img src="https://i.ytimg.com/vi/${esc(x.id)}/mqdefault.jpg" alt="" loading="lazy"></span>
+        <span class="uptext" aria-hidden="true"><b>${esc(x.title)}</b><small>${esc(x.r.catno)}${x.r.year?" · "+x.r.year:""}</small><small>${esc(artistLine(x.r))}</small></span></a></li>`; }
+    ul.innerHTML=html; ul.scrollTop=0;
+  }
+  fill(); brandFor(v.r);
+  document.getElementById("autoNext").onchange=e=>{ autoNext=e.target.checked; try{ localStorage.setItem("loop-autonext",autoNext?"1":"0"); }catch(_){} announce(autoNext?"Autoplay on":"Autoplay off"); };
+  document.getElementById("shareBtn").onclick=async()=>{ const cur=vList[vNow], url=location.href.split("#")[0]+"#video-"+cur.id;
+    try{ if(navigator.share){ await navigator.share({title:cur.title, text:`${cur.title}, ${LABELNAME[cur.r.group]||"Loop Records"}`, url}); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+    try{ await navigator.clipboard.writeText(url); announce("Link copied"); const b=document.getElementById("shareBtn"); b.textContent="Link copied"; setTimeout(()=>{ b.textContent="Share"; },2500); }catch(e){ prompt("Copy this link", url); } };
+  const box=document.getElementById("stageBox");
+  box.innerHTML=`<button type="button" class="ytplay" id="stagePlay" aria-label="Play ${esc(v.title)}"><img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt=""><span class="bigplay" aria-hidden="true"></span></button>`;
+  loadYT().then(ok=>{
+    if(!document.contains(box)) return;
+    if(!ok){ box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?rel=0&playsinline=1" title="Video player: ${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; return; }
+    ytPlayer=cleanPlayer(box,{id:v.id,title:v.title,release:v.r,
+      prev:()=>go(prevId()), next:()=>go(nextId()),
+      onEnd:()=>{ if(autoNext) go(nextId()); }, onError:()=>{ if(autoNext) setTimeout(()=>go(nextId()),800); }});
+  });
   focusMain();
 }
 
@@ -1442,7 +1433,7 @@ function route(){
   else if(h==="videos"||h.startsWith("video-")) viewVideos(h.startsWith("video-")?h.slice(6):null);
   else if(h==="about") viewAbout();
   else viewReleases(false);
-  if(moved) brandFor(h.startsWith("release-") ? byId.get(h.slice(8)) : null);
+  if(moved && !h.startsWith("video-")) brandFor(h.startsWith("release-") ? byId.get(h.slice(8)) : null);
   if(moved && scrollMem[key]!=null){
     const y = scrollMem[key];
     const back = main.querySelector(`a[href="${prev.replace(/"/g,"")}"]`);
