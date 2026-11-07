@@ -48,7 +48,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 .brand .mark{display:block;flex:none;background:currentColor;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .brand .mk-spiral{width:38px;height:40px;color:var(--logo-spiral,var(--loop));transition:color .8s;-webkit-mask-image:url("__LOGO_SPIRAL__");mask-image:url("__LOGO_SPIRAL__")}
 .brand .mk-word{width:203px;height:18px;color:var(--logo-word,var(--ink));transition:color .8s;-webkit-mask-image:url("__LOGO_WORD__");mask-image:url("__LOGO_WORD__")}
-@media (max-width:640px){.brand{order:1;flex:1 1 100%;gap:10px;max-width:420px}.brand .mk-spiral{width:auto;height:auto;flex:0 0 15%;aspect-ratio:38/40}.brand .words{flex:1;width:auto;gap:5px}.brand .mk-word{width:100%;height:auto;aspect-ratio:203/18}}
+@media (max-width:640px){.brand{order:1;flex:0 0 100%;gap:10px;max-width:none}.brand .mk-spiral{width:auto;height:auto;flex:0 0 min(15%,64px);aspect-ratio:38/40}.brand .words{flex:0 1 350px;width:auto;gap:5px}.brand .mk-word{width:100%;height:auto;aspect-ratio:203/18}}
 @media (forced-colors:active){.brand .mark{background:CanvasText}}
 .brand .era{display:block;width:100%;height:auto;aspect-ratio:20/1;color:var(--muted);overflow:visible}
 .brand .era text{font:500 10px var(--mono);fill:currentColor;text-transform:uppercase}
@@ -65,9 +65,18 @@ nav.views{display:flex;flex-wrap:nowrap;gap:2px}
 @media (min-width:900px){.search{order:2;flex:1 1 220px}.tools{order:3;margin-left:0}}
 /* Phones: the search box is small until you tap it; then it takes the whole row (the icons step aside)
    and a search button appears at its end. When you leave it, it goes back to small. */
-@media (max-width:640px){.search{order:2;flex:0 1 7.5em;transition:flex-basis .25s ease}.search input{padding:8px 12px}.tools{order:3;margin-left:auto}
-  .search.open{flex:1 1 100%}
-  .bar:has(.search.open) .tools{display:none}}
+/* Phones: the search box keeps its small place in the row; when opened, the box glides out over the icons
+   (one smooth S-curve) while they fade, so nothing else on the row moves. */
+@media (max-width:640px){.search{order:2;flex:1 0 7.5em;height:44px;z-index:2}.search input{padding:8px 12px}
+  .search .sbox{position:absolute;left:0;top:0;bottom:0;width:100%;display:flex;align-items:center;transition:width .5s cubic-bezier(.65,0,.35,1)}
+  .search.open .sbox{width:calc(100vw - max(16px,env(safe-area-inset-left,0px)) - max(16px,env(safe-area-inset-right,0px)))}
+  .tools nav.views{display:contents}
+  .bar{column-gap:0}
+  .tools::before{content:"";flex:none;width:0}
+  .tools{order:3;margin-left:0;flex:100 1 0;max-width:330px;justify-content:space-between;transition:opacity .35s cubic-bezier(.65,0,.35,1) .1s,visibility 0s}
+  .bar:has(.search.open) .tools{opacity:0;visibility:hidden;transition:opacity .25s cubic-bezier(.65,0,.35,1),visibility 0s .3s}}
+.sbox{display:flex;flex:1;min-width:0;position:relative;align-items:center}
+@media (prefers-reduced-motion:reduce){.search .sbox,.tools{transition:none!important}}
 .pastebox{margin-top:12px;padding:12px;border:2px dashed var(--loop);border-radius:10px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
 .pastebox label{font-weight:600}
 .pastebox textarea{font:15px var(--body);padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);resize:none;width:100%}
@@ -432,8 +441,8 @@ a.vthumb{text-decoration:none}
     </a>
     <form class="search" role="search" id="searchForm">
       <label class="sr" for="q">Search releases, artists, credits and tracks</label>
-      <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search">
-      <button type="submit" class="searchgo" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></button>
+      <span class="sbox"><input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search">
+      <button type="submit" class="searchgo" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></button></span>
     </form>
     <div class="tools">
     <nav class="views" aria-label="Views">
@@ -806,7 +815,8 @@ const pwin = (()=>{
   function fill(v){
     cur=v; const r=v.r;
     // A video linked to a track: the release's square sleeve is the main picture, the video stays visible and smaller.
-    const u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(v.track&&u); el.classList.toggle("withart",!art.hidden);
+    // Switched off for now (Gordon): show the video as the main picture until the real sound files arrive.
+    const PW_ART=false, u=imgUrls(r)[0], art=$("pwArt"); art.hidden=!(PW_ART&&v.track&&u); el.classList.toggle("withart",!art.hidden);
     art.innerHTML = !art.hidden ? `<img src="${esc(u)}" alt="">` : "";
     $("pwTitle").textContent = vidName(v);
     $("pwMeta").innerHTML = `<a class="relchip" href="#release-${r.id}">${sleeveThumb(r)}<span><small>${esc(LABELNAME[r.group]||"")}</small><b>${esc(r.title)}</b><span>${esc(artistLine(r))}</span><small>${esc(r.catno)}${r.year?" · "+r.year:""}${v.track?" · track "+esc(v.track.pos):""}</small></span></a>`;
