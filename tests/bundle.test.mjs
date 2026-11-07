@@ -8,7 +8,7 @@ const catalog = loadSiteCatalog(fileURLToPath(new URL("..", import.meta.url)), {
 const site = "https://loop.example";
 
 test("every release, person and track makes it into the bundle", () => {
-  const b = buildBundle({ catalog, siteUrl: site });
+  const b = buildBundle({ requireAudio: false, catalog, siteUrl: site });
   assert.equal(b.schema, SCHEMA);
   assert.equal(b.releases.length, catalog.releases.length);
   assert.equal(b.artists.length, catalog.people.length);
@@ -21,8 +21,8 @@ test("every release, person and track makes it into the bundle", () => {
 });
 
 test("ids are stable and unique so re-sending updates instead of duplicating", () => {
-  const a = buildBundle({ catalog, siteUrl: site, exportedAt: "2026-01-01T00:00:00Z" });
-  const b = buildBundle({ catalog, siteUrl: site, exportedAt: "2026-01-01T00:00:00Z" });
+  const a = buildBundle({ requireAudio: false, catalog, siteUrl: site, exportedAt: "2026-01-01T00:00:00Z" });
+  const b = buildBundle({ requireAudio: false, catalog, siteUrl: site, exportedAt: "2026-01-01T00:00:00Z" });
   assert.deepEqual(a, b);
   for (const [name, list, key] of [["releases", a.releases, "releaseId"], ["works", a.works, "workId"], ["artists", a.artists, "id"], ["videos", a.videos, "videoId"]]) {
     const ids = list.map(x => x[key]);
@@ -33,16 +33,16 @@ test("ids are stable and unique so re-sending updates instead of duplicating", (
 
 test("artwork is absolute, and back-office overrides win", () => {
   const r0 = catalog.releases.find(r => r.images.length);
-  const plain = buildBundle({ catalog, siteUrl: site }).releases.find(r => r.discogsId === r0.id);
+  const plain = buildBundle({ requireAudio: false, catalog, siteUrl: site }).releases.find(r => r.discogsId === r0.id);
   assert.equal(plain.coverArtUrl, `${site}/${r0.images[0]}`);
   const docs = groupDocs([{ collection: "artwork", id: String(r0.id), data: { images: [{ url: "https://cdn.example/new.jpg" }] } }]);
-  const over = buildBundle({ catalog, docs, siteUrl: site }).releases.find(r => r.discogsId === r0.id);
+  const over = buildBundle({ requireAudio: false, catalog, docs, siteUrl: site }).releases.find(r => r.discogsId === r0.id);
   assert.equal(over.coverArtUrl, "https://cdn.example/new.jpg");
   assert.equal(over.images.length, r0.images.length + 1);
 });
 
 test("credits link to artist documents", () => {
-  const b = buildBundle({ catalog, siteUrl: site });
+  const b = buildBundle({ requireAudio: false, catalog, siteUrl: site });
   const ids = new Set(b.artists.map(a => a.id));
   const linked = b.releases.flatMap(r => [...r.credits, ...r.tracks.flatMap(t => t.credits)]).filter(c => c.artistId);
   assert.ok(linked.length > 0);
@@ -62,7 +62,7 @@ test("back-office records come along; customer contact details do not", () => {
     { collection: "sync", id: "s1", data: { licensee: "SVT", contact: "x@svt.se", releaseId: rid, fee: 500000, status: "licensed" } },
     { collection: "rights", id: String(rid), data: { upc: "123456789012", status: "cleared", splits: [{ name: "Yakari", key: "d57788", role: "Artist", share: 50 }, { name: "Loop Records", key: null, role: "Label", share: 50 }], tracks: { [pos]: { isrc: "SEABC9400001", stim: "registered" } } } },
   ]);
-  const b = buildBundle({ catalog, docs, siteUrl: site });
+  const b = buildBundle({ requireAudio: false, catalog, docs, siteUrl: site });
   const rel = b.releases.find(r => r.discogsId === rid);
   assert.equal(rel.upc, "123456789012");
   assert.equal(rel.splits.length, 2);
@@ -78,19 +78,38 @@ test("back-office records come along; customer contact details do not", () => {
 });
 
 test("bundle stays well under Vercel's 4.5 MB request limit", () => {
-  const size = Buffer.byteLength(JSON.stringify(buildBundle({ catalog, siteUrl: site })));
+  const size = Buffer.byteLength(JSON.stringify(buildBundle({ requireAudio: false, catalog, siteUrl: site })));
   assert.ok(size < 3_000_000, `bundle is ${size} bytes`);
 });
 
 test("uploaded sound files travel with their tracks", () => {
   const r = catalog.releases.find(x => x.catno === "LOOP 001"), t = r.tracks[0];
   const docs = groupDocs([{ collection: "audio", id: `${r.id}_${t.pos}`, data: { url: "https://x.supabase.co/storage/v1/object/public/audio/a.mp3", name: "a.mp3", type: "audio/mpeg" } }]);
-  const b = buildBundle({ catalog, docs, siteUrl: site });
+  const b = buildBundle({ requireAudio: false, catalog, docs, siteUrl: site });
   const rel = b.releases.find(x => x.discogsId === r.id);
   assert.match(rel.tracks[0].audioUrl, /a\.mp3$/);
   assert.equal(rel.tracks[1].audioUrl, undefined);
   assert.equal(b.works.find(w => w.workId === rel.tracks[0].workId).sourceUrl, rel.tracks[0].audioUrl);
   assert.equal(b.counts.tracksWithAudio, 1);
+});
+
+test("nothing goes to Breakin Bread without its sound file", () => {
+  const r = catalog.releases.find(x => x.catno === "LOOP 001"), t = r.tracks[1];
+  const empty = buildBundle({ catalog, siteUrl: site });
+  assert.equal(empty.releases.length, 0);
+  assert.equal(empty.works.length, 0);
+  assert.equal(empty.artists.length, 0);
+  assert.ok(empty.videos.length > 0, "videos still go");
+  assert.ok(empty.videos.every(v => !v.releaseRef && v.releaseRefs.length === 0 && !v.artist));
+  assert.equal(empty.counts.heldBackWithoutAudio.releases, catalog.releases.length);
+  const docs = groupDocs([{ collection: "audio", id: `${r.id}_${t.pos}`, data: { url: "https://x/a.mp3" } }]);
+  const one = buildBundle({ catalog, docs, siteUrl: site });
+  assert.equal(one.releases.length, 1);
+  assert.equal(one.releases[0].tracks.length, 1);
+  assert.equal(one.releases[0].tracks[0].title, t.title);
+  assert.equal(one.works.length, 1);
+  assert.ok(one.artists.length > 0 && one.artists.every(a => a.releaseIds.includes(one.releases[0].releaseId)));
+  assert.equal(one.label.releaseCount, 1);
 });
 
 test("slugify handles Swedish letters", () => {

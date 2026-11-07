@@ -67,6 +67,7 @@ function viewAdmin(h){
     <div id="adm"></div><p class="status" id="admStatus" role="status"></p>`;
   const el=document.getElementById("adm");
   SECTIONS[sec](el);
+  main.insertAdjacentHTML("beforeend", `<p class="devcredit">App developed by Breakin Bread</p>`);
   refreshAdmin();
   focusMain();
 }
@@ -634,7 +635,7 @@ LIVE.bb = () => { const s=S.settings.breakinbread||{}; const c=s.counts||{};
   <dt>Products</dt><dd>${c.products??all("products").length}</dd><dt>Sync deals</dt><dd>${c.syncDeals??all("sync").length}</dd><dt>Orders</dt><dd>${c.orders??all("orders").length}</dd>
   ${s.error?`<dt>Error</dt><dd>${esc(s.error)}</dd>`:""}</dl>`; };
 SECTIONS["admin-bb"] = el => {
-  el.innerHTML = `<h1>Breakin Bread</h1><p class="lede">Send all of Loop Records to Breakin Bread in one click: the label, every artist, every release with its tracks, credits, artwork and videos, plus events, products, sync deals and rights splits. Sending again updates what is already there, nothing is duplicated. Customer names and email addresses stay here.</p>
+  el.innerHTML = `<h1>Breakin Bread</h1><p class="lede">Send all of Loop Records to Breakin Bread in one click: the label, every artist, every release with its tracks, credits, artwork and videos, plus events, products, sync deals and rights splits. Only songs with a sound file go: a release goes with the tracks that have sound, and releases without any stay here. Videos always go. Sending again updates what is already there, nothing is duplicated. Customer names and email addresses stay here.</p>
   <div data-live="bb"></div>
   <div class="btnrow"><button type="button" class="btn primary" data-act="push">Send everything to Breakin Bread</button><button type="button" class="btn" data-act="dry">Check first, don't send</button></div>
   <div id="bbOut" class="note" role="status"></div>`;
@@ -648,7 +649,7 @@ SECTIONS["admin-bb"] = el => {
       const j = await res.json().catch(()=>({error:"Unexpected reply ("+res.status+")"}));
       if(!res.ok || j.ok===false) throw new Error(j.error||("Failed ("+res.status+")"));
       const c=j.counts||{};
-      out.textContent = (dry?"Ready to send: ":"Sent to Breakin Bread: ")+`${c.releases} releases, ${c.artists} artists, ${c.works} tracks, ${c.credits} credits, ${c.videos} videos, ${c.events} events, ${c.products} products.`;
+      out.textContent = (dry?"Ready to send: ":"Sent to Breakin Bread: ")+`${c.releases} releases, ${c.artists} artists, ${c.works} tracks, ${c.credits} credits, ${c.videos} videos, ${c.events} events, ${c.products} products.`+(c.heldBackWithoutAudio?` Staying at Loop until they have sound files: ${c.heldBackWithoutAudio.releases} releases and ${c.heldBackWithoutAudio.tracks} tracks.`:"");
     }catch(err){ out.textContent="Couldn't "+(dry?"check":"send")+": "+(err&&err.message||err); }
     finally{ btns.forEach(x=>x.disabled=false); }
   };

@@ -5,7 +5,11 @@ import assert from "node:assert/strict";
 import http from "node:http";
 
 let server, base, received = [], logged = [], settings = null;
-const docs = [{ collection: "products", id: "p1", data: { sku: "LOOP001-DIG", type: "digital_release", releaseId: 73207, price: 9900, status: "live" } }];
+const docs = [
+  { collection: "products", id: "p1", data: { sku: "LOOP001-DIG", type: "digital_release", releaseId: 73207, price: 9900, status: "live" } },
+  // Only tracks with a sound file go to Breakin Bread: one here, so one release travels.
+  { collection: "audio", id: "73207_A1", data: { url: "https://x.supabase.co/storage/v1/object/public/audio/a1.mp3", name: "a1.mp3" } },
+];
 
 before(async () => {
   server = http.createServer(async (req, res) => {
@@ -48,7 +52,8 @@ test("refuses anyone who isn't staff", async () => {
 test("dry run builds the bundle without sending", async () => {
   const r = await call("good", { dryRun: true });
   assert.equal(r.status, 200);
-  assert.equal(r.body.counts.releases, 62);
+  assert.equal(r.body.counts.releases, 1);
+  assert.equal(r.body.counts.heldBackWithoutAudio.releases, 61);
   assert.equal(r.body.counts.products, 1);
   assert.equal(received.length, 0);
   assert.equal(settings.data.lastStatus, "dry");
@@ -60,8 +65,9 @@ test("one click sends everything to Breakin Bread and logs it", async () => {
   assert.equal(received.length, 1);
   const b = received[0];
   assert.equal(b.schema, "loop-records.breakinbread/v1");
-  assert.equal(b.releases.length, 62);
-  assert.equal(b.artists.length, 156);
+  assert.equal(b.releases.length, 1);
+  assert.equal(b.releases[0].tracks.length, 1);
+  assert.ok(b.artists.length > 0 && b.artists.length < 156);
   assert.equal(b.commerce.products[0].sku, "LOOP001-DIG");
   assert.ok(b.releases[0].coverArtUrl.startsWith("https://"));
   assert.equal(settings.data.lastStatus, "ok");
