@@ -155,8 +155,8 @@
   function el(tag, attrs, html) { var e = document.createElement(tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; }
   function mountAuth() {
     var nav = document.getElementById("navAdmin"); if (!nav || !nav.parentNode) return;
-    var btn = el("button", { type: "button", id: "staffBtn", "class": "staffbtn" });
-    nav.parentNode.appendChild(btn);
+    var btn = el("button", { type: "button", id: "staffBtn", "class": "ico" });
+    (nav.closest(".tools") || nav.parentNode).appendChild(btn);
     var dlg = el("dialog", { id: "staffDlg", "aria-labelledby": "staffTitle" },
       '<h2 id="staffTitle">Sign in or sign up</h2>' +
       '<form id="staffForm" class="staffform">' +
@@ -168,7 +168,7 @@
       '<div class="btnrow"><button class="btn" type="button" id="staffAgain">Use another email</button><button class="btn primary" type="button" data-close>Close</button></div></form>' +
       '<p class="staffmsg" id="staffMsg" role="status" aria-live="polite"></p>');
     document.body.appendChild(dlg);
-    var css = el("style", {}, ".staffbtn{font:inherit;font-weight:600;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:4px}.staffbtn:hover{color:var(--loop-text)}" +
+    var css = el("style", {}, "" +
       "#staffDlg{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:20px;max-width:min(420px,calc(100vw - 32px))}#staffDlg::backdrop{background:var(--scrim)}" +
       ".staffform label{display:block;font-weight:600;margin:12px 0 4px}.staffform input{width:100%;box-sizing:border-box;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}" +
       "#sentMsg{font-weight:600}.staffmsg{min-height:1.4em;color:var(--muted)}");
@@ -176,8 +176,12 @@
     var f1 = document.getElementById("staffForm"), f2 = document.getElementById("codeForm"), msg = document.getElementById("staffMsg"), sentTo = "";
     function showStep(n) { f1.hidden = n !== 1; f2.hidden = n !== 2; msg.textContent = ""; }
     ready.then(function (s) {
-      btn.textContent = s ? "Sign out" : "Sign in";
-      if (!s) btn.setAttribute("aria-label", "Sign in or sign up"); else btn.removeAttribute("aria-label");
+      // Simple monochrome icons: an arrow into a door to sign in, out of it to sign out.
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (s
+        ? '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 8l-4 4 4 4M6 12h9"/>'
+        : '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M11 8l4 4-4 4M4 12h11"/>') + '</svg>';
+      var label = s ? "Sign out" : "Sign in or sign up";
+      btn.setAttribute("aria-label", label); btn.title = label;
       btn.onclick = function () { if (s) { sb.auth.signOut(); } else { showStep(1); dlg.showModal(); document.getElementById("staffEmail").focus(); } };
     });
     dlg.querySelectorAll("[data-close]").forEach(function (b) { b.onclick = function () { dlg.close(); }; });
