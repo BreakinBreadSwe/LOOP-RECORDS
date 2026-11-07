@@ -143,6 +143,27 @@ a.card:hover .sleeve:not(.multi){transform:translateY(-3px) rotate(-.6deg)}
 .roles li{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
 pre.code{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font:13px/1.5 var(--mono)}
 footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:13px}
+/* Footer player: one bar at the bottom for track sound files (with a waveform timeline) and for the video playing. */
+#dock{position:fixed;left:0;right:0;bottom:0;z-index:8;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  display:grid;grid-template-columns:auto minmax(0,1.1fr) auto minmax(0,3fr) auto auto;grid-template-areas:"art meta ctl wave time vol";gap:6px 12px;align-items:center}
+#dock[hidden]{display:none}
+body.docked{padding-bottom:84px}
+#dock .dart{grid-area:art;width:48px;height:48px;border-radius:4px;overflow:hidden;background:var(--bg);display:block}
+#dock .dart img,#dock .dart svg{width:100%;height:100%;object-fit:contain;display:block}
+#dock .dmeta{grid-area:meta;min-width:0;display:flex;flex-direction:column;gap:1px;text-decoration:none;color:var(--ink)}
+#dock .dmeta b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dock .dmeta small{font:12px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dock .dctl{grid-area:ctl;display:flex;align-items:center;gap:2px}
+#dock .dctl .dplay{background:var(--ink);color:var(--bg);width:44px;height:44px}
+#dock .dwave{grid-area:wave;position:relative;height:40px;min-width:0;border-radius:4px}
+#dock .dwave canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#dock .dwave input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+#dock .dwave:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+#dock .dtime{grid-area:time;font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
+#dock .dvol{grid-area:vol}
+@media (max-width:700px){#dock{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"art meta ctl" "wave wave wave" "time time vol";gap:4px 10px}
+  #dock .dtime{justify-self:start}body.docked{padding-bottom:150px}#dock .dwave{height:34px}}
 h2.galh{font-size:22px;margin:20px 0 8px}
 .gallery{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
 .gallery li{display:flex;flex-direction:column;gap:6px}
@@ -379,6 +400,16 @@ header.top{transition:transform .25s ease}
 <main id="main" class="wrap" tabindex="-1"></main>
 <datalist id="peopleList"></datalist>
 <p class="sr" aria-live="polite" id="live"></p>
+<section id="dock" aria-label="Player" hidden>
+  <a class="dart" id="dArt" href="#" tabindex="-1" aria-hidden="true"></a>
+  <a class="dmeta" id="dMeta" href="#"><b id="dTitle"></b><small id="dSub"></small></a>
+  <div class="dctl"><button type="button" class="ico" id="dPrev" aria-label="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5v14"/><path d="M19 5.5v13L9 12z" fill="currentColor" stroke="none"/></svg></button>
+    <button type="button" class="ico dplay" id="dPlay" aria-label="Play"></button>
+    <button type="button" class="ico" id="dNext" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 5v14"/><path d="M5 5.5v13L15 12z" fill="currentColor" stroke="none"/></svg></button></div>
+  <div class="dwave"><canvas id="dWave" aria-hidden="true"></canvas><input type="range" id="dSeek" min="0" max="1000" value="0" aria-label="Position in the track" aria-valuetext="0 seconds"></div>
+  <span class="dtime" id="dTime" aria-hidden="true">0:00 / 0:00</span>
+  <button type="button" class="ico dvol" id="dMute" aria-label="Mute"></button>
+</section>
 <footer><div class="wrap">Catalog data from Discogs, label 179847, retrieved 3 Nov 2026. <span id="vidNote">Videos link out to YouTube.</span> A generated Loop sleeve shows until each real cover is added.</div></footer>
 
 <script id="catalog" type="application/json">__CATALOG__</script>
@@ -570,6 +601,112 @@ function videoList(vs){
     return `<li><a href="${yt(v.id)}" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span>${esc(v.title||"Untitled video")}<small>${rel?esc(rel.catno)+" · ":""}${esc(v.source)} · opens YouTube</small></span></a></li>`;}).join("")}</ul>`;
 }
 
+// ---------- Footer player ----------
+// One bar at the bottom. Sources: a track's sound file (own audio element, waveform drawn from the file)
+// or the video playing on the page (it then works as a remote for that video). Never both at once.
+const dock = (()=>{
+  const el=document.getElementById("dock"), audio=new Audio(); audio.preload="metadata";
+  const $=id=>document.getElementById(id), cv=$("dWave"), seek=$("dSeek");
+  let src=null, peaks=null, timer=null, dragging=false;
+  const peakCache=new Map();
+  const ICON={play:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/></svg>',
+    pause:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14M16 5v14" stroke-width="3"/></svg>',
+    sound:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
+    muted:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>'};
+  function show(){ el.hidden=false; document.body.classList.add("docked"); }
+  function hide(){ el.hidden=true; document.body.classList.remove("docked"); clearInterval(timer); }
+  function draw(){
+    const w=cv.clientWidth, h=cv.clientHeight; if(!w||!h) return; const dpr=devicePixelRatio||1;
+    if(cv.width!==Math.round(w*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); }
+    const c=cv.getContext("2d"); c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,w,h);
+    const cs=getComputedStyle(document.documentElement), played=cs.getPropertyValue("--loop").trim()||"#FF4400", rest=cs.getPropertyValue("--muted").trim()||"#888";
+    const d=src?src.dur():0, p=d?Math.min(1,src.cur()/d):0, frac=dragging?seek.value/1000:p;
+    if(peaks){ const bw=3, gap=2, n=Math.floor(w/(bw+gap));
+      for(let i=0;i<n;i++){ const v=peaks[Math.floor(i/n*peaks.length)]||0, bh=Math.max(2,v*(h-4));
+        c.fillStyle=(i/n)<frac?played:rest; c.globalAlpha=(i/n)<frac?1:.45; c.fillRect(i*(bw+gap),(h-bh)/2,bw,bh); } c.globalAlpha=1; }
+    else { c.fillStyle=rest; c.globalAlpha=.35; c.fillRect(0,h/2-2,w,4); c.globalAlpha=1; c.fillStyle=played; c.fillRect(0,h/2-2,w*frac,4);
+      c.beginPath(); c.arc(Math.max(7,w*frac),h/2,7,0,Math.PI*2); c.fill(); }
+  }
+  function paint(){
+    if(!src) return; if(src.alive && !src.alive()){ stop(); return; }
+    const d=src.dur(), t=src.cur(), on=src.isPlaying();
+    if(!dragging) seek.value=d?Math.round(t/d*1000):0;
+    $("dTime").textContent=`${ytClock(t)} / ${ytClock(d)}`; seek.setAttribute("aria-valuetext",`${ytSpoken(t)} of ${ytSpoken(d)}`);
+    $("dPlay").innerHTML=on?ICON.pause:ICON.play; $("dPlay").setAttribute("aria-label",on?"Pause":"Play");
+    const m=src.isMuted(); $("dMute").innerHTML=m?ICON.muted:ICON.sound; $("dMute").setAttribute("aria-label",m?"Turn sound on":"Mute");
+    draw();
+  }
+  async function loadPeaks(url){
+    if(peakCache.has(url)) return peakCache.get(url);
+    const job=(async()=>{ try{
+      const buf=await (await fetch(url)).arrayBuffer();
+      const AC=window.OfflineAudioContext||window.webkitOfflineAudioContext; const ac=new AC(1,2,44100);
+      const ab=await new Promise((res,rej)=>{ const pr=ac.decodeAudioData(buf,res,rej); if(pr&&pr.then) pr.then(res,rej); });
+      const ch=ab.getChannelData(0), N=600, step=Math.floor(ch.length/N)||1, out=new Array(N).fill(0); let mx=0;
+      for(let i=0;i<N;i++){ let sum=0; const o=i*step; for(let j=0;j<step;j+=8){ const v=ch[o+j]||0; sum+=v*v; } out[i]=Math.sqrt(sum/(step/8)); mx=Math.max(mx,out[i]); }
+      return out.map(v=>mx?v/mx:0);
+    }catch(e){ return null; } })();
+    peakCache.set(url, job); return job;
+  }
+  function attach(s){
+    if(src && src!==s && src.pause) try{ src.pause(); }catch(e){}
+    src=s; peaks=null; show();
+    $("dTitle").textContent=s.title; $("dSub").textContent=s.sub||""; $("dMeta").href=s.href||"#"; $("dArt").href=s.href||"#";
+    $("dArt").innerHTML=s.art||""; $("dPrev").hidden=!s.prev; $("dNext").hidden=!s.next;
+    $("dSeek").setAttribute("aria-label", s.kind==="audio"?"Position in the track":"Position in the video");
+    if(s.wave) loadPeaks(s.wave).then(p=>{ if(src===s){ peaks=p; draw(); } });
+    clearInterval(timer); timer=setInterval(paint,200); paint();
+  }
+  function stop(){ src=null; peaks=null; hide(); }
+  $("dPlay").onclick=()=>{ if(!src) return; src.isPlaying()?src.pause():src.play(); setTimeout(paint,60); };
+  $("dPrev").onclick=()=>src&&src.prev&&src.prev(); $("dNext").onclick=()=>src&&src.next&&src.next();
+  $("dMute").onclick=()=>{ if(!src) return; src.toggleMute(); paint(); announce(src.isMuted()?"Muted":"Sound on"); };
+  seek.addEventListener("input",()=>{ dragging=true; draw(); });
+  seek.addEventListener("change",()=>{ if(src){ const d=src.dur(); if(d) src.seek(seek.value/1000*d); } dragging=false; paint(); });
+  addEventListener("resize",()=>draw());
+
+  // ---- track sound files
+  let queue=[], qi=-1;
+  function playTrack(r, pos){
+    const list=r.tracks.filter(t=>SOUND[soundKey(r,t.pos)]); qi=list.findIndex(t=>t.pos===pos); if(qi<0) return;
+    queue=list.map(t=>({r,t,snd:SOUND[soundKey(r,t.pos)]})); startQueued(true);
+  }
+  function startQueued(say){
+    const q=queue[qi]; if(!q) return;
+    audio.src=q.snd.url; audio.play().catch(()=>{});
+    const u=imgUrls(q.r)[0];
+    attach({kind:"audio", title:`${q.t.title}`, sub:`${artistLine(q.r)} · ${q.r.catno}`, href:"#release-"+q.r.id,
+      art:u?`<img src="${esc(u)}" alt="">`:placeholder(q.r,true), wave:q.snd.url,
+      play:()=>audio.play().catch(()=>{}), pause:()=>audio.pause(), isPlaying:()=>!audio.paused&&!audio.ended,
+      cur:()=>audio.currentTime||0, dur:()=>isFinite(audio.duration)?audio.duration:0, seek:t=>{ audio.currentTime=t; },
+      isMuted:()=>audio.muted, toggleMute:()=>{ audio.muted=!audio.muted; },
+      prev: queue.length>1 ? ()=>{ if(audio.currentTime>3){ audio.currentTime=0; return; } qi=(qi-1+queue.length)%queue.length; startQueued(true); } : null,
+      next: queue.length>1 ? ()=>{ qi=(qi+1)%queue.length; startQueued(true); } : null});
+    cleanPlayers.forEach(x=>{ try{ x.player.pauseVideo(); }catch(e){} });
+    if(say) announce(`Playing ${q.t.pos} ${q.t.title}, ${artistLine(q.r)}`);
+    brandFor(q.r);
+  }
+  audio.addEventListener("ended",()=>{ if(qi<queue.length-1){ qi++; startQueued(false); } else paint(); });
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-playtrack]"); if(!b) return;
+    const r=location.hash.startsWith("#release-")&&byId.get(location.hash.slice(9)); if(r) playTrack(r,b.dataset.playtrack); });
+
+  // ---- the video playing on the page
+  function followVideo(h, title, r){
+    audio.pause();
+    const u=r&&imgUrls(r)[0];
+    attach({kind:"video", title, sub:r?`${artistLine(r)} · ${r.catno}`:"Video", href:r?"#release-"+r.id:location.hash||"#",
+      art:u?`<img src="${esc(u)}" alt="">`:(r?placeholder(r,true):""),
+      alive:()=>{ const f=h.iframe(); return !!(f&&document.contains(f)); },
+      play:()=>h.play(), pause:()=>{ try{ h.player.pauseVideo(); }catch(e){} },
+      isPlaying:()=>{ try{ const st=h.player.getPlayerState(); return st===1||st===3; }catch(e){ return false; } },
+      cur:()=>{ try{ return h.player.getCurrentTime()||0; }catch(e){ return 0; } }, dur:()=>{ try{ return h.player.getDuration()||0; }catch(e){ return 0; } },
+      seek:t=>{ try{ h.player.seekTo(t,true); }catch(e){} },
+      isMuted:()=>{ try{ return h.player.isMuted(); }catch(e){ return false; } }, toggleMute:()=>{ try{ h.player.isMuted()?h.player.unMute():h.player.mute(); }catch(e){} },
+      prev: h.prev||null, next: h.next||null});
+  }
+  return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop };
+})();
+
 // ---------- Clean YouTube player: no YouTube overlays, our own controls underneath ----------
 const YT_ICONS={play:'<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',pause:'<path d="M8 5v14M16 5v14" stroke-width="3"/>',
   sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
@@ -612,10 +749,11 @@ function cleanPlayer(box, o){
   h.player=new YT.Player(box.querySelector(".ytcrop > div"),{host:"https://www.youtube-nocookie.com",videoId:o.id,
     playerVars:{autoplay:1,controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
     events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video: "+title; f.setAttribute("tabindex","-1"); f.setAttribute("aria-hidden","true"); play(); paint(); if(o.focus) playB.focus(); },
-            onStateChange:e=>{ if(e.data===1){ clearTimeout(startCheck); box.classList.remove("letthrough"); hint.hidden=true; setPlaying(true); }
+            onStateChange:e=>{ if(e.data===1){ clearTimeout(startCheck); box.classList.remove("letthrough"); hint.hidden=true; setPlaying(true); dock.followVideo(h, title, o.release||null); }
               else { setPlaying(false); if(e.data===0){ seek.value=1000; o.onEnd&&o.onEnd(); } } },
             onError:()=>{ setPlaying(false); o.onError&&o.onError(); }}});
-  h.load=(id,t)=>{ title=t; poster.src=`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`; bar.setAttribute("aria-label","Video controls: "+t);
+  h.play=play; h.prev=o.prev||null; h.next=o.next||null;
+  h.load=(id,t,rel)=>{ title=t; if(rel) o.release=rel; poster.src=`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`; bar.setAttribute("aria-label","Video controls: "+t);
     const f=h.iframe(); if(f) f.title="Video: "+t; h.player.loadVideoById(id); play(); };
   cleanPlayers.add(h);
   return h;
@@ -709,8 +847,9 @@ function viewVideos(startId){
     const box=document.getElementById("stageBox"); if(!box) return;
     if(ok){
       const f = ytPlayer && ytPlayer.iframe && ytPlayer.iframe();
-      if(f && box.contains(f)) ytPlayer.load(v.id, v.title);
-      else ytPlayer = cleanPlayer(box, {id:v.id, title:v.title, focus:fromList,
+      if(f && box.contains(f)) ytPlayer.load(v.id, v.title, v.r);
+      else ytPlayer = cleanPlayer(box, {id:v.id, title:v.title, focus:fromList, release:v.r,
+          prev:()=>playAt(vNow-1,false), next:()=>playAt(vNow+1,false),
           onEnd:()=>{ if(vTV) playAt(vNow+1,false); },
           onError:()=>{ if(vTV) setTimeout(()=>playAt(vNow+1,false),800); }});
     } else {
@@ -796,7 +935,7 @@ function renderAudio(r, onlyPos){
     const t = r.tracks.find(x => x.pos === pos); if(!t) return;
     const snd = SOUND[soundKey(r, pos)];
     const id = "up-" + soundKey(r, pos);
-    let html = snd ? `<audio controls preload="none" tabindex="0" src="${esc(snd.url)}" aria-label="Play ${esc(trackLabel(r,t))}"></audio>` : "";
+    let html = snd ? `<button type="button" class="btn small trackplay" data-playtrack="${esc(pos)}" aria-label="Play ${esc(trackLabel(r,t))}">Play</button>` : "";
     if(canEditRelease(r) && AB){
       html += `<span class="up"><label for="${id}">${snd ? "Replace sound file for" : "Add sound file for"} ${esc(trackLabel(r,t))}</label>
         <input type="file" id="${id}" accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.aif,.aiff,.ogg" data-up="${esc(pos)}">
@@ -804,7 +943,7 @@ function renderAudio(r, onlyPos){
     }
     const hadFocus = slot.contains(document.activeElement);
     slot.innerHTML = html;
-    if(hadFocus || soundFocus === pos){ const el = slot.querySelector("audio") || slot.querySelector("input"); if(el){ el.focus(); if(soundFocus === pos && el.tagName === "AUDIO") soundFocus = null; } }
+    if(hadFocus || soundFocus === pos){ const el = slot.querySelector(".trackplay") || slot.querySelector("input"); if(el){ el.focus(); if(soundFocus === pos && el.classList.contains("trackplay")) soundFocus = null; } }
   });
 }
 document.addEventListener("change", async e => {
@@ -1196,6 +1335,7 @@ function saverAllowed(){
   if(document.querySelector("dialog[open]")) return false;
   const a=document.activeElement; if(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return false;
   if([...document.querySelectorAll("audio,video")].some(m=>!m.paused)) return false;
+  if(dock.playing()) return false;
   if(document.querySelector("main iframe")) return false;          // a video is open
   return true;
 }
@@ -1300,7 +1440,8 @@ document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDef
 window.addEventListener("hashchange",route);
 document.addEventListener("click", async e=>{ const b=e.target.closest(".ytplay"); if(!b || b.id==="stagePlay") return;
   const box=b.closest(".ytbox");
-  if(box && await loadYT()){ cleanPlayer(box,{id:b.dataset.yt,title:b.dataset.title,focus:true}); return; }
+  if(box && await loadYT()){ const rel=location.hash.startsWith("#release-")?byId.get(location.hash.slice(9)):null;
+    cleanPlayer(box,{id:b.dataset.yt,title:b.dataset.title,focus:true,release:rel||null}); return; }
   const f=document.createElement("iframe");
   f.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.yt)}?autoplay=1&rel=0&playsinline=1`;
   f.title=b.dataset.title; f.allow="autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen=true; f.loading="lazy";
