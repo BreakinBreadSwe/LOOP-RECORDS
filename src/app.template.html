@@ -148,6 +148,27 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
   padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
   display:grid;grid-template-columns:auto minmax(0,1.1fr) auto minmax(0,3fr) auto auto;grid-template-areas:"art meta ctl wave time vol";gap:6px 12px;align-items:center}
 #dock[hidden]{display:none}
+#dock .dmeta,#dock .dart{cursor:pointer}
+#pwin{position:fixed;left:0;right:0;top:0;bottom:var(--dockh,72px);z-index:7;background:var(--bg);overflow:auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 24px;transform:translateY(100%);transition:transform .35s cubic-bezier(.65,0,.35,1)}
+#pwin.on{transform:none}
+#pwin[hidden]{display:none}
+#pwin .pwhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#pwin .pwbody{display:grid;grid-template-columns:minmax(0,1fr);gap:20px 24px;align-items:start}
+@media (min-width:900px){#pwin .pwbody{grid-template-columns:minmax(0,1fr) clamp(300px,26vw,400px)}}
+.pwth{margin:22px 0 8px;font-size:18px}
+.pwtracks{list-style:none;margin:0;padding:0}
+.pwtracks li{padding:8px 0;border-top:1px solid var(--line);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.pwtracks li[aria-current]{font-weight:700}
+.pwtracks .pos{font:500 13px var(--mono);color:var(--muted);min-width:2.5em}
+.pwtracks small{font:12px var(--mono);color:var(--muted);margin-left:auto}
+.linklike{font:inherit;background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;cursor:pointer;text-align:left}
+.nowtag2{font:600 11px var(--mono);background:var(--loop);color:#000;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+body.pwopen{overflow:hidden}
+#vu{position:fixed;right:max(4px,env(safe-area-inset-right,0px));top:96px;bottom:calc(var(--dockh,72px) + 12px);z-index:6;display:flex;gap:3px;pointer-events:none}
+#vu[hidden]{display:none}
+#vu span{position:relative;width:6px;border-radius:3px;background:color-mix(in srgb,var(--muted) 25%,transparent);overflow:hidden}
+#vu span::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--loop) 0 70%,#ffd400 85%,#ff1a1a 100%);clip-path:inset(calc((1 - var(--v,0)) * 100%) 0 0 0)}
+#vu span::after{content:"";position:absolute;left:0;right:0;height:2px;bottom:calc(var(--p,0) * 100%);background:var(--ink)}
 body.docked{padding-bottom:84px}
 #dock .dart{grid-area:art;width:48px;height:48px;border-radius:4px;overflow:hidden;background:var(--bg);display:block}
 #dock .dart img,#dock .dart svg{width:100%;height:100%;object-fit:contain;display:block}
@@ -421,6 +442,17 @@ a.vthumb{text-decoration:none}
   <span class="dtime" id="dTime" aria-hidden="true">0:00 / 0:00</span>
   <button type="button" class="ico dvol" id="dMute" aria-label="Mute"></button>
 </section>
+<section id="pwin" aria-labelledby="pwTitle" hidden>
+  <div class="pwhead"><button type="button" class="ico" id="pwClose" aria-label="Close the player window"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9l7 7 7-7"/></svg></button><span class="eyebrow">Now playing</span></div>
+  <div class="pwbody">
+    <div class="pwmain"><div class="ytbox" id="pwBox"></div>
+      <h2 id="pwTitle" class="watchtitle" tabindex="-1"></h2>
+      <div class="watchmeta" id="pwMeta"></div>
+      <div id="pwTracks"></div></div>
+    <aside class="upnext" aria-labelledby="pwUpH"><div class="uphead"><h2 id="pwUpH">Up next</h2></div><ol id="pwUp"></ol></aside>
+  </div>
+</section>
+<div id="vu" aria-hidden="true" hidden><span class="vul"></span><span class="vur"></span></div>
 <footer><div class="wrap">Catalog data from Discogs, label 179847, retrieved 3 Nov 2026. <span id="vidNote">Videos link out to YouTube.</span> A generated Loop sleeve shows until each real cover is added.</div></footer>
 
 <script id="catalog" type="application/json">__CATALOG__</script>
@@ -616,7 +648,7 @@ function videoList(vs){
 // One bar at the bottom. Sources: a track's sound file (own audio element, waveform drawn from the file)
 // or the video playing on the page (it then works as a remote for that video). Never both at once.
 const dock = (()=>{
-  const el=document.getElementById("dock"), audio=new Audio(); audio.preload="metadata";
+  const el=document.getElementById("dock"), audio=new Audio(); audio.preload="metadata"; audio.crossOrigin="anonymous";
   const $=id=>document.getElementById(id), cv=$("dWave"), seek=$("dSeek");
   let src=null, peaks=null, timer=null, dragging=false;
   const peakCache=new Map();
@@ -625,6 +657,8 @@ const dock = (()=>{
     sound:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
     muted:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>'};
   function show(){ el.hidden=false; document.body.classList.add("docked"); }
+  new ResizeObserver(()=>document.documentElement.style.setProperty("--dockh", (el.hidden?0:el.offsetHeight)+"px")).observe(el);
+  let idleV=null;
   function hide(){ el.hidden=true; document.body.classList.remove("docked"); clearInterval(timer); }
   function draw(){
     const w=cv.clientWidth, h=cv.clientHeight; if(!w||!h) return; const dpr=devicePixelRatio||1;
@@ -664,11 +698,20 @@ const dock = (()=>{
     src=s; peaks=null; show();
     $("dTitle").textContent=s.title; $("dSub").textContent=s.sub||""; $("dMeta").href=s.href||"#"; $("dArt").href=s.href||"#";
     $("dArt").innerHTML=s.art||""; $("dPrev").hidden=!s.prev; $("dNext").hidden=!s.next;
+    $("dMeta").setAttribute("aria-label", s.open ? `${s.title}, ${s.sub||""}. Open the player window` : `${s.title}, ${s.sub||""}. Open the release`);
     $("dSeek").setAttribute("aria-label", s.kind==="audio"?"Position in the track":"Position in the video");
     if(s.wave) loadPeaks(s.wave).then(p=>{ if(src===s){ peaks=p; draw(); } });
     clearInterval(timer); timer=setInterval(paint,200); paint();
   }
-  function stop(){ src=null; peaks=null; hide(); }
+  function stop(){ src=null; peaks=null; if(idleV) idle(idleV); else hide(); }
+  // Ready to play: the footer shows a track from the videos; Play opens the player window and starts it.
+  function idle(v){ idleV=v; const u=imgUrls(v.r)[0];
+    attach({kind:"video", owner:"idle", title:vidPos(v)+vidName(v), sub:`${artistLine(v.r)} · ${v.r.catno}`, href:"#video-"+v.id,
+      art:u?`<img src="${esc(u)}" alt="">`:placeholder(v.r,true), open:()=>pwin.open(v,false),
+      play:()=>pwin.open(v,true), pause:()=>{}, isPlaying:()=>false, cur:()=>0, dur:()=>0, seek:()=>{}, isMuted:()=>false, toggleMute:()=>{},
+      prev:null, next:null}); }
+  const openWin=e=>{ if(src&&src.open){ e.preventDefault(); src.open(); } };
+  $("dArt").onclick=openWin; $("dMeta").onclick=openWin;
   $("dPlay").onclick=()=>{ if(!src) return; src.isPlaying()?src.pause():src.play(); setTimeout(paint,60); };
   $("dPrev").onclick=()=>src&&src.prev&&src.prev(); $("dNext").onclick=()=>src&&src.next&&src.next();
   $("dMute").onclick=()=>{ if(!src) return; src.toggleMute(); paint(); announce(src.isMuted()?"Muted":"Sound on"); };
@@ -704,18 +747,87 @@ const dock = (()=>{
   // ---- the video playing on the page
   function followVideo(h, title, r){
     audio.pause();
-    const u=r&&imgUrls(r)[0];
-    attach({kind:"video", owner:h, title, sub:r?`${artistLine(r)} · ${r.catno}`:"Video", href:r?"#release-"+r.id:location.hash||"#",
+    const u=r&&imgUrls(r)[0], v=VIDS.find(x=>x.id===h.vid);
+    if(v){ idleV=v; title=vidPos(v)+vidName(v); }
+    attach({kind:"video", owner:h, title, open:()=>pwin.open(v||idleV, false, h), sub:r?`${artistLine(r)} · ${r.catno}`:"Video", href:r?"#release-"+r.id:location.hash||"#",
       art:u?`<img src="${esc(u)}" alt="">`:(r?placeholder(r,true):""),
       alive:()=>{ const f=h.iframe(); return !!(f&&document.contains(f)); },
-      play:()=>h.play(), pause:()=>{ try{ h.player.pauseVideo(); }catch(e){} },
+      play:()=>{ if(h.inWindow) pwin.show(); h.play(); }, pause:()=>{ try{ h.player.pauseVideo(); }catch(e){} },
       isPlaying:()=>{ try{ const st=h.player.getPlayerState(); return st===1||st===3; }catch(e){ return false; } },
       cur:()=>{ try{ return h.player.getCurrentTime()||0; }catch(e){ return 0; } }, dur:()=>{ try{ return h.player.getDuration()||0; }catch(e){ return 0; } },
       seek:t=>{ try{ h.player.seekTo(t,true); }catch(e){} },
       isMuted:()=>{ try{ return h.player.isMuted(); }catch(e){ return false; } }, toggleMute:()=>{ try{ h.player.isMuted()?h.player.unMute():h.player.mute(); }catch(e){} },
       prev: h.prev||null, next: h.next||null});
   }
-  return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop };
+  return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop, idle, audio, current:()=>src };
+})();
+
+// ---------- Player window: slides up over the page from the footer, video plus everything about the track ----------
+const pwin = (()=>{
+  const el=document.getElementById("pwin"), $=id=>document.getElementById(id);
+  let h=null, cur=null, opener=null;
+  function show(){ if(!el.hidden) return; opener=document.activeElement; el.hidden=false; document.body.classList.add("pwopen"); requestAnimationFrame(()=>el.classList.add("on")); }
+  function close(){ if(el.hidden) return; try{ h&&h.player&&h.player.pauseVideo(); }catch(e){} el.classList.remove("on"); document.body.classList.remove("pwopen");
+    el.hidden=true; if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); }
+  function fill(v){
+    cur=v; const r=v.r;
+    $("pwTitle").textContent = vidName(v);
+    $("pwMeta").innerHTML = `<a class="relchip" href="#release-${r.id}">${sleeveThumb(r)}<span><small>${esc(LABELNAME[r.group]||"")}</small><b>${esc(r.title)}</b><span>${esc(artistLine(r))}</span><small>${esc(r.catno)}${r.year?" · "+r.year:""}${v.track?" · track "+esc(v.track.pos):""}</small></span></a>`;
+    const tc = v.track && v.track.credits && v.track.credits.length ? `<p class="note">${v.track.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</p>` : "";
+    $("pwTracks").innerHTML = tc + `<h3 class="pwth">Tracks on ${esc(r.title)}</h3><ol class="pwtracks">${r.tracks.map(t=>{ const tv=VIDS.find(x=>x.r===r&&x.track===t);
+      const now=v.track===t; return `<li${now?' aria-current="true"':""}><span class="pos">${esc(t.pos)}</span> ${tv&&!now?`<button type="button" class="linklike" data-pwv="${esc(tv.id)}">${esc(t.title)}</button>`:`<span>${esc(t.title)}</span>`}${now?' <span class="nowtag2">Playing</span>':""}${t.dur?` <small>${esc(t.dur)}</small>`:""}</li>`; }).join("")}</ol>`;
+    const list=videoOrder(), i=Math.max(0,list.indexOf(v)); let up="";
+    for(let k=1;k<=Math.min(12,list.length-1);k++){ const x=list[(i+k)%list.length];
+      up+=`<li><button type="button" class="upitem" data-pwv="${esc(x.id)}" aria-label="${esc(vidName(x))}. ${esc(artistLine(x.r))}, ${esc(x.r.catno)}">
+        <span class="upthumb"><img src="https://i.ytimg.com/vi/${esc(x.id)}/mqdefault.jpg" alt="" loading="lazy"></span>
+        <span class="uptext" aria-hidden="true"><b>${esc(vidName(x))}</b><small>${esc(artistLine(x.r))}</small><small>${esc(x.r.catno)}${x.r.year?" · "+x.r.year:""}</small></span></button></li>`; }
+    $("pwUp").innerHTML=up;
+    el.querySelectorAll("[data-pwv]").forEach(b=>b.onclick=()=>open(VIDS.find(x=>x.id===b.dataset.pwv),true));
+    el.style.setProperty("--stage-c", r.color||"var(--loop)");
+  }
+  function step(d){ const list=videoOrder(), i=list.indexOf(cur); open(list[((i<0?0:i)+d+list.length)%list.length], true); }
+  async function open(v, play, fromHandle){
+    if(!v) return; show(); fill(v); $("pwTitle").focus();
+    // Opened from a video playing on the page: carry on in the window from the same moment.
+    let at=0; if(fromHandle && fromHandle!==h){ try{ at=fromHandle.player.getCurrentTime()||0; const st=fromHandle.player.getPlayerState(); play = play || st===1 || st===3; fromHandle.player.pauseVideo(); }catch(e){} }
+    const box=$("pwBox");
+    if(!(await loadYT())){ box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?rel=0&playsinline=1" title="Video: ${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; return; }
+    const f=h&&h.iframe&&h.iframe();
+    if(f && box.contains(f)){ if(h.vid!==v.id) h.load(v.id, vidName(v), v.r, at); else if(play) h.play(); }
+    else { h=cleanPlayer(box,{id:v.id,title:vidName(v),release:v.r,autoplay:!!play,start:at,prev:()=>step(-1),next:()=>step(1),
+      onEnd:()=>{ if(autoNext) step(1); }}); h.inWindow=true; }
+    if(play) announce(`Playing ${vidName(v)}, ${artistLine(v.r)}`);
+  }
+  $("pwClose").onclick=close;
+  el.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); close(); } });
+  addEventListener("hashchange",()=>close());
+  return { open, close, show };
+})();
+
+// ---------- Level meter: a vertical meter on the far right while a sound file plays ----------
+// It measures the real sound of uploaded files. YouTube's sound can't be measured by a web page,
+// so for videos the meter stays away rather than pretend.
+const vu = (()=>{
+  const el=document.getElementById("vu"), bl=el.querySelector(".vul"), br=el.querySelector(".vur");
+  let ctx=null, aL=null, aR=null, raf=0, pl=0, pr=0, tries=0;
+  function connect(){
+    if(ctx||tries++) return !!ctx;
+    try{ const AC=window.AudioContext||window.webkitAudioContext; ctx=new AC();
+      const srcN=ctx.createMediaElementSource(dock.audio), sp=ctx.createChannelSplitter(2);
+      aL=ctx.createAnalyser(); aR=ctx.createAnalyser(); aL.fftSize=aR.fftSize=1024;
+      srcN.connect(ctx.destination); srcN.connect(sp); sp.connect(aL,0); sp.connect(aR,1);
+    }catch(e){ ctx=null; } return !!ctx;
+  }
+  const level=a=>{ const b=new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let m=0; for(const x of b) m=Math.max(m,Math.abs(x)); const db=20*Math.log10(m||1e-6); return Math.max(0,Math.min(1,(db+48)/48)); };
+  function tick(){ if(!ctx||dock.audio.paused){ stop(); return; }
+    const l=level(aL); let r=level(aR); if(r<0.01 && l>0.02) r=l; // a mono file plays the same on both sides
+    pl=Math.max(l,pl*0.9); pr=Math.max(r,pr*0.9);
+    bl.style.setProperty("--v",l); br.style.setProperty("--v",r); bl.style.setProperty("--p",pl); br.style.setProperty("--p",pr);
+    raf=requestAnimationFrame(tick); }
+  function start(){ if(!connect()) return; if(ctx.state==="suspended") ctx.resume(); el.hidden=false; cancelAnimationFrame(raf); raf=requestAnimationFrame(tick); }
+  function stop(){ cancelAnimationFrame(raf); el.hidden=true; }
+  dock.audio.addEventListener("play",start); dock.audio.addEventListener("pause",stop); dock.audio.addEventListener("ended",stop);
+  return {start, stop};
 })();
 
 // ---------- Clean YouTube player: no YouTube overlays, our own controls underneath ----------
@@ -740,7 +852,7 @@ function cleanPlayer(box, o){
   const playB=bar.querySelector('[data-c="play"]'), muteB=bar.querySelector('[data-c="mute"]'), fullB=bar.querySelector('[data-c="full"]'),
         seek=bar.querySelector(".ytseek"), time=bar.querySelector(".yttime"), hint=box.querySelector(".ythint"), poster=box.querySelector(".ytposter");
   let title=o.title, dragging=false, ticker=null, startCheck=null;
-  const h={ player:null, box, bar, iframe:()=>h.player&&h.player.getIframe&&h.player.getIframe() };
+  const h={ player:null, box, bar, vid:o.id, iframe:()=>h.player&&h.player.getIframe&&h.player.getIframe() };
   const dur=()=>{ try{ return h.player.getDuration()||0; }catch(e){ return 0; } };
   const cur=()=>{ try{ return h.player.getCurrentTime()||0; }catch(e){ return 0; } };
   function paint(){ const d=dur(), c=cur(); if(!dragging){ seek.value=d?Math.round(c/d*1000):0; } seek.style.setProperty("--p",(seek.value/10)+"%");
@@ -758,14 +870,14 @@ function cleanPlayer(box, o){
   seek.addEventListener("input",()=>{ dragging=true; seek.style.setProperty("--p",(seek.value/10)+"%"); const d=dur(); if(d){ time.textContent=`${ytClock(seek.value/1000*d)} / ${ytClock(d)}`; } });
   seek.addEventListener("change",()=>{ const d=dur(); if(d&&h.player) h.player.seekTo(seek.value/1000*d,true); dragging=false; paint(); });
   h.player=new YT.Player(box.querySelector(".ytcrop > div"),{host:"https://www.youtube-nocookie.com",videoId:o.id,
-    playerVars:{autoplay:o.autoplay===false?0:1,controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
+    playerVars:{autoplay:o.autoplay===false?0:1,start:Math.floor(o.start||0),controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
     events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video: "+title; f.setAttribute("tabindex","-1"); f.setAttribute("aria-hidden","true"); h.ready=true; if(o.autoplay!==false||h.wanted) play(); paint(); if(o.focus) playB.focus(); },
             onStateChange:e=>{ if(e.data===1){ clearTimeout(startCheck); box.classList.remove("letthrough"); hint.hidden=true; setPlaying(true); dock.followVideo(h, title, o.release||null); }
               else { setPlaying(false); if(e.data===0){ seek.value=1000; o.onEnd&&o.onEnd(); } } },
             onError:()=>{ setPlaying(false); o.onError&&o.onError(); }}});
   h.play=play; h.prev=o.prev||null; h.next=o.next||null;
-  h.load=(id,t,rel)=>{ title=t; if(rel) o.release=rel; poster.src=`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`; bar.setAttribute("aria-label","Video controls: "+t);
-    const f=h.iframe(); if(f) f.title="Video: "+t; h.player.loadVideoById(id); play(); };
+  h.load=(id,t,rel,at)=>{ title=t; h.vid=id; if(rel) o.release=rel; poster.src=`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`; bar.setAttribute("aria-label","Video controls: "+t);
+    const f=h.iframe(); if(f) f.title="Video: "+t; h.player.loadVideoById({videoId:id,startSeconds:Math.floor(at||0)}); play(); };
   box._clean=h; cleanPlayers.add(h);
   return h;
 }
@@ -781,7 +893,17 @@ async function prepVideos(){
 }
 
 // ---------- Videos: "Loop TV". A player with the sleeve beside it, and every video below. ----------
-const VIDS = (()=>{ const seen=new Set(), out=[]; R.forEach(r=>(r.videos||[]).forEach(v=>{ if(v.id && !seen.has(v.id)){ seen.add(v.id); out.push({id:v.id, title:v.title||"Untitled video", r}); } })); return out; })();
+// Each video is linked to the track it holds when the track's title appears in the video's title
+// (the longest match wins), so the player can name the track and show its release sleeve.
+function trackForVideo(r, title){
+  const vt=" "+norm(title).replace(/[^a-z0-9]+/g," ")+" "; let best=null, bl=0;
+  for(const t of r.tracks||[]){ const tt=norm(t.title).replace(/\(.*?\)|\[.*?\]/g," ").replace(/[^a-z0-9]+/g," ").trim();
+    if(tt.length>=3 && vt.includes(" "+tt+" ") && tt.length>bl){ best=t; bl=tt.length; } }
+  return best;
+}
+const VIDS = (()=>{ const seen=new Set(), out=[]; R.forEach(r=>(r.videos||[]).forEach(v=>{ if(v.id && !seen.has(v.id)){ seen.add(v.id); out.push({id:v.id, title:v.title||"Untitled video", r, track:trackForVideo(r, v.title||"")}); } })); return out; })();
+const vidName = v => v.track ? v.track.title : v.title;
+const vidPos = v => v.track ? v.track.pos+" " : "";
 let vList=[], vNow=-1, vTV=false, ytPlayer=null, ytReady=null;
 function loadYT(){
   if(window.YT && YT.Player) return Promise.resolve(true);
@@ -1475,6 +1597,7 @@ applyTheme(savedTheme);
 themeBtn.onclick=()=>{ savedTheme=THEME_NEXT[savedTheme]; applyTheme(savedTheme); try{ localStorage.setItem("loop-theme",savedTheme); }catch(e){} announce("Theme: "+THEMES[savedTheme][0]); };
 document.getElementById("peopleList").innerHTML=P.map(p=>`<option value="${esc(p.name)}">`).join("");
 quiet=true; route(); quiet=false; applyLook();
+if(STANDALONE){ const ready=VIDS.filter(v=>v.track); const pick=ready[Math.floor(Math.random()*ready.length)]||VIDS[0]; if(pick) dock.idle(pick); }
 
 // runtime: shared artwork overrides
 (async()=>{
