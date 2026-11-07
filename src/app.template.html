@@ -105,7 +105,10 @@ a.card:hover .sleeve:not(.multi){transform:translateY(-3px) rotate(-.6deg)}
 .people li{break-inside:avoid;padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
 .people .meta{font:12px var(--mono);color:var(--muted);white-space:nowrap}
 
-.detail{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:32px;align-items:start}
+/* Release page: from tablet width the artwork column (with All releases) stays in place while the
+   tracklist, credits and videos scroll beside it. */
+.detail{display:grid;grid-template-columns:minmax(0,clamp(340px,38vw,560px)) minmax(0,1fr);gap:32px;align-items:start}
+@media (min-width:761px){.detail .relside{position:sticky;top:calc(var(--hdrh,80px) + 12px);max-height:calc(100vh - var(--hdrh,80px) - var(--dockh,0px) - 24px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px}}
 @media (max-width:760px){.detail{grid-template-columns:minmax(0,1fr)}}
 .detail .sleeve{box-shadow:0 1px 0 var(--line),0 24px 40px -24px rgba(0,0,0,.6)}
 .facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:16px 0 0}
@@ -1004,9 +1007,8 @@ function viewRelease(r){
   r.credits.forEach(c=>{ (grouped[c.role]=grouped[c.role]||[]).push(c); });
   const variants = r.variants.length?`<dt>Variants</dt><dd>${r.variants.map(v=>`<a href="https://www.discogs.com/release/${v}" target="_blank" rel="noopener">${v}</a>`).join(", ")} (white label, promo or test pressing)</dd>`:"";
   main.innerHTML = `
-    <a class="back" href="#">All releases</a>
     <div class="detail">
-      <div><div id="slides">${sleeve(r)}</div>
+      <div class="relside"><a class="back" href="#">All releases</a><div id="slides">${sleeve(r)}</div>
         <div class="btnrow">
           <span class="staffonly" hidden>${r.discogsImage?`<a class="btn" href="${esc(r.discogsImage)}" target="_blank" rel="noopener">Cover on Discogs</a>`:""}
           <a class="btn" href="${r.discogs}" target="_blank" rel="noopener">Discogs page</a></span>
@@ -1582,6 +1584,7 @@ document.addEventListener("click", async e=>{ const b=e.target.closest(".ytplay"
 // On phones the header stays at the top: it slides up while you scroll down and comes back
 // as soon as you scroll up, reach the top, or focus anything in it (keyboard, screen reader).
 (function(){ const hd=document.querySelector("header.top"); let lastY=scrollY;
+  new ResizeObserver(()=>document.documentElement.style.setProperty("--hdrh", hd.offsetHeight+"px")).observe(hd);
   addEventListener("scroll",()=>{ const y=scrollY, d=y-lastY;
     if(y<80 || d<-6) hd.classList.remove("away"); else if(d>6 && innerWidth<=640 && !hd.contains(document.activeElement)) hd.classList.add("away");
     lastY=y; },{passive:true});
