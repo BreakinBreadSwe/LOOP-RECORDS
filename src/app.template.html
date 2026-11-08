@@ -183,7 +183,7 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
   display:grid;grid-template-columns:auto minmax(0,1.1fr) auto minmax(0,3fr) auto auto;grid-template-areas:"art meta ctl wave time vol";gap:6px 12px;align-items:center}
 #dock[hidden]{display:none}
 #dock .dmeta,#dock .dart{cursor:pointer}
-#pwin{position:fixed;left:0;right:0;top:0;bottom:var(--dockh,72px);z-index:7;background:var(--bg);overflow:auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 24px;transform:translateY(100%);transition:transform .32s cubic-bezier(.65,0,.35,1)}
+#pwin{position:fixed;left:0;right:0;top:var(--hdrh,0px);bottom:var(--dockh,72px);z-index:7;background:var(--bg);overflow:auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 24px;transform:translateY(100%);transition:transform .32s cubic-bezier(.65,0,.35,1)}
 @media (prefers-reduced-motion:reduce){#pwin{transition:none}}
 #pwin .pwmini-open,#pwin .pwmini-stop{display:none}
 #pwin.mini{top:auto;left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(var(--dockh,72px) + 8px);width:min(372px,calc(100vw - 16px));padding:6px 8px 8px;overflow:hidden;border-radius:12px;background:var(--surface);box-shadow:0 12px 40px -8px rgba(0,0,0,.6);border:1px solid var(--line)}
@@ -235,6 +235,8 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 .linklike{font:inherit;background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;cursor:pointer;text-align:left}
 .nowtag2{font:600 11px var(--mono);background:var(--loop);color:#000;padding:2px 6px;border-radius:4px;text-transform:uppercase}
 body.pwopen{overflow:hidden}
+/* The header with the menu stays on screen above the player window. */
+body.pwopen header.top{transform:none!important;position:fixed;left:0;right:0;top:0;padding-inline:max(16px,env(safe-area-inset-left,0px))}
 #vu{position:fixed;right:max(4px,env(safe-area-inset-right,0px));top:96px;bottom:calc(var(--dockh,72px) + 12px);z-index:6;display:flex;gap:3px;pointer-events:none}
 #vu[hidden]{display:none}
 #vu span{width:7px;display:flex;flex-direction:column-reverse;gap:2px}
