@@ -196,7 +196,9 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 @media (prefers-reduced-motion:reduce){#pwin{transition:none}}
 #pwin .pwmini-open,#pwin .pwmini-stop{display:none}
 #pwin.mini{top:auto;left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(var(--dockh,72px) + 8px);width:min(372px,calc(100vw - 16px));padding:6px 8px 8px;overflow:hidden;border-radius:12px;background:var(--surface);box-shadow:0 12px 40px -8px rgba(0,0,0,.6);border:1px solid var(--line)}
-#pwin.mini .pwhead{margin:0 0 4px}
+#pwin.mini .pwhead{margin:0 0 4px;cursor:grab}
+#pwin.mini{touch-action:none;cursor:grab}
+#pwin.mini.dragging{cursor:grabbing;transition:none;box-shadow:0 18px 50px -8px rgba(0,0,0,.7)}
 #pwin.mini #pwClose{display:none}
 #pwin.mini .pwmini-open{display:grid;margin-left:auto}#pwin.mini .pwmini-stop{display:grid}
 #pwin.mini .pwbody{display:block}
@@ -931,14 +933,33 @@ const pwin = (()=>{
   let h=null, cur=null, opener=null;
   function mark(open){}
   let closing=null;
-  function show(){ if(el.classList.contains("mini")){ el.classList.remove("mini","on"); document.body.classList.add("pwopen"); mark(true); requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); return; }
+  function show(){ if(el.classList.contains("mini")){ el.classList.remove("mini","on"); placeMini(); document.body.classList.add("pwopen"); mark(true); requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); return; }
     if(!el.hidden && !closing) return; clearTimeout(closing); closing=null;
     if(el.hidden) opener=document.activeElement; el.hidden=false; document.body.classList.add("pwopen"); mark(true);
     requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); }
   // Closing while a video plays makes the window small instead: a mini player above the footer that keeps
   // playing while you browse (YouTube must stay visible while it plays). Closing when nothing plays hides it.
   const playingNow=()=>{ try{ const st=h&&h.player&&h.player.getPlayerState(); return st===1||st===3; }catch(e){ return false; } };
-  function toMini(){ el.classList.add("mini"); el.classList.remove("on"); document.body.classList.remove("pwopen"); mark(false);
+  // The small player can be dragged anywhere on the screen; its place is remembered on the device.
+  let miniPos=null; try{ miniPos=JSON.parse(localStorage.getItem("loop-mini")||"null"); }catch(e){}
+  function clampMini(){ if(!miniPos) return; const w=el.offsetWidth||372, hgt=el.offsetHeight||240, top=document.querySelector("header.top").offsetHeight||0,
+      bot=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dockh"))||0;
+    miniPos.x=Math.max(4,Math.min(innerWidth-w-4,miniPos.x)); miniPos.y=Math.max(top+4,Math.min(innerHeight-bot-hgt-4,miniPos.y)); }
+  function placeMini(){ if(!el.classList.contains("mini")||!miniPos){ el.style.left=el.style.top=el.style.right=el.style.bottom=""; return; }
+    clampMini(); Object.assign(el.style,{left:miniPos.x+"px",top:miniPos.y+"px",right:"auto",bottom:"auto"}); }
+  addEventListener("resize",placeMini);
+  let drag=null, dragged=false;
+  el.addEventListener("pointerdown",e=>{ if(!el.classList.contains("mini")||e.button>0||e.target.closest("button,input,a")) return;
+    const r=el.getBoundingClientRect(); drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,x:r.left,y:r.top}; dragged=false; });
+  el.addEventListener("pointermove",e=>{ if(!drag||e.pointerId!==drag.id) return; const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+    if(!dragged && Math.hypot(dx,dy)<8) return;
+    if(!dragged){ dragged=true; try{ el.setPointerCapture(e.pointerId); }catch(_){} el.classList.add("dragging"); }
+    miniPos={x:drag.x+dx,y:drag.y+dy}; placeMini(); e.preventDefault(); });
+  const endDrag=e=>{ if(!drag||e.pointerId!==drag.id) return; drag=null; el.classList.remove("dragging");
+    if(dragged){ try{ localStorage.setItem("loop-mini",JSON.stringify(miniPos)); }catch(_){} } };
+  el.addEventListener("pointerup",endDrag); el.addEventListener("pointercancel",endDrag);
+  el.addEventListener("click",e=>{ if(dragged){ dragged=false; e.preventDefault(); e.stopPropagation(); } },true); // a drag is not a tap on the video
+  function toMini(){ el.classList.add("mini"); requestAnimationFrame(placeMini); el.classList.remove("on"); document.body.classList.remove("pwopen"); mark(false);
     requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); announce("Player made small. It keeps playing."); }
   function close(force){ if(el.hidden || closing) return;
     if(!force && playingNow()){ if(!el.classList.contains("mini")){ toMini(); if(opener&&document.contains(opener)) opener.focus(); else $("dPlay").focus(); } return; }
