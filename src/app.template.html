@@ -214,6 +214,22 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
   #pwin:not(.mini) .pwmain,#pwin:not(.mini) .upnext{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:20px}
   #pwin:not(.mini) .pwbody{column-gap:32px}}
 .pwth{margin:22px 0 8px;font-size:18px}
+.trackpage{display:grid;grid-template-columns:minmax(0,clamp(160px,34vw,420px)) minmax(0,1fr);gap:20px 28px;align-items:end;margin-top:6px}
+.tpart{aspect-ratio:1;background:var(--surface);border-radius:6px;overflow:hidden;box-shadow:0 24px 40px -24px rgba(0,0,0,.6)}
+.tpart img,.tpart svg{width:100%;height:100%;object-fit:contain;display:block}
+.tpinfo .pagetitle{margin:4px 0 6px;text-transform:none}
+.tpfrom{color:var(--muted);margin:6px 0 14px}
+@media (max-width:560px){.trackpage{grid-template-columns:minmax(0,1fr)}.tpart{max-width:320px}}
+.tpwave{position:relative;height:96px;border-radius:8px;background:var(--surface);overflow:hidden}
+.tpwave canvas{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
+.tpwave input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
+.tpwave:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.tpmeters{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:12px}
+.tpled{display:flex;align-items:center;gap:10px;font:600 12px var(--mono);color:var(--muted)}
+.tpled i{flex:1;height:12px;border-radius:2px;background:repeating-linear-gradient(to right,color-mix(in srgb,var(--muted) 22%,transparent) 0 calc(100%/40 - 2px),transparent calc(100%/40 - 2px) calc(100%/40));position:relative;overflow:hidden}
+.tpled i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to right,var(--loop) 0 calc(100%/40 - 2px),transparent calc(100%/40 - 2px) calc(100%/40));clip-path:inset(0 calc((1 - var(--v,0)) * 100%) 0 0)}
+.tpmeters canvas{width:100%;height:90px;border-radius:8px;background:var(--surface)}
+.tlink{color:inherit;text-decoration:none}.tlink:hover{text-decoration:underline}
 #partyDlg{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:20px;max-width:min(440px,calc(100vw - 32px))}
 #partyDlg::backdrop{background:var(--scrim)}
 #partyDlg h2{font-size:24px;margin:0 0 10px;text-transform:none}
@@ -827,7 +843,7 @@ const dock = (()=>{
     src=s; peaks=null; show();
     $("dTitle").textContent=s.title; $("dSub").textContent=s.sub||""; $("dMeta").href=s.href||"#"; $("dArt").href=s.href||"#";
     $("dArt").innerHTML=s.art||""; $("dPrev").hidden=!s.prev; $("dNext").hidden=!s.next;
-    $("dMeta").setAttribute("aria-label", s.open ? `${s.title}, ${s.sub||""}. Player window` : `${s.title}, ${s.sub||""}. Open the release`);
+    $("dMeta").setAttribute("aria-label", `${s.title}, ${s.sub||""}. ${s.kind==="audio"?"Track page":"Video page"}`);
     $("dSeek").setAttribute("aria-label", s.kind==="audio"?"Position in the track":"Position in the video");
     if(s.wave) loadPeaks(s.wave).then(p=>{ if(src===s){ peaks=p; draw(); } });
     clearInterval(timer); timer=setInterval(paint,200); if(s.setVol) s.setVol(loopMuted?0:loopVol); paint();
@@ -840,7 +856,14 @@ const dock = (()=>{
       play:()=>pwin.open(v,true), pause:()=>{}, isPlaying:()=>false, cur:()=>0, dur:()=>0, seek:()=>{}, isMuted:()=>false, toggleMute:()=>{},
       prev:null, next:null}); }
   // The sleeve and the title toggle the player window: open it, or close it again.
-  const openWin=e=>{ if(window.pwin && pwin.isOpen()){ e.preventDefault(); pwin.close(); return; } if(src&&src.open){ e.preventDefault(); src.open(); } };
+  // The sleeve and the title open the page of what plays (the video page, or the track page for a sound
+  // file) and, tapped again on that page, go back to where you were.
+  function pageOf(s){ const r=s&&s.ref; if(!r) return null; return r.kind==="audio" ? `#track-${r.rid}-${encodeURIComponent(r.pos)}` : `#video-${r.vid}`; }
+  const openWin=e=>{ e.preventDefault(); if(window.pwin && pwin.isOpen()) pwin.close();
+    const to=pageOf(src); if(!to) return;
+    if(location.hash===to){ if(cameFrom && cameFrom!==to) location.hash=cameFrom; else location.hash="#"; }
+    else { cameFrom=location.hash||"#"; location.hash=to; } };
+  let cameFrom=null;
   $("dArt").onclick=openWin; $("dMeta").onclick=openWin;
   $("dPlay").onclick=()=>{ if(!src) return; src.isPlaying()?src.pause():src.play(); setTimeout(paint,60); };
   $("dPrev").onclick=()=>src&&src.prev&&src.prev(); $("dNext").onclick=()=>src&&src.next&&src.next();
@@ -898,7 +921,7 @@ const dock = (()=>{
       setVol:v=>{ try{ h.player.setVolume(v||0); v?h.player.unMute():h.player.mute(); }catch(e){} },
       prev: h.prev||null, next: h.next||null});
   }
-  return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop, idle, audio, current:()=>src, playTrack };
+  return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop, idle, audio, current:()=>src, playTrack, peaks:loadPeaks };
 })();
 
 // ---------- Player window: slides up over the page from the footer, video plus everything about the track ----------
@@ -906,7 +929,7 @@ const PLAY_ICON='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><
 const pwin = (()=>{
   const el=document.getElementById("pwin"), $=id=>document.getElementById(id);
   let h=null, cur=null, opener=null;
-  function mark(open){ const m=$("dMeta"); m.setAttribute("aria-expanded",open?"true":"false"); m.setAttribute("aria-controls","pwin"); }
+  function mark(open){}
   let closing=null;
   function show(){ if(el.classList.contains("mini")){ el.classList.remove("mini","on"); document.body.classList.add("pwopen"); mark(true); requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("on"))); return; }
     if(!el.hidden && !closing) return; clearTimeout(closing); closing=null;
@@ -978,8 +1001,11 @@ const pwin = (()=>{
   el.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); close(); } });
   addEventListener("hashchange",()=>close()); // browsing on: a playing video goes small and carries on
   // Carry a page video on in the small player from the same moment.
+  // The watch page takes over a video playing here, from the same moment.
+  function take(vid){ if(!h||h.vid!==vid||el.hidden) return null; let at=0, on=false; try{ at=h.player.getCurrentTime()||0; const st=h.player.getPlayerState(); on=st===1||st===3; h.player.pauseVideo(); }catch(e){}
+    el.classList.remove("on","mini"); document.body.classList.remove("pwopen"); el.hidden=true; return {at,on}; }
   async function carry(v, at){ await open(v, true); try{ if(at>1) h.player.seekTo(at,true); }catch(e){} setTimeout(()=>{ if(!el.hidden) toMini(); },60); }
-  return { open, close, show, carry, isOpen:()=>!el.hidden && !closing && !el.classList.contains("mini") };
+  return { open, close, show, carry, take, isOpen:()=>!el.hidden && !closing && !el.classList.contains("mini") };
 })();
 window.pwin = pwin;
 
@@ -1023,7 +1049,7 @@ const vu = (()=>{
   const showWithDock=()=>{ el.hidden=document.getElementById("dock").hidden; };
   new MutationObserver(showWithDock).observe(document.getElementById("dock"),{attributes:true,attributeFilter:["hidden"]}); showWithDock();
   dock.audio.addEventListener("play",start); dock.audio.addEventListener("pause",()=>{ if(!raf) raf=requestAnimationFrame(tick); });
-  return {start};
+  return {start, levels:()=>lvl.slice(), analyser:()=>(ctx && !dock.audio.paused) ? an[0] : null};
 })();
 
 // ---------- Listening party: several phones play the same track in step ----------
@@ -1269,11 +1295,62 @@ function watchVideo(id){
   loadYT().then(ok=>{
     if(!document.contains(box)) return;
     if(!ok){ box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?rel=0&playsinline=1" title="Video player: ${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; return; }
-    ytPlayer=cleanPlayer(box,{id:v.id,title:v.title,release:v.r,
+    const handed=pwin.take(v.id);
+    ytPlayer=cleanPlayer(box,{id:v.id,title:v.title,release:v.r, autoplay: handed?handed.on:true, start: handed?handed.at:0,
       prev:()=>go(prevId()), next:()=>go(nextId()),
       onEnd:()=>{ if(autoNext) go(nextId()); }, onError:()=>{ if(autoNext) setTimeout(()=>go(nextId()),800); }});
   });
   focusMain();
+}
+
+// ---------- Track page, after the Breakin Bread track page: artwork, title, play, a big waveform,
+// level meters and a spectrum, credits and the rest of the release. Meters and waveform use the real
+// sound file; for a track that only has a video they wait for the file.
+let tpRaf=0;
+function viewTrack(r, t){
+  setNav("releases"); cancelAnimationFrame(tpRaf);
+  const snd=SOUND[soundKey(r,t.pos)], tv=VIDS.find(x=>x.r===r&&x.track===t), u=imgUrls(r)[0];
+  const others=r.tracks.filter(x=>x!==t);
+  main.innerHTML=`<a class="back" href="#release-${r.id}">${esc(r.title)}</a>
+    <div class="trackpage">
+      <div class="tpart">${u?`<img src="${esc(u)}" alt="Cover of ${esc(r.title)}">`:placeholder(r,true)}</div>
+      <div class="tpinfo">
+        <p class="eyebrow">${esc(LABELNAME[r.group]||"")} · ${esc(r.catno)} · track ${esc(t.pos)}</p>
+        <h1 class="pagetitle">${esc(t.title)}</h1>
+        <p class="artline">${(t.artists.length?t.artists:r.artists).map(plink).join(" &amp; ")||"Various artists"}</p>
+        <p class="tpfrom">From <a href="#release-${r.id}">${esc(r.title)}</a>${r.year?`, ${r.year}`:""}${t.dur?` · ${esc(t.dur)}`:""}</p>
+        <div class="btnrow">${snd?`<button type="button" class="btn primary" id="tpPlay">Play</button>`:tv?`<a class="btn primary" href="#video-${esc(tv.id)}">Play video</a>`:`<span class="nosound">No sound yet</span>`}</div>
+      </div>
+    </div>
+    <section class="tpsound" aria-labelledby="tpSoundH"><h2 class="sect" id="tpSoundH">Sound</h2>
+      <div class="tpwave"><canvas id="tpWave" aria-hidden="true"></canvas>${snd?`<input type="range" id="tpSeek" min="0" max="1000" value="0" aria-label="Position in ${esc(t.title)}">`:""}</div>
+      <div class="tpmeters" aria-hidden="true"><div class="tpled"><span>L</span><i id="tpL"></i></div><div class="tpled"><span>R</span><i id="tpR"></i></div><canvas id="tpSpec"></canvas></div>
+      <p class="note" id="tpNote">${snd?"The waveform, the level meters and the spectrum follow the sound while it plays.":"The waveform and the meters come alive when the sound file for this track is uploaded."}</p>
+    </section>
+    ${t.credits.length?`<h2 class="sect">Credits</h2><div class="credits">${t.credits.map(c=>`<div><span class="role">${esc(c.role)}</span><span>${plink(c)}</span></div>`).join("")}</div>`:""}
+    ${others.length?`<h2 class="sect">More from ${esc(r.title)}</h2><ol class="tracks">${others.map(x=>`<li><span class="pos">${esc(x.pos)}</span><span><a class="tlink" href="#track-${r.id}-${encodeURIComponent(x.pos)}">${esc(x.title)}</a></span><span class="dur">${esc(x.dur||"")}</span></li>`).join("")}</ol>`:""}`;
+  const pb=document.getElementById("tpPlay"); if(pb) pb.onclick=()=>dock.playTrack(r,t.pos);
+  const seek=document.getElementById("tpSeek");
+  const mine=()=>{ const s=dock.current(); return s&&s.ref&&s.ref.kind==="audio"&&s.ref.rid===r.id&&s.ref.pos===t.pos ? s : null; };
+  if(seek) seek.addEventListener("change",()=>{ const s=mine(); if(s){ const d=s.dur(); if(d) s.seek(seek.value/1000*d); } else dock.playTrack(r,t.pos); });
+  let peaks=null; if(snd) dock.peaks(snd.url).then(p=>{ peaks=p; });
+  const wave=document.getElementById("tpWave"), spec=document.getElementById("tpSpec"), L=document.getElementById("tpL"), R=document.getElementById("tpR");
+  const css=getComputedStyle(document.documentElement), loop=css.getPropertyValue("--loop").trim()||"#FF4400", mut=css.getPropertyValue("--muted").trim()||"#888";
+  const fit=c=>{ const d=devicePixelRatio||1, w=c.clientWidth, h=c.clientHeight; if(c.width!==Math.round(w*d)){ c.width=Math.round(w*d); c.height=Math.round(h*d); } const x=c.getContext("2d"); x.setTransform(d,0,0,d,0,0); x.clearRect(0,0,w,h); return [x,w,h]; };
+  function frame(){
+    if(!document.contains(wave)) return;
+    const s=mine(), d=s?s.dur():0, p=d?s.cur()/d:0;
+    if(seek && s && document.activeElement!==seek) seek.value=Math.round(p*1000);
+    let [x,w,h]=fit(wave); const n=Math.floor(w/4);
+    for(let i=0;i<n;i++){ const v=peaks?peaks[Math.floor(i/n*peaks.length)]||0:0.06; const bh=Math.max(2,v*(h-6)); x.fillStyle=(i/n)<p?loop:mut; x.globalAlpha=(i/n)<p?1:.4; x.fillRect(i*4,(h-bh)/2,2.5,bh); } x.globalAlpha=1;
+    const lv=s?vu.levels():[0,0]; L.style.setProperty("--v",lv[0]); R.style.setProperty("--v",lv[1]);
+    [x,w,h]=fit(spec); const a=s&&vu.analyser();
+    if(a){ const b=new Uint8Array(a.frequencyBinCount); a.getByteFrequencyData(b); const bars=48; for(let i=0;i<bars;i++){ const k=Math.floor(Math.pow(i/bars,2)*b.length*0.7), v=b[k]/255, bw=w/bars; x.fillStyle=loop; x.globalAlpha=.35+.65*v; x.fillRect(i*bw+1,h-v*h,bw-2,v*h); } x.globalAlpha=1; }
+    else { x.fillStyle=mut; x.globalAlpha=.3; x.fillRect(0,h-2,w,2); x.globalAlpha=1; }
+    tpRaf=requestAnimationFrame(frame);
+  }
+  tpRaf=requestAnimationFrame(frame);
+  brandFor(r); focusMain();
 }
 
 function viewRelease(r){
@@ -1313,7 +1390,7 @@ function viewRelease(r){
         </dl>
         ${r.styles.length?`<ul class="tags" aria-label="Styles">${[...r.genres,...r.styles].map(s=>`<li>${esc(s)}</li>`).join("")}</ul>`:""}
         <h2>Tracklist</h2>
-        <ol class="tracks">${r.tracks.map(t=>`<li><span class="pos">${esc(t.pos)}</span><span>${t.artists.length?t.artists.map(plink).join(", ")+" – ":""}${esc(t.title)}</span><span class="dur">${esc(t.dur)}</span>
+        <ol class="tracks">${r.tracks.map(t=>`<li><span class="pos">${esc(t.pos)}</span><span>${t.artists.length?t.artists.map(plink).join(", ")+" – ":""}<a class="tlink" href="#track-${r.id}-${encodeURIComponent(t.pos)}">${esc(t.title)}</a></span><span class="dur">${esc(t.dur)}</span>
           ${t.credits.length?`<span class="tc">${t.credits.map(c=>esc(c.role)+": "+plink(c)).join(" · ")}</span>`:""}<span class="ta" data-track="${esc(t.pos)}"></span></li>`).join("")}</ol>
         <h2>Credits</h2>
         ${Object.keys(grouped).length?`<div class="credits">${Object.entries(grouped).map(([role,cs])=>`<div><span class="role">${esc(role)}</span><span>${cs.map(plink).join(", ")}</span></div>`).join("")}</div>`:`<p class="note">Discogs lists no release-level credits for this one. Track credits, if any, are in the tracklist above.</p>`}
@@ -1840,6 +1917,7 @@ function route(){
   else if(h.startsWith("artist-") && byKey.has(h.slice(7))) viewPerson(byKey.get(h.slice(7)));
   else if(h==="admin"||h.startsWith("admin-")) viewAdmin(h);
   else if(h==="people") viewPeople();
+  else if(h.startsWith("track-")){ const m=h.match(/^track-(\d+)-(.+)$/), r=m&&byId.get(m[1]), t=r&&r.tracks.find(x=>x.pos===decodeURIComponent(m[2])); if(t) viewTrack(r,t); else viewReleases(false); }
   else if(h.startsWith("party-")){ viewReleases(false); setTimeout(()=>party.prompt(h.slice(6).toUpperCase()),50); }
   else if(h==="videos"||h.startsWith("video-")) viewVideos(h.startsWith("video-")?h.slice(6):null);
   else if(h==="about") viewAbout();
