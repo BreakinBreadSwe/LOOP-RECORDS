@@ -270,6 +270,11 @@ body.docked{padding-bottom:calc(var(--dockh,84px) + 12px)}
 #dock .dwave:focus-within{outline:3px solid var(--focus);outline-offset:2px}
 #dock .dtime{grid-area:time;font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
 #dock .dvol{grid-area:vol}
+#dock .dvolwrap{grid-area:vol;position:relative;display:inline-grid}
+#dock .dvolpop{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 30px -8px rgba(0,0,0,.5);z-index:3}
+#dock .dvolpop[hidden]{display:none}
+@media (max-width:700px){#dock .dvolpop{left:auto;right:-4px;transform:none}}
+#dock .dvolpop input{writing-mode:vertical-lr;direction:rtl;width:32px;height:140px;margin:0;accent-color:var(--loop);cursor:pointer}
 /* Phones: two rows. Sleeve, title and buttons on top; time, waveform and sound underneath. */
 @media (max-width:700px){#dock{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"art meta ctl" "line line line";gap:2px 10px;padding-top:6px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
   #dock .dline{grid-area:line;display:flex;align-items:center;gap:10px;min-width:0}
@@ -538,7 +543,9 @@ a.vthumb{text-decoration:none}
     <button type="button" class="ico" id="dNext" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 5v14"/><path d="M5 5.5v13L15 12z" fill="currentColor" stroke="none"/></svg></button></div>
   <div class="dline"><span class="dtime" id="dTime" aria-hidden="true">0:00 / 0:00</span>
   <div class="dwave"><canvas id="dWave" aria-hidden="true"></canvas><input type="range" id="dSeek" min="0" max="1000" value="0" aria-label="Position in the track" aria-valuetext="0 seconds"></div>
-  <button type="button" class="ico dvol" id="dMute" aria-label="Mute"></button></div>
+  <span class="dvolwrap"><button type="button" class="ico dvol" id="dMute" aria-label="Volume" aria-expanded="false" aria-controls="dVolPop"></button>
+    <span class="dvolpop" id="dVolPop" hidden><input type="range" id="dVol" min="0" max="100" step="1" value="80" aria-label="Volume" aria-valuetext="80 percent">
+      <button type="button" class="ico" id="dVolMute" aria-label="Mute"></button></span></span></div>
 </section>
 <section id="pwin" aria-labelledby="pwTitle" hidden>
   <div class="pwhead"><button type="button" class="ico" id="pwClose" aria-label="Make the player small"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9l7 7 7-7"/></svg></button><span class="eyebrow">Now playing</span>
@@ -762,6 +769,9 @@ function videoList(vs){
     return `<li><a href="${yt(v.id)}" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span>${esc(v.title||"Untitled video")}<small>${rel?esc(rel.catno)+" · ":""}${esc(v.source)} · opens YouTube</small></span></a></li>`;}).join("")}</ul>`;
 }
 
+// Volume shared by the footer and every video player, remembered on the device.
+let loopVol=80, loopMuted=false; try{ const v=JSON.parse(localStorage.getItem("loop-vol")||"null"); if(v){ loopVol=Math.max(0,Math.min(100,+v.v||0)); loopMuted=!!v.m; } }catch(e){}
+function saveVol(){ try{ localStorage.setItem("loop-vol",JSON.stringify({v:loopVol,m:loopMuted})); }catch(e){} }
 // ---------- Footer player ----------
 // One bar at the bottom. Sources: a track's sound file (own audio element, waveform drawn from the file)
 // or the video playing on the page (it then works as a remote for that video). Never both at once.
@@ -796,7 +806,8 @@ const dock = (()=>{
     if(!dragging) seek.value=d?Math.round(t/d*1000):0;
     $("dTime").textContent=`${ytClock(t)} / ${ytClock(d)}`; seek.setAttribute("aria-valuetext",`${ytSpoken(t)} of ${ytSpoken(d)}`);
     $("dPlay").innerHTML=on?ICON.pause:ICON.play; $("dPlay").setAttribute("aria-label",on?"Pause":"Play");
-    const m=src.isMuted(); $("dMute").innerHTML=m?ICON.muted:ICON.sound; $("dMute").setAttribute("aria-label",m?"Turn sound on":"Mute");
+    const m=loopMuted||loopVol===0; $("dMute").innerHTML=m?ICON.muted:ICON.sound; $("dMute").setAttribute("aria-label",`Volume, ${m?"muted":loopVol+" percent"}`);
+    $("dVolMute").innerHTML=m?ICON.muted:ICON.sound; $("dVolMute").setAttribute("aria-label",m?"Turn sound on":"Mute");
     draw();
   }
   async function loadPeaks(url){
@@ -819,7 +830,7 @@ const dock = (()=>{
     $("dMeta").setAttribute("aria-label", s.open ? `${s.title}, ${s.sub||""}. Player window` : `${s.title}, ${s.sub||""}. Open the release`);
     $("dSeek").setAttribute("aria-label", s.kind==="audio"?"Position in the track":"Position in the video");
     if(s.wave) loadPeaks(s.wave).then(p=>{ if(src===s){ peaks=p; draw(); } });
-    clearInterval(timer); timer=setInterval(paint,200); paint();
+    clearInterval(timer); timer=setInterval(paint,200); if(s.setVol) s.setVol(loopMuted?0:loopVol); paint();
   }
   function stop(){ src=null; peaks=null; if(idleV) idle(idleV); else hide(); }
   // Ready to play: the footer shows a track from the videos; Play opens the player window and starts it.
@@ -833,7 +844,14 @@ const dock = (()=>{
   $("dArt").onclick=openWin; $("dMeta").onclick=openWin;
   $("dPlay").onclick=()=>{ if(!src) return; src.isPlaying()?src.pause():src.play(); setTimeout(paint,60); };
   $("dPrev").onclick=()=>src&&src.prev&&src.prev(); $("dNext").onclick=()=>src&&src.next&&src.next();
-  $("dMute").onclick=()=>{ if(!src) return; src.toggleMute(); paint(); announce(src.isMuted()?"Muted":"Sound on"); };
+  const pop=$("dVolPop"), vs=$("dVol");
+  function applyVol(){ if(src&&src.setVol) src.setVol(loopMuted?0:loopVol); cleanPlayers.forEach(x=>{ try{ x.player.setVolume(loopVol); loopMuted?x.player.mute():x.player.unMute(); }catch(e){} }); saveVol(); paint(); }
+  function volOpen(open){ pop.hidden=!open; $("dMute").setAttribute("aria-expanded",open?"true":"false"); if(open){ vs.value=loopVol; vs.setAttribute("aria-valuetext",loopVol+" percent"); vs.focus(); } }
+  $("dMute").onclick=e=>{ e.stopPropagation(); volOpen(pop.hidden); };
+  vs.addEventListener("input",()=>{ loopVol=+vs.value; loopMuted=loopVol===0; vs.setAttribute("aria-valuetext",loopVol+" percent"); applyVol(); });
+  $("dVolMute").onclick=()=>{ loopMuted=!loopMuted; if(!loopMuted && loopVol===0){ loopVol=60; vs.value=60; } applyVol(); announce(loopMuted?"Muted":"Sound on, "+loopVol+" percent"); };
+  pop.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.stopPropagation(); volOpen(false); $("dMute").focus(); } });
+  document.addEventListener("pointerdown",e=>{ if(!pop.hidden && !e.target.closest(".dvolwrap")) volOpen(false); });
   seek.addEventListener("input",()=>{ dragging=true; draw(); });
   seek.addEventListener("change",()=>{ if(src){ const d=src.dur(); if(d) src.seek(seek.value/1000*d); } dragging=false; paint(); });
   addEventListener("resize",()=>draw());
@@ -852,7 +870,7 @@ const dock = (()=>{
       art:u?`<img src="${esc(u)}" alt="">`:placeholder(q.r,true), wave:q.snd.url,
       play:()=>audio.play().catch(()=>{}), pause:()=>audio.pause(), isPlaying:()=>!audio.paused&&!audio.ended,
       cur:()=>audio.currentTime||0, dur:()=>isFinite(audio.duration)?audio.duration:0, seek:t=>{ audio.currentTime=t; },
-      isMuted:()=>audio.muted, toggleMute:()=>{ audio.muted=!audio.muted; },
+      isMuted:()=>audio.muted, toggleMute:()=>{ audio.muted=!audio.muted; }, setVol:v=>{ audio.volume=v/100; audio.muted=false; },
       prev: queue.length>1 ? ()=>{ if(audio.currentTime>3){ audio.currentTime=0; return; } qi=(qi-1+queue.length)%queue.length; startQueued(true); } : null,
       next: queue.length>1 ? ()=>{ qi=(qi+1)%queue.length; startQueued(true); } : null});
     cleanPlayers.forEach(x=>{ try{ x.player.pauseVideo(); }catch(e){} });
@@ -877,6 +895,7 @@ const dock = (()=>{
       cur:()=>{ try{ return h.player.getCurrentTime()||0; }catch(e){ return 0; } }, dur:()=>{ try{ return h.player.getDuration()||0; }catch(e){ return 0; } },
       seek:t=>{ try{ h.player.seekTo(t,true); }catch(e){} },
       isMuted:()=>{ try{ return h.player.isMuted(); }catch(e){ return false; } }, toggleMute:()=>{ try{ h.player.isMuted()?h.player.unMute():h.player.mute(); }catch(e){} },
+      setVol:v=>{ try{ h.player.setVolume(v||0); v?h.player.unMute():h.player.mute(); }catch(e){} },
       prev: h.prev||null, next: h.next||null});
   }
   return { followVideo, playing:()=>!!(src&&src.isPlaying()), stop, idle, audio, current:()=>src, playTrack };
@@ -1131,7 +1150,7 @@ function cleanPlayer(box, o){
   seek.addEventListener("change",()=>{ const d=dur(); if(d&&h.player) h.player.seekTo(seek.value/1000*d,true); dragging=false; paint(); });
   h.player=new YT.Player(box.querySelector(".ytcrop > div"),{host:"https://www.youtube-nocookie.com",videoId:o.id,
     playerVars:{autoplay:o.autoplay===false?0:1,start:Math.floor(o.start||0),controls:0,rel:0,playsinline:1,iv_load_policy:3,disablekb:1,fs:0,cc_load_policy:0,modestbranding:1},
-    events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video: "+title; f.setAttribute("tabindex","-1"); f.setAttribute("aria-hidden","true"); h.ready=true; if(o.autoplay!==false||h.wanted) play(); paint(); if(o.focus) playB.focus(); },
+    events:{onReady:e=>{ const f=e.target.getIframe(); f.title="Video: "+title; f.setAttribute("tabindex","-1"); f.setAttribute("aria-hidden","true"); h.ready=true; try{ e.target.setVolume(loopVol); if(loopMuted) e.target.mute(); }catch(_){} if(o.autoplay!==false||h.wanted) play(); paint(); if(o.focus) playB.focus(); },
             onStateChange:e=>{ if(e.data===1){ clearTimeout(startCheck); box.classList.remove("letthrough"); hint.hidden=true; setPlaying(true); dock.followVideo(h, title, o.release||null); }
               else { setPlaying(false); if(e.data===0){ seek.value=1000; o.onEnd&&o.onEnd(); } } },
             onError:()=>{ setPlaying(false); o.onError&&o.onError(); }}});
