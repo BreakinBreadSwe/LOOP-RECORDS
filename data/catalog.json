@@ -17,7 +17,7 @@
   ],
   "discogs": "https://www.discogs.com/label/179847-Loop-Records-4"
  },
- "source": "Discogs API, retrieved 2026-11-03",
+ "source": "Discogs API, retrieved 2026-11-03 (Plumphouse PLUMP 006 to 032 added 2026-11-09)",
  "releases": [
   {
    "id": 2264437,
@@ -5902,7 +5902,9 @@
     "Hard House"
    ],
    "discogsImage": "https://i.discogs.com/o2Giw9CG7l3jjNCRM5uiwaaYHhCD6aLK0hD-4uIIo-4/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE3NjI1/Mi0xMzAxMjI4Mjgx/LmpwZWc.jpeg",
-   "variants": [],
+   "variants": [
+    11385755
+   ],
    "discogs": "https://www.discogs.com/release/176252",
    "tracks": [
     {
@@ -5965,6 +5967,1596 @@
     {
      "id": "QhjTdxD3tdE",
      "title": "Bender Boys - Over & Over [PLUMP 005]",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 190584,
+   "catno": "PLUMP 006",
+   "catnos": [
+    "PLUMP 006"
+   ],
+   "group": "plump",
+   "title": "Rhythms",
+   "artists": [
+    {
+     "name": "Microman",
+     "key": "d19539"
+    }
+   ],
+   "year": 1995,
+   "released": "1995",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 006"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Techno",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/Vw5NrgF5HLDDMfe_o55g4_qxzI6p4IiulS87AQv7_gE/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE5MDU4/NC0xMTk5MDE4NTQ2/LmpwZWc.jpeg",
+   "variants": [
+    7622183
+   ],
+   "discogs": "https://www.discogs.com/release/190584",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Rhythm One",
+     "dur": "6:43",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Rhythm Seven",
+     "dur": "6:17",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Rhythm Two",
+     "dur": "6:43",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Rhythm Three",
+     "dur": "5:43",
+     "artists": [],
+     "credits": [
+      {
+       "name": "L.S. Lindgren",
+       "key": "d425843",
+       "role": "Guitar [Screwed]"
+      }
+     ]
+    }
+   ],
+   "credits": [
+    {
+     "name": "F. M. Lindgren",
+     "key": "d340054",
+     "role": "Written-By, Producer"
+    }
+   ],
+   "videos": [
+    {
+     "id": "jQMWgqNZffM",
+     "title": "Microman - Rhythm Seven [1995]",
+     "source": "Discogs"
+    },
+    {
+     "id": "d1EuS4od0tM",
+     "title": "Microman - Rhythm Two",
+     "source": "Discogs"
+    },
+    {
+     "id": "myWOx86ga94",
+     "title": "Microman - Rhythm Three",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 34448,
+   "catno": "PLUMP 007",
+   "catnos": [
+    "PLUMP 007"
+   ],
+   "group": "plump",
+   "title": "Knock 'Em Out",
+   "artists": [
+    {
+     "name": "Mr. James Barth",
+     "key": "d89"
+    },
+    {
+     "name": "Bob Brewthbaker",
+     "key": "d28855"
+    }
+   ],
+   "year": 1995,
+   "released": "1995",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 007"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Techno"
+   ],
+   "discogsImage": "https://i.discogs.com/-yk9qk5diSMxv5CNlUT3qcAlIxZvYbpGhoNXJEYhITY/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM0NDQ4/LTEyODA0MzU0Mzku/anBlZw.jpeg",
+   "variants": [
+    10342682
+   ],
+   "discogs": "https://www.discogs.com/release/34448",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Knock 'Em Out (In The Last Round)",
+     "dur": "6:04",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Knock 'Em Out (Just In It For The Groupies)",
+     "dur": "6:08",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Knock 'Em Out (Old School)",
+     "dur": "5:06",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Knock 'Em Out (Barth's & Bob's Beat's)",
+     "dur": "3:50",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "WMJgnE_eJiI",
+     "title": "Mr. Barth vs. Bob Brewthbaker - Knock 'Em Out (Old School Mix)",
+     "source": "Discogs"
+    },
+    {
+     "id": "W3zQHm7YYc8",
+     "title": "Knock'em Out (Oldschool Mix) (2019 Remastered)",
+     "source": "Discogs"
+    },
+    {
+     "id": "DJLPPujm6dI",
+     "title": "Mr. Barth vs. Bob Brewthbaker - Knock 'Em Out (In The Last Round)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 52126,
+   "catno": "PLUMP 008",
+   "catnos": [
+    "PLUMP 008"
+   ],
+   "group": "plump",
+   "title": "Much More Vol. 2",
+   "artists": [
+    {
+     "name": "Bender Boys",
+     "key": "d12658"
+    }
+   ],
+   "year": 1995,
+   "released": "1995",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 008"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/TZF8UNLV9NFavHWqwr28PReTXkgL79aIfsasoNNX2g0/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTUyMTI2/LTExNDA5NjQ0Mjgu/anBlZw.jpeg",
+   "variants": [
+    1742080
+   ],
+   "discogs": "https://www.discogs.com/release/52126",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Don't Try",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Poltergeist",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "At The Cirkus",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "So What (I Did)",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Andreas Hansson",
+     "key": "d146330",
+     "role": "Written-By, Producer"
+    },
+    {
+     "name": "Jan Lutgebaucks",
+     "key": "d602492",
+     "role": "Written-By, Producer"
+    }
+   ],
+   "videos": [
+    {
+     "id": "O7443oxKeh4",
+     "title": "Bender Boys - Don't try",
+     "source": "Discogs"
+    },
+    {
+     "id": "ZogiGMjFacs",
+     "title": "Poltergeist - Bender Boys",
+     "source": "Discogs"
+    },
+    {
+     "id": "gJ_GghLZzVU",
+     "title": "Bender Boys - So What I Did [1996]",
+     "source": "Discogs"
+    },
+    {
+     "id": "Vq2PrhwmgI0",
+     "title": "Bender Boys - At The Cirkus (1995)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 190582,
+   "catno": "PLUMP 009",
+   "catnos": [
+    "PLUMP 009"
+   ],
+   "group": "plump",
+   "title": "\"Nice Price\" EP",
+   "artists": [
+    {
+     "name": "Groove Machine",
+     "key": "d16055"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 009"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Techno",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/tuggAwh3y01U8qSWZkYulVFn4yN2bbMICmmRVfesW_Y/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE5MDU4/Mi0xNDMxMTc3NzEz/LTk3NDYuanBlZw.jpeg",
+   "variants": [
+    1742067
+   ],
+   "discogs": "https://www.discogs.com/release/190582",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "3 Cuts For The Price Of 1",
+     "dur": "14:35",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Free Of Charge",
+     "dur": "5:50",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Dodgy Business",
+     "dur": "7:40",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": []
+  },
+  {
+   "id": 65343,
+   "catno": "PLUMP 010",
+   "catnos": [
+    "PLUMP 010"
+   ],
+   "group": "plump",
+   "title": "Club Lounge",
+   "artists": [
+    {
+     "name": "Popeye",
+     "key": "d53977"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 010"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Deep House"
+   ],
+   "discogsImage": "https://i.discogs.com/ToGm2FtvLP4lejVmQ_DaDPfyeyKkbPLz4J2_QvNFSCY/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY1MzQz/LTExMDE1ODYwNDku/anBn.jpeg",
+   "variants": [
+    1742051
+   ],
+   "discogs": "https://www.discogs.com/release/65343",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Get Up",
+     "dur": "6:06",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Hard Moods",
+     "dur": "9:04",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Boogie 2000",
+     "dur": "5:20",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Rise Up",
+     "dur": "6:45",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Fredrik Stark",
+     "key": "d92",
+     "role": "Written-By, Producer"
+    }
+   ],
+   "videos": [
+    {
+     "id": "XZmfIe6_RrE",
+     "title": "Popeye - Get Up [PLUMP 017]",
+     "source": "Discogs"
+    },
+    {
+     "id": "pGd2d4EC7gg",
+     "title": "Popeye - boogie 2000 - plumphouse",
+     "source": "Discogs"
+    },
+    {
+     "id": "IwwWHIg_URI",
+     "title": "Popeye - Rise Up",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 57596,
+   "catno": "PLUMP 011",
+   "catnos": [
+    "PLUMP 011"
+   ],
+   "group": "plump",
+   "title": "The Fucked-Up Charter",
+   "artists": [
+    {
+     "name": "Strong Accents",
+     "key": "d30532"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 011"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/GPYkjYSSYly4EljGlZP8gPaCSK50qrTsjnDe-DQEl-s/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTU3NTk2/LTEyMzc1NjU5ODUu/anBlZw.jpeg",
+   "variants": [
+    5724645
+   ],
+   "discogs": "https://www.discogs.com/release/57596",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Let's Take Off Version",
+     "dur": "8:17",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Have A Nice Journey Version",
+     "dur": "6:12",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Original Destination Version",
+     "dur": "10:24",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Oops! We've Lost A Wing Version",
+     "dur": "9:21",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "3bH7p6HBCPQ",
+     "title": "Strong Accents - Let's Take Off (Version)  [1996]",
+     "source": "Discogs"
+    },
+    {
+     "id": "l68WAWJ1Xmo",
+     "title": "Strong Accents ‎- Have a nice journey version",
+     "source": "Discogs"
+    },
+    {
+     "id": "7mhJ7LDO_6Q",
+     "title": "Strong Accents - Original Destination (Version)  [1996]",
+     "source": "Discogs"
+    },
+    {
+     "id": "NJ9Rp4XiN6M",
+     "title": "Strong Accents - Oops! We've Lost A Wing (Version)  [1996]",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 192062,
+   "catno": "PLUMP 012",
+   "catnos": [
+    "PLUMP 012"
+   ],
+   "group": "plump",
+   "title": "La Musica Que Me Gusta",
+   "artists": [
+    {
+     "name": "Microbonze",
+     "key": "d42240"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 45 RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 012"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/uQTa1WPogoWPHvafoacBnITBl-B2elR8111Z4MJYdxw/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE5MjA2/Mi0xMTQ4NjI1MTEx/LmpwZWc.jpeg",
+   "variants": [
+    21114976
+   ],
+   "discogs": "https://www.discogs.com/release/192062",
+   "tracks": [
+    {
+     "pos": "A",
+     "title": "La Musica Que Me Gusta (Original Version)",
+     "dur": "8:26",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B",
+     "title": "La Musica Que Me Gusta (Bend Over Remix)",
+     "dur": "7:01",
+     "artists": [],
+     "credits": [
+      {
+       "name": "Bender Boys",
+       "key": "d12658",
+       "role": "Remix"
+      }
+     ]
+    }
+   ],
+   "credits": [
+    {
+     "name": "Célia Tarrius",
+     "key": "d712736",
+     "role": "Featuring"
+    },
+    {
+     "name": "Célia Tarrius",
+     "key": "d712736",
+     "role": "Vocals"
+    },
+    {
+     "name": "F. M. Lindgren",
+     "key": "d340054",
+     "role": "Written-By, Producer"
+    },
+    {
+     "name": "Thierry Tarrius",
+     "key": "d476659",
+     "role": "Written-By, Producer"
+    }
+   ],
+   "videos": [
+    {
+     "id": "yl0_s9bSBD0",
+     "title": "Microbonze   La musica que me gusta (original Vers) - 1996 - House",
+     "source": "Discogs"
+    },
+    {
+     "id": "Ok6PbF_wqgY",
+     "title": "Microbonze   La musica que me gusta (Bend Over Remix) - 1996 - House",
+     "source": "Discogs"
+    },
+    {
+     "id": "1NyLzW0QQr8",
+     "title": "(1996) Microbonze feat. Célia - La Musica Que Me Gusta [Original Version Mix]",
+     "source": "Discogs"
+    },
+    {
+     "id": "Di1LlZu6Cq0",
+     "title": "Microbonze – La musica que me gusta",
+     "source": "Discogs"
+    },
+    {
+     "id": "nphuPsh6sFU",
+     "title": "Microbonze - La Musica Que Me Gusta",
+     "source": "Discogs"
+    },
+    {
+     "id": "gWgspImHPoo",
+     "title": "Microbonze feat. Célia - La Musica Que Me Gusta (Bend Over Remix)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 17596,
+   "catno": "PLUMP 013",
+   "catnos": [
+    "PLUMP 013"
+   ],
+   "group": "plump",
+   "title": "Maximum EP. Vol 3",
+   "artists": [
+    {
+     "name": "Bender Boys",
+     "key": "d12658"
+    }
+   ],
+   "year": 1996,
+   "released": "1996-03-24",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM, EP",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 013"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Deep House"
+   ],
+   "discogsImage": "https://i.discogs.com/140Qa5PtIrVsEAoODvGonjoDLORzYhxML7ZtJSUM3xE/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE3NTk2/LTExMDU3OTQ3ODYu/anBn.jpeg",
+   "variants": [
+    25861582
+   ],
+   "discogs": "https://www.discogs.com/release/17596",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Tow Truck",
+     "dur": "6:00",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Clap Your Hands",
+     "dur": "5:06",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A3",
+     "title": "Delusion",
+     "dur": "6:15",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Broccoli",
+     "dur": "7:10",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "I'm Tired, Phase Tour",
+     "dur": "5:13",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B3",
+     "title": "Start Pumping",
+     "dur": "6:37",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Andreas Hansson",
+     "key": "d146330",
+     "role": "Written-by, Producer [All Pumping Grooves]"
+    },
+    {
+     "name": "Jan Lutgebaucks",
+     "key": "d602492",
+     "role": "Written-by, Producer [All Pumping Grooves]"
+    }
+   ],
+   "videos": [
+    {
+     "id": "to-UGjGXTho",
+     "title": "Bender Boys - Broccoli",
+     "source": "Discogs"
+    },
+    {
+     "id": "kHuAAlmGSd8",
+     "title": "Bender Boys - Clap Your Hands (1996)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 37222,
+   "catno": "PLUMP 014",
+   "catnos": [
+    "PLUMP 014"
+   ],
+   "group": "plump",
+   "title": "Confused",
+   "artists": [
+    {
+     "name": "Bob Brewthbaker",
+     "key": "d28855"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 014"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/yvWbUt2QGEzE1WHIu0ldL6-U8IRVIsH-qF6zYlPWaB8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM3MjIy/LTE1MTA0OTc3NTYt/NTkwOC5qcGVn.jpeg",
+   "variants": [
+    6549798
+   ],
+   "discogs": "https://www.discogs.com/release/37222",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "I Made The Music",
+     "dur": "6:21",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Afterhour",
+     "dur": "6:47",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Guru Is Getting Married",
+     "dur": "7:18",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Keep 'n Give",
+     "dur": "8:04",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "IoOCbZ-9NCA",
+     "title": "Bob Brewthbaker - Guru Is Getting Married [PLUMP 014]",
+     "source": "Discogs"
+    },
+    {
+     "id": "exa7rVfLVEs",
+     "title": "Bob Brewthbaker - Keep 'n Give [PLUMP 014]",
+     "source": "Discogs"
+    },
+    {
+     "id": "GFLp9-dBSCY",
+     "title": "Bob Brewthbaker - Afterhour [PLUMP 014]",
+     "source": "Discogs"
+    },
+    {
+     "id": "9MalhfFDZ6U",
+     "title": "Bob Brewthbaker - I Made The Music [PLUMP 014]",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 190577,
+   "catno": "PLUMP 015",
+   "catnos": [
+    "PLUMP 015"
+   ],
+   "group": "plump",
+   "title": "Coolgate Cowboy",
+   "artists": [
+    {
+     "name": "Microman",
+     "key": "d19539"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 015"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Techno"
+   ],
+   "discogsImage": "https://i.discogs.com/LLhPAkLENRoaeZPLWs5jQfqrKlf3UsqeffI9yo8Svg0/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE5MDU3/Ny0xMTQ2MDAzOTQy/LmpwZWc.jpeg",
+   "variants": [
+    5797416
+   ],
+   "discogs": "https://www.discogs.com/release/190577",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Coolgate Cowboy (Coolstomper Mix)",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Coolgate Cowboy (Cowboy Heaven Mix)",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Coolgate Cowboy (Rodeo Sunset Mix)",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "7faFA-e7Lzo",
+     "title": "Microman - Coolgate Cowboy (Cowboy Heaven Mix) (1996)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 190587,
+   "catno": "PLUMP 016",
+   "catnos": [
+    "PLUMP 016"
+   ],
+   "group": "plump",
+   "title": "Step A Side",
+   "artists": [
+    {
+     "name": "Mr. James Barth",
+     "key": "d89"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 016"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Deep House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/y_STqon0YqYT2-dvGXKJNjPvf7ztBHRXJj_AU-pJhq8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE5MDU4/Ny0xNDMxMTc4ODI1/LTQ4NzYuanBlZw.jpeg",
+   "variants": [
+    15971322
+   ],
+   "discogs": "https://www.discogs.com/release/190587",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Filthy Promises",
+     "dur": "6:01",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Step A Side (Original Version)",
+     "dur": "6:02",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Step All Over You",
+     "dur": "5:01",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "PZWxpBd0CVU",
+     "title": "Mr. Barth - Step A Side (Original Version)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 206267,
+   "catno": "PLUMP 017",
+   "catnos": [
+    "PLUMP 017"
+   ],
+   "group": "plump",
+   "title": "Magic Wonderland Vol. 1",
+   "artists": [
+    {
+     "name": "Various",
+     "key": "d194"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "2 × Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 017"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Deep House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/yesHqtiKmD8y-eWnP2lZF8FXkJf8Qjn7g5oM2ODmNZk/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIwNjI2/Ny0xMjI5MjU3NDA3/LmpwZWc.jpeg",
+   "variants": [],
+   "discogs": "https://www.discogs.com/release/206267",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Microhouse",
+     "dur": "7:47",
+     "artists": [
+      {
+       "name": "Microman",
+       "key": "d19539"
+      }
+     ],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Lonley Blues",
+     "dur": "8:50",
+     "artists": [
+      {
+       "name": "Mr. James Barth",
+       "key": "d89"
+      }
+     ],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Rainbow Fungus",
+     "dur": "8:17",
+     "artists": [
+      {
+       "name": "Groove Machine",
+       "key": "d16055"
+      }
+     ],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Get Up",
+     "dur": "8:08",
+     "artists": [
+      {
+       "name": "Popeye",
+       "key": "d53977"
+      }
+     ],
+     "credits": []
+    },
+    {
+     "pos": "C1",
+     "title": "La Musica Que Me Gusta",
+     "dur": "9:39",
+     "artists": [
+      {
+       "name": "Microbonze",
+       "key": "d42240"
+      }
+     ],
+     "credits": []
+    },
+    {
+     "pos": "C2",
+     "title": "Keep On Coming",
+     "dur": "5:42",
+     "artists": [
+      {
+       "name": "Il Stefano",
+       "key": "d42042"
+      },
+      {
+       "name": "DJ Alexi Delano",
+       "key": "d26"
+      }
+     ],
+     "credits": []
+    },
+    {
+     "pos": "D1",
+     "title": "Slow Down",
+     "dur": "5:08",
+     "artists": [
+      {
+       "name": "Bender Boys",
+       "key": "d12658"
+      }
+     ],
+     "credits": []
+    },
+    {
+     "pos": "D2",
+     "title": "Let's Go T-Funk",
+     "dur": "6:53",
+     "artists": [
+      {
+       "name": "Dr. Hallu",
+       "key": "d150059"
+      }
+     ],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "HjT4jr-Ws9g",
+     "title": "Microman - Microhouse [more than 14 min mix] VINYL",
+     "source": "Discogs"
+    },
+    {
+     "id": "DQNpTsU70n4",
+     "title": "Mr. Barth - Lonely Blues [PLUMP 017]",
+     "source": "Discogs"
+    },
+    {
+     "id": "nDkaKGgoYt0",
+     "title": "GROOVE MACHINE   rainbow fungus",
+     "source": "Discogs"
+    },
+    {
+     "id": "XZmfIe6_RrE",
+     "title": "Popeye - Get Up [PLUMP 017]",
+     "source": "Discogs"
+    },
+    {
+     "id": "1NyLzW0QQr8",
+     "title": "(1996) Microbonze feat. Célia - La Musica Que Me Gusta [Original Version Mix]",
+     "source": "Discogs"
+    },
+    {
+     "id": "vWY-O0PMn5g",
+     "title": "IL Stefano & Alexi Delano - Keep On Coming (Original Mix)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 57273,
+   "catno": "PLUMP 018",
+   "catnos": [
+    "PLUMP 018"
+   ],
+   "group": "plump",
+   "title": "Fatz 1",
+   "artists": [
+    {
+     "name": "Bender Boys",
+     "key": "d12658"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 018"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/tr3ssQ_YVPcADcGJlF-8jikY-yZUwfWetVzxYMRFENo/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTU3Mjcz/LTExOTkwMTg5MzIu/anBlZw.jpeg",
+   "variants": [
+    5711700
+   ],
+   "discogs": "https://www.discogs.com/release/57273",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Friends Of Max",
+     "dur": "6:43",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Basemaker",
+     "dur": "6:42",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Muffins",
+     "dur": "6:05",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Smergliato",
+     "dur": "6:45",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Andreas Hansson",
+     "key": "d146330",
+     "role": "Written-By, Producer"
+    },
+    {
+     "name": "Jan Lutgebaucks",
+     "key": "d602492",
+     "role": "Written-By, Producer"
+    }
+   ],
+   "videos": [
+    {
+     "id": "AzuPst6cMfU",
+     "title": "Bender Boys - Fatz 1 EP (Smerigliato)",
+     "source": "Discogs"
+    },
+    {
+     "id": "m6KJwQ6hixY",
+     "title": "Bender Boys - Fatz 1 EP (Muffins)",
+     "source": "Discogs"
+    },
+    {
+     "id": "RWl3YKt_0Ls",
+     "title": "Bender Boys - Fatz 1 EP (Friends Of Max)",
+     "source": "Discogs"
+    },
+    {
+     "id": "LUzXztXndrE",
+     "title": "Bender Boys - Fatz 1 EP (Basemaker) (Pitch -4%)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 144692,
+   "catno": "PLUMP 019",
+   "catnos": [
+    "PLUMP 019"
+   ],
+   "group": "plump",
+   "title": "Club Lounge Vol. 2",
+   "artists": [
+    {
+     "name": "Popeye",
+     "key": "d53977"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 019"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Deep House"
+   ],
+   "discogsImage": "https://i.discogs.com/9oZohd1fg51_6pmy_L1A1FVTNBRYPU_JYv1Vp5eAG8A/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE0NDY5/Mi0xMTAxNTg2MDg4/LmpwZw.jpeg",
+   "variants": [
+    14382526
+   ],
+   "discogs": "https://www.discogs.com/release/144692",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Bits 'N Snippets",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Tunnel Vision",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Revelation",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Track Nouveau",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "8ZNvO1RWyUc",
+     "title": "Popeye - Club Lounge Vol. 2 - Bit's N Snippets",
+     "source": "Discogs"
+    },
+    {
+     "id": "GKru5TforWk",
+     "title": "Popeye - Club Lounge Vol. 2 - Tunnel Vision",
+     "source": "Discogs"
+    },
+    {
+     "id": "4FiWX8qrme0",
+     "title": "Popeye - Revelation - Club Lounge vol 2",
+     "source": "Discogs"
+    },
+    {
+     "id": "eAnWQLmk8b8",
+     "title": "Popeye - Track Nouveau - Club Lounge Vol 2",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 190581,
+   "catno": "PLUMP 020",
+   "catnos": [
+    "PLUMP 020"
+   ],
+   "group": "plump",
+   "title": "Fatz 2",
+   "artists": [
+    {
+     "name": "Bender Boys",
+     "key": "d12658"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 020"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Techno"
+   ],
+   "discogsImage": "https://i.discogs.com/jcClzaHHerSH_tEjWpzAi_4sdGH5QwNjx5pBCmvVrWU/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE5MDU4/MS0xMTk5MDE4OTk0/LmpwZWc.jpeg",
+   "variants": [
+    14981497
+   ],
+   "discogs": "https://www.discogs.com/release/190581",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Tease Me",
+     "dur": "8:05",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Freestylin",
+     "dur": "7:26",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Hard Drive",
+     "dur": "8:01",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Got To Do It",
+     "dur": "6:46",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "GHwEoUkirao",
+     "title": "Bender Boys - Freestylin",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 470207,
+   "catno": "PLUMP 021",
+   "catnos": [
+    "PLUMP 021"
+   ],
+   "group": "plump",
+   "title": "Solid Gold E.P.",
+   "artists": [
+    {
+     "name": "Tommy Tee",
+     "key": "d325960"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM, EP",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 021"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Euro House"
+   ],
+   "discogsImage": "https://i.discogs.com/RhvJUZcIiMLN1KI0pB2S7tKEAN-21W5TL5WeEB1Tj_E/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTQ3MDIw/Ny0xMjM3MDI5OTA1/LmpwZWc.jpeg",
+   "variants": [
+    2862946
+   ],
+   "discogs": "https://www.discogs.com/release/470207",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Jetset Groove",
+     "dur": "7:54",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Golden Whoop",
+     "dur": "6:58",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "24 K",
+     "dur": "7:27",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "D-inferno",
+     "dur": "6:25",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Fredrik Stark",
+     "key": "d92",
+     "role": "Producer"
+    },
+    {
+     "name": "Tommy Wallin",
+     "key": "d325961",
+     "role": "Producer"
+    },
+    {
+     "name": "Tommy Wallin",
+     "key": "d325961",
+     "role": "Written-By"
+    }
+   ],
+   "videos": [
+    {
+     "id": "8kad9iRf17o",
+     "title": "Tommy Tee - Golden Whoop (1996)",
+     "source": "Discogs"
+    },
+    {
+     "id": "891ovE-D1J8",
+     "title": "Tommy Tee - D-Inferno",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 22119,
+   "catno": "PLUMP 022",
+   "catnos": [
+    "PLUMP 022"
+   ],
+   "group": "plump",
+   "title": "Summer Jam",
+   "artists": [
+    {
+     "name": "Soul Kitchen Orchestra",
+     "key": "d18590"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 022"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Progressive House",
+    "House"
+   ],
+   "discogsImage": "https://i.discogs.com/jwaRWKDvpg0wTbvhkWqNEeUWLIq3SEAc_an4IJ2w5oU/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIyMTE5/LTExOTkwMTkwNjku/anBlZw.jpeg",
+   "variants": [
+    4611888
+   ],
+   "discogs": "https://www.discogs.com/release/22119",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Chocolate Dreams (Fudge Mix)",
+     "dur": "8:18",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Chocolate Dreams (Low Fat Mix)",
+     "dur": "7:05",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Strawberry Cloud (No Ice Mix)",
+     "dur": "7:23",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Strawberry Cloud (Sweet Mix)",
+     "dur": "7:48",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Andreas Hansson",
+     "key": "d146330",
+     "role": "Written-By"
+    },
+    {
+     "name": "Manuel Perez",
+     "key": "d20798",
+     "role": "Written-By"
+    },
+    {
+     "name": "Thomas Krome",
+     "key": "d491",
+     "role": "Written-By"
+    }
+   ],
+   "videos": [
+    {
+     "id": "F0U-G__9kpk",
+     "title": "Soul Kitchen Orchestra , Chocolate Dreams",
      "source": "Discogs"
     }
    ]
@@ -6055,6 +7647,1146 @@
     {
      "id": "jW-0_DSk1Y0",
      "title": "Benderboys - Keep On Dripp'n",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 38673,
+   "catno": "plump 024",
+   "catnos": [
+    "plump 024"
+   ],
+   "group": "plump",
+   "title": "Vibe",
+   "artists": [
+    {
+     "name": "Joel Mull",
+     "key": "d1356"
+    }
+   ],
+   "year": 1997,
+   "released": "1997",
+   "country": "UK",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "plump 024"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Techno"
+   ],
+   "discogsImage": "https://i.discogs.com/e8RbonGX9rZ3KKk4qhLL9mqx7ggeOBmujEBQfgBC6k8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM4Njcz/LTExOTkwMTkxODgu/anBlZw.jpeg",
+   "variants": [
+    7205160
+   ],
+   "discogs": "https://www.discogs.com/release/38673",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Bärry Hart",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Check In The Vibe",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Use The Key",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Backoldman",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "cf9o4rs0IGE",
+     "title": "Joel Mull – Bärry Hart (1997) [Vibe 001]",
+     "source": "Discogs"
+    },
+    {
+     "id": "NodZOgkNlWg",
+     "title": "Joel Mull - Backoldman - 1997 [Demo Track] Techno",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 57277,
+   "catno": "plump 025",
+   "catnos": [
+    "plump 025"
+   ],
+   "group": "plump",
+   "title": "Love You Forever (Part 1...)",
+   "artists": [
+    {
+     "name": "Bobby Forester",
+     "key": "d14631"
+    }
+   ],
+   "year": 1998,
+   "released": "1998",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "plump 025"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/CyBheRzl6Zo8vAkwDOh-iuHY3gaqDMpajJUTWZJnKBA/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTU3Mjc3/LTEyNDExOTQ0OTMu/anBlZw.jpeg",
+   "variants": [
+    29061169
+   ],
+   "discogs": "https://www.discogs.com/release/57277",
+   "tracks": [
+    {
+     "pos": "a.1",
+     "title": "«I Got» Pressure Control",
+     "dur": "7:22",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "a.2",
+     "title": "Juk 2 My Rooz",
+     "dur": "6:57",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "b.1",
+     "title": "The Day The World Stood Still",
+     "dur": "8:21",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Bobby Forester",
+     "key": "d14631",
+     "role": "Producer, Mixed By"
+    }
+   ],
+   "videos": [
+    {
+     "id": "pI6LpWIzNSI",
+     "title": "Bobby Forester  -  I Got Pressure Control",
+     "source": "Discogs"
+    },
+    {
+     "id": "4tF6qzcCPaQ",
+     "title": "Bobby Forester  -  The Day The World Stood Still",
+     "source": "Discogs"
+    },
+    {
+     "id": "tMzFWkPBytY",
+     "title": "Bobby Forester  -  Juk 2 My Rooz",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 15539,
+   "catno": "PLUMP 026",
+   "catnos": [
+    "PLUMP 026"
+   ],
+   "group": "plump",
+   "title": "Love You Forever (Part 2)",
+   "artists": [
+    {
+     "name": "Bobby Forester",
+     "key": "d14631"
+    }
+   ],
+   "year": 1998,
+   "released": "1998",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 026"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House"
+   ],
+   "discogsImage": "https://i.discogs.com/-UTWMOpRHHREO4ZSUt7p6xrEoWTkzAfleggurKaHJnU/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE1NTM5/LTAwMi5qcGc.jpeg",
+   "variants": [
+    5918174
+   ],
+   "discogs": "https://www.discogs.com/release/15539",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "I Know I Shouldn't",
+     "dur": "7:48",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Nites Of Iguana",
+     "dur": "6:35",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "West Side Girls",
+     "dur": "6:32",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "She Loox Different",
+     "dur": "6:55",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Bobby Forester",
+     "key": "d14631",
+     "role": "Producer, Mixed By"
+    }
+   ],
+   "videos": [
+    {
+     "id": "P53dz2C-18k",
+     "title": "Bobby Forester  -  I Know I Shouldn't",
+     "source": "Discogs"
+    },
+    {
+     "id": "SF2-pOfK8ZY",
+     "title": "Bobby Forester - Nites Of Iguana [Plumpcd 102]",
+     "source": "Discogs"
+    },
+    {
+     "id": "Q63ISeNVMFo",
+     "title": "Bobby Forester - West Side Girls (Plumphouse Records 1998)",
+     "source": "Discogs"
+    },
+    {
+     "id": "xkwvsDJvezk",
+     "title": "Bobby Forester -  She Loox Different (Plumphouse Records)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 101063,
+   "catno": "plump 027",
+   "catnos": [
+    "plump 027"
+   ],
+   "group": "plump",
+   "title": "First Spectrum",
+   "artists": [
+    {
+     "name": "Andreas Bender",
+     "key": "d1372"
+    }
+   ],
+   "year": 1998,
+   "released": "1998",
+   "country": "Sweden",
+   "format": "2 × Vinyl, 12\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "plump 027"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/_WAXaEAgpm6ARStYhVkzekQBYieRLDLb_HOEysG7xmM/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEwMTA2/My0xMjkwNzY2NjQ2/LmpwZWc.jpeg",
+   "variants": [
+    27429552
+   ],
+   "discogs": "https://www.discogs.com/release/101063",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Cruise Control",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Vento",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Supercut",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Turtle Gum",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "C1",
+     "title": "Silicon Sky",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "C2",
+     "title": "Crispy",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "D1",
+     "title": "Monomastic",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "D2",
+     "title": "Dorodect",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "D3",
+     "title": "Loves Me Not",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "D4",
+     "title": "Relax",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Vår",
+     "key": "d1923843",
+     "role": "Design"
+    }
+   ],
+   "videos": [
+    {
+     "id": "AR6thwXv_mE",
+     "title": "Andreas Bender - Cruise Control",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 57451,
+   "catno": "PLUMP028",
+   "catnos": [
+    "PLUMP028"
+   ],
+   "group": "plump",
+   "title": "Enchantment Under The Sea",
+   "artists": [
+    {
+     "name": "Bob Brewthbaker",
+     "key": "d28855"
+    },
+    {
+     "name": "Eddie Chanoogah",
+     "key": "d798568"
+    }
+   ],
+   "year": 1998,
+   "released": "1998",
+   "country": "Sweden",
+   "format": "Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP028"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Deep House"
+   ],
+   "discogsImage": "https://i.discogs.com/iQCaUkZZuGW_q1xPfMTMOJzI8msqDg8-bSVBM1dpCeg/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTU3NDUx/LTEyMTQyMzIwMTMu/anBlZw.jpeg",
+   "variants": [
+    2187653
+   ],
+   "discogs": "https://www.discogs.com/release/57451",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Willits Point",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "The Dagger Of Xian",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "The Sight On Juarios",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "DJ Alexi Delano",
+     "key": "d26",
+     "role": "Songwriter"
+    },
+    {
+     "name": "Vincenzo",
+     "key": "d675",
+     "role": "Songwriter, Co-producer"
+    }
+   ],
+   "videos": [
+    {
+     "id": "IkKlOPVl2YU",
+     "title": "1. The Dagger of Xian - Side A - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs"
+    },
+    {
+     "id": "38gPHsNw8IQ",
+     "title": "3. Willitis Point - Side B - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs"
+    },
+    {
+     "id": "1uc2Rsfugak",
+     "title": "2. The Sight of Juarios - Side A - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs"
+    },
+    {
+     "id": "1wRZbORN6vQ",
+     "title": "Bob Brewthbaker & Eddie Chanoogah  -  The Dagger Of Xian",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 15538,
+   "catno": "PLUMP 029",
+   "catnos": [
+    "PLUMP 029"
+   ],
+   "group": "plump",
+   "title": "Love You Forever RMX",
+   "artists": [
+    {
+     "name": "Bobby Forester",
+     "key": "d14631"
+    }
+   ],
+   "year": 1998,
+   "released": "1998-05-18",
+   "country": "UK",
+   "format": "Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 029"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House"
+   ],
+   "discogsImage": "https://i.discogs.com/t62I_qrIL95sRpnJvx6S6J1f-suV17Cz-XWEIevw5v8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE1NTM4/LTExOTIxOTQ2NzUu/anBlZw.jpeg",
+   "variants": [],
+   "discogs": "https://www.discogs.com/release/15538",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Pressure Control (J. Dahlbäck Mix)",
+     "dur": "6:19",
+     "artists": [],
+     "credits": [
+      {
+       "name": "Jesper Dahlbäck",
+       "key": "d239",
+       "role": "Remix"
+      }
+     ]
+    },
+    {
+     "pos": "A2",
+     "title": "Pressure Control (A. Bender Mix)",
+     "dur": "7:14",
+     "artists": [],
+     "credits": [
+      {
+       "name": "Andreas Bender",
+       "key": "d1372",
+       "role": "Remix"
+      }
+     ]
+    },
+    {
+     "pos": "B",
+     "title": "The Day The World Stood Still (Forester Speed Karate Mix)",
+     "dur": "8:13",
+     "artists": [],
+     "credits": [
+      {
+       "name": "Jori Hulkkonen",
+       "key": "d739",
+       "role": "Remix"
+      }
+     ]
+    }
+   ],
+   "credits": [
+    {
+     "name": "Dave Williams",
+     "key": "d12528913",
+     "role": "Lacquer Cut By"
+    }
+   ],
+   "videos": [
+    {
+     "id": "XpvoKmNmL5Y",
+     "title": "Bobby Forester - The Day The World Stood Still (Forester Speed Karate Mix)",
+     "source": "Discogs"
+    },
+    {
+     "id": "sjYpJ26pFE4",
+     "title": "Bobby Forester - Pressure Control (J. Dahlbäck Mix) (1998)",
+     "source": "Discogs"
+    },
+    {
+     "id": "Cn2fr7nrH3M",
+     "title": "Bobby Forester -  Pressure Control (A. Blender Mix)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 231247,
+   "catno": "PLUMP030",
+   "catnos": [
+    "PLUMP030"
+   ],
+   "group": "plump",
+   "title": "Welcome 2 Halluwood",
+   "artists": [
+    {
+     "name": "Dr. Hallu",
+     "key": "d150059"
+    }
+   ],
+   "year": 1998,
+   "released": "1998",
+   "country": "Sweden",
+   "format": "2 × Vinyl, 10\", 33 ⅓ RPM",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP030"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/yiMP_kiB-GcW7a9VLf1pY8Y801pKWzi891LHkaYZPg4/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIzMTI0/Ny0xMjY1MTc3OTc0/LmpwZWc.jpeg",
+   "variants": [
+    3228230
+   ],
+   "discogs": "https://www.discogs.com/release/231247",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "Pack The Trunk (No Glamour Version)",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Pack The Trunk (Spanky Version)",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "Pack The Trunk (Cinatory Version)",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Bring Da Sax",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Thomas Krome",
+     "key": "d491",
+     "role": "Written-By, Producer"
+    }
+   ],
+   "videos": [
+    {
+     "id": "T4FjMZkkQ2E",
+     "title": "Dr. Hallu - Pack The Trunk (Cinatory Version) (1998)",
+     "source": "Discogs"
+    },
+    {
+     "id": "X_kF6K3LLEI",
+     "title": "Dr. Hallu - Bring Da Sax (1998)",
+     "source": "Discogs"
+    },
+    {
+     "id": "NLwQZUY6C4k",
+     "title": "Dr. Hallu - Pack The Trunk (Spanky Version)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 37391,
+   "catno": "PLUMP 031",
+   "catnos": [
+    "PLUMP 031"
+   ],
+   "group": "plump",
+   "title": "Songs From Abroad",
+   "artists": [
+    {
+     "name": "Bob Brewthbaker",
+     "key": "d28855"
+    }
+   ],
+   "year": 1998,
+   "released": "1998",
+   "country": "Sweden",
+   "format": "Vinyl, 12\"",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP 031"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/MK4vL0eR8PUzERkfGwMpno8GlL2zuuiwoyeKppfCOlE/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM3Mzkx/LTAwMS5qcGc.jpeg",
+   "variants": [],
+   "discogs": "https://www.discogs.com/release/37391",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "When The Time Comes",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "Always Something",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "I Need This",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "Asymetric Funk",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [],
+   "videos": [
+    {
+     "id": "lcilfPJ5jAA",
+     "title": "Bob Brewthbaker - 'Always Something'",
+     "source": "Discogs"
+    },
+    {
+     "id": "UOMUDThJ9tY",
+     "title": "Bob Brewthbaker - 'Asymetric Funk'",
+     "source": "Discogs"
+    },
+    {
+     "id": "FJw7oSI1UAA",
+     "title": "Bob Brewthbaker - I Need This",
+     "source": "Discogs"
+    },
+    {
+     "id": "3IpaTQo5Nt8",
+     "title": "Bob Brewthbaker - 'When The Time Comes'",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 963,
+   "catno": "plump 032",
+   "catnos": [
+    "plump 032"
+   ],
+   "group": "plump",
+   "title": "I Am EP",
+   "artists": [
+    {
+     "name": "Andreas Bender",
+     "key": "d1372"
+    }
+   ],
+   "year": 1998,
+   "released": "1998",
+   "country": "Sweden",
+   "format": "Vinyl, 12\", 33 ⅓ RPM, EP",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "plump 032"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/8jsnqcWailI7vd6QXcgkq7-AOOcj9AehJr7yBWmkU08/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTk2My0x/MjIyNjk1MDg5Lmpw/ZWc.jpeg",
+   "variants": [
+    4611941
+   ],
+   "discogs": "https://www.discogs.com/release/963",
+   "tracks": [
+    {
+     "pos": "A1",
+     "title": "I Am Distorted",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "A2",
+     "title": "I Am There",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B1",
+     "title": "I Am Here",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "B2",
+     "title": "I Am Disco",
+     "dur": "",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Tim D.",
+     "key": "d394355",
+     "role": "Lacquer Cut By"
+    },
+    {
+     "name": "Andreas Bender",
+     "key": "d1372",
+     "role": "Producer [All Trax By], Written-By [All Trax By]"
+    }
+   ],
+   "videos": [
+    {
+     "id": "YKhlxOuulqM",
+     "title": "Andreas Bender ‎– I Am There (1998)",
+     "source": "Discogs"
+    },
+    {
+     "id": "mvGNlPzZMEo",
+     "title": "Andreas Bender – i am here",
+     "source": "Discogs"
+    },
+    {
+     "id": "AfLuBuV46Lk",
+     "title": "Andreas Bender ‎– I Am Disco (1998)",
+     "source": "Discogs"
+    }
+   ]
+  },
+  {
+   "id": 872971,
+   "catno": "PLUMP CD 100",
+   "catnos": [
+    "PLUMP CD 100"
+   ],
+   "group": "plump",
+   "title": "Magic Wonderland Vol. 1",
+   "artists": [
+    {
+     "name": "Various",
+     "key": "d194"
+    }
+   ],
+   "year": 1996,
+   "released": "1996",
+   "country": "Sweden",
+   "format": "CD, Compilation",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "PLUMP CD 100"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Deep House",
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/A0fatIS6roSlHcLta9G7vogqOeOxQePbCZm8TGtdMNw/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTg3Mjk3/MS0xMTY3ODI4MzYz/LmpwZWc.jpeg",
+   "variants": [],
+   "discogs": "https://www.discogs.com/release/872971",
+   "tracks": [
+    {
+     "pos": "1",
+     "title": "La Musica Que Me Gusta (Bend Over Remix)",
+     "dur": "9:36",
+     "artists": [
+      {
+       "name": "Microbonze",
+       "key": "d42240"
+      }
+     ],
+     "credits": [
+      {
+       "name": "F. M. Lindgren",
+       "key": "d340054",
+       "role": "Producer, Written-By"
+      },
+      {
+       "name": "Thierry Tarrius",
+       "key": "d476659",
+       "role": "Producer, Written-By"
+      },
+      {
+       "name": "Bender Boys",
+       "key": "d12658",
+       "role": "Remix"
+      },
+      {
+       "name": "Célia Tarrius",
+       "key": "d712736",
+       "role": "Vocals"
+      }
+     ]
+    },
+    {
+     "pos": "2",
+     "title": "Get Up",
+     "dur": "6:06",
+     "artists": [
+      {
+       "name": "Popeye",
+       "key": "d53977"
+      }
+     ],
+     "credits": [
+      {
+       "name": "Fredrik Stark",
+       "key": "d92",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "3",
+     "title": "Keep On Coming",
+     "dur": "6:12",
+     "artists": [
+      {
+       "name": "Il Stefano",
+       "key": "d42042"
+      },
+      {
+       "name": "DJ Alexi Delano",
+       "key": "d26"
+      }
+     ],
+     "credits": [
+      {
+       "name": "DJ Alexi Delano",
+       "key": "d26",
+       "role": "Producer, Written-By"
+      },
+      {
+       "name": "Stefan Andreasson",
+       "key": "d661689",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "4",
+     "title": "Clap Your Hands",
+     "dur": "5:06",
+     "artists": [
+      {
+       "name": "Bender Boys",
+       "key": "d12658"
+      }
+     ],
+     "credits": [
+      {
+       "name": "Andreas Hansson",
+       "key": "d146330",
+       "role": "Producer, Written-By"
+      },
+      {
+       "name": "Jan Lutgebaucks",
+       "key": "d602492",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "5",
+     "title": "Lonley Blues",
+     "dur": "7:47",
+     "artists": [
+      {
+       "name": "Mr. James Barth",
+       "key": "d89"
+      }
+     ],
+     "credits": [
+      {
+       "name": "Mr. James Barth",
+       "key": "d89",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "6",
+     "title": "Let's Go T-Funk",
+     "dur": "6:53",
+     "artists": [
+      {
+       "name": "Dr. Hallu",
+       "key": "d150059"
+      }
+     ],
+     "credits": [
+      {
+       "name": "Thomas Gustavsson",
+       "key": "d1090925",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "7",
+     "title": "Rainbow Fungus",
+     "dur": "5:30",
+     "artists": [
+      {
+       "name": "Groove Machine",
+       "key": "d16055"
+      }
+     ],
+     "credits": [
+      {
+       "name": "Dick Track",
+       "key": "d19541",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "8",
+     "title": "So What I Did",
+     "dur": "7:13",
+     "artists": [
+      {
+       "name": "Bender Boys",
+       "key": "d12658"
+      }
+     ],
+     "credits": [
+      {
+       "name": "Andreas Hansson",
+       "key": "d146330",
+       "role": "Producer, Written-By"
+      },
+      {
+       "name": "Jan Lutgebaucks",
+       "key": "d602492",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "9",
+     "title": "Guru Is Getting Married",
+     "dur": "7:18",
+     "artists": [
+      {
+       "name": "Bob Brewthbaker",
+       "key": "d28855"
+      }
+     ],
+     "credits": [
+      {
+       "name": "Bob Brewthbaker",
+       "key": "d28855",
+       "role": "Producer, Written-By"
+      }
+     ]
+    },
+    {
+     "pos": "10",
+     "title": "Microhouse",
+     "dur": "7:45",
+     "artists": [
+      {
+       "name": "Microman",
+       "key": "d19539"
+      }
+     ],
+     "credits": [
+      {
+       "name": "F. M. Lindgren",
+       "key": "d340054",
+       "role": "Producer, Written-By"
+      }
+     ]
+    }
+   ],
+   "credits": [
+    {
+     "name": "Stefan Holm",
+     "key": "n-stefan-holm",
+     "role": "Artwork By [Cover], Photography"
+    }
+   ],
+   "videos": [
+    {
+     "id": "HjT4jr-Ws9g",
+     "title": "Microman - Microhouse [more than 14 min mix] VINYL",
+     "source": "Discogs"
+    },
+    {
+     "id": "DQNpTsU70n4",
+     "title": "Mr. Barth - Lonely Blues [PLUMP 017]",
+     "source": "Discogs"
+    },
+    {
+     "id": "nDkaKGgoYt0",
+     "title": "GROOVE MACHINE   rainbow fungus",
+     "source": "Discogs"
+    },
+    {
+     "id": "XZmfIe6_RrE",
+     "title": "Popeye - Get Up [PLUMP 017]",
+     "source": "Discogs"
+    },
+    {
+     "id": "1NyLzW0QQr8",
+     "title": "(1996) Microbonze feat. Célia - La Musica Que Me Gusta [Original Version Mix]",
+     "source": "Discogs"
+    },
+    {
+     "id": "vWY-O0PMn5g",
+     "title": "IL Stefano & Alexi Delano - Keep On Coming (Original Mix)",
      "source": "Discogs"
     }
    ]
@@ -6625,6 +9357,171 @@
      "id": "l8vfH5Oh_8k",
      "title": "Mr. James Barth - My Old Blues Suits (Full Album)",
      "source": "YouTube search"
+    }
+   ]
+  },
+  {
+   "id": 37220,
+   "catno": "Plumpcd 102",
+   "catnos": [
+    "Plumpcd 102",
+    "plumpcd 102"
+   ],
+   "group": "plump",
+   "title": "Love You Forever",
+   "artists": [
+    {
+     "name": "Bobby Forester",
+     "key": "d14631"
+    }
+   ],
+   "year": 1998,
+   "released": "1998-04-27",
+   "country": "Sweden",
+   "format": "CD, Album",
+   "labels": [
+    {
+     "name": "Plumphouse Records",
+     "catno": "Plumpcd 102"
+    },
+    {
+     "name": "Plumphouse Records",
+     "catno": "plumpcd 102"
+    }
+   ],
+   "genres": [
+    "Electronic"
+   ],
+   "styles": [
+    "Tech House"
+   ],
+   "discogsImage": "https://i.discogs.com/X0HweItZcaJT_gwtogahIlG22Y-MazvCZlWqmtAHUdQ/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM3MjIw/LTE2NTcyMjc4ODQt/OTgxMS5qcGVn.jpeg",
+   "variants": [],
+   "discogs": "https://www.discogs.com/release/37220",
+   "tracks": [
+    {
+     "pos": "1",
+     "title": "I Know I Shouldn't",
+     "dur": "7:48",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "2",
+     "title": "The Day The World Stood Still",
+     "dur": "8:21",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "3",
+     "title": "(I Got) Pressure Control",
+     "dur": "7:22",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "4",
+     "title": "West Side Girls",
+     "dur": "6:32",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "5",
+     "title": "Nites Of Iguana",
+     "dur": "6:35",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "6",
+     "title": "Ceep Kumming",
+     "dur": "6:22",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "7",
+     "title": "Git Wat She Wonz",
+     "dur": "6:10",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "8",
+     "title": "Juk 2 My Rooz",
+     "dur": "6:57",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "9",
+     "title": "She Loxx Different",
+     "dur": "6:55",
+     "artists": [],
+     "credits": []
+    },
+    {
+     "pos": "10",
+     "title": "In The Year 2000",
+     "dur": "5:53",
+     "artists": [],
+     "credits": []
+    }
+   ],
+   "credits": [
+    {
+     "name": "Muffe",
+     "key": "d2101142",
+     "role": "Design"
+    },
+    {
+     "name": "Håkan Lindell",
+     "key": "d2249586",
+     "role": "Photography By"
+    },
+    {
+     "name": "Bobby Forester",
+     "key": "d14631",
+     "role": "Producer, Mixed By"
+    }
+   ],
+   "videos": [
+    {
+     "id": "k2zO2bmcM7o",
+     "title": "Bobby Forester - (I Got) Pressure Control",
+     "source": "Discogs"
+    },
+    {
+     "id": "rx1rJdOhH-U",
+     "title": "Bobby Forester - Ceep Kumming [Plumphouse Records / 1998]",
+     "source": "Discogs"
+    },
+    {
+     "id": "Q63ISeNVMFo",
+     "title": "Bobby Forester - West Side Girls (Plumphouse Records 1998)",
+     "source": "Discogs"
+    },
+    {
+     "id": "t9o_iLeqbmg",
+     "title": "Bobby Forester - In The Year 2000 [Plumpcd 102]",
+     "source": "Discogs"
+    },
+    {
+     "id": "SF2-pOfK8ZY",
+     "title": "Bobby Forester - Nites Of Iguana [Plumpcd 102]",
+     "source": "Discogs"
+    },
+    {
+     "id": "26Rb8ccqJKs",
+     "title": "Bobby Forester - West Side Girls",
+     "source": "Discogs"
+    },
+    {
+     "id": "tMzFWkPBytY",
+     "title": "Bobby Forester  -  Juk 2 My Rooz",
+     "source": "Discogs"
     }
    ]
   },
@@ -9176,15 +12073,63 @@
      "release": 33782,
      "role": "Written-By, Producer",
      "track": "16"
+    },
+    {
+     "release": 101063,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 15538,
+     "role": "Remix",
+     "track": "A2"
+    },
+    {
+     "release": 963,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 963,
+     "role": "Producer [All Trax By], Written-By [All Trax By]",
+     "track": null
     }
    ],
    "releases": [
+    963,
+    15538,
     30410,
     33782,
     56587,
+    101063,
     194084
    ],
-   "videos": [],
+   "videos": [
+    {
+     "id": "AR6thwXv_mE",
+     "title": "Andreas Bender - Cruise Control",
+     "source": "Discogs",
+     "release": 101063
+    },
+    {
+     "id": "YKhlxOuulqM",
+     "title": "Andreas Bender ‎– I Am There (1998)",
+     "source": "Discogs",
+     "release": 963
+    },
+    {
+     "id": "mvGNlPzZMEo",
+     "title": "Andreas Bender – i am here",
+     "source": "Discogs",
+     "release": 963
+    },
+    {
+     "id": "AfLuBuV46Lk",
+     "title": "Andreas Bender ‎– I Am Disco (1998)",
+     "source": "Discogs",
+     "release": 963
+    }
+   ],
    "discogs": "https://www.discogs.com/artist/1372"
   },
   {
@@ -9204,11 +12149,46 @@
      "release": 161657,
      "role": "Written-By, Producer",
      "track": null
+    },
+    {
+     "release": 52126,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 17596,
+     "role": "Written-by, Producer [All Pumping Grooves]",
+     "track": null
+    },
+    {
+     "release": 57273,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 22119,
+     "role": "Written-By",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "4"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "8"
     }
    ],
    "releases": [
+    17596,
+    22119,
+    52126,
+    57273,
     161657,
-    176252
+    176252,
+    872971
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/146330"
@@ -9371,11 +12351,63 @@
      "release": 20356129,
      "role": "Track artist",
      "track": "15"
+    },
+    {
+     "release": 52126,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 192062,
+     "role": "Remix",
+     "track": "B"
+    },
+    {
+     "release": 17596,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "D1"
+    },
+    {
+     "release": 57273,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 190581,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Remix",
+     "track": "1"
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "4"
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "8"
     }
    ],
    "releases": [
+    17596,
+    52126,
+    57273,
     161657,
     176252,
+    190581,
+    192062,
+    206267,
+    872971,
     20356129
    ],
    "videos": [
@@ -9406,6 +12438,72 @@
      "title": "Benderboys - Keep On Dripp'n",
      "source": "Discogs",
      "release": 161657
+    },
+    {
+     "id": "O7443oxKeh4",
+     "title": "Bender Boys - Don't try",
+     "source": "Discogs",
+     "release": 52126
+    },
+    {
+     "id": "ZogiGMjFacs",
+     "title": "Poltergeist - Bender Boys",
+     "source": "Discogs",
+     "release": 52126
+    },
+    {
+     "id": "gJ_GghLZzVU",
+     "title": "Bender Boys - So What I Did [1996]",
+     "source": "Discogs",
+     "release": 52126
+    },
+    {
+     "id": "Vq2PrhwmgI0",
+     "title": "Bender Boys - At The Cirkus (1995)",
+     "source": "Discogs",
+     "release": 52126
+    },
+    {
+     "id": "to-UGjGXTho",
+     "title": "Bender Boys - Broccoli",
+     "source": "Discogs",
+     "release": 17596
+    },
+    {
+     "id": "kHuAAlmGSd8",
+     "title": "Bender Boys - Clap Your Hands (1996)",
+     "source": "Discogs",
+     "release": 17596
+    },
+    {
+     "id": "AzuPst6cMfU",
+     "title": "Bender Boys - Fatz 1 EP (Smerigliato)",
+     "source": "Discogs",
+     "release": 57273
+    },
+    {
+     "id": "m6KJwQ6hixY",
+     "title": "Bender Boys - Fatz 1 EP (Muffins)",
+     "source": "Discogs",
+     "release": 57273
+    },
+    {
+     "id": "RWl3YKt_0Ls",
+     "title": "Bender Boys - Fatz 1 EP (Friends Of Max)",
+     "source": "Discogs",
+     "release": 57273
+    },
+    {
+     "id": "LUzXztXndrE",
+     "title": "Bender Boys - Fatz 1 EP (Basemaker) (Pitch -4%)",
+     "source": "Discogs",
+     "release": 57273
+    },
+    {
+     "id": "GHwEoUkirao",
+     "title": "Bender Boys - Freestylin",
+     "source": "Discogs",
+     "release": 190581
     }
    ],
    "discogs": "https://www.discogs.com/artist/12658"
@@ -9628,15 +12726,141 @@
      "release": 20356129,
      "role": "Track artist",
      "track": "4"
+    },
+    {
+     "release": 34448,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 37222,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 57451,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 37391,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "9"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "9"
     }
    ],
    "releases": [
+    34448,
+    37222,
+    37391,
     42643,
     47295,
+    57451,
     194084,
+    872971,
     20356129
    ],
-   "videos": [],
+   "videos": [
+    {
+     "id": "WMJgnE_eJiI",
+     "title": "Mr. Barth vs. Bob Brewthbaker - Knock 'Em Out (Old School Mix)",
+     "source": "Discogs",
+     "release": 34448
+    },
+    {
+     "id": "W3zQHm7YYc8",
+     "title": "Knock'em Out (Oldschool Mix) (2019 Remastered)",
+     "source": "Discogs",
+     "release": 34448
+    },
+    {
+     "id": "DJLPPujm6dI",
+     "title": "Mr. Barth vs. Bob Brewthbaker - Knock 'Em Out (In The Last Round)",
+     "source": "Discogs",
+     "release": 34448
+    },
+    {
+     "id": "IoOCbZ-9NCA",
+     "title": "Bob Brewthbaker - Guru Is Getting Married [PLUMP 014]",
+     "source": "Discogs",
+     "release": 37222
+    },
+    {
+     "id": "exa7rVfLVEs",
+     "title": "Bob Brewthbaker - Keep 'n Give [PLUMP 014]",
+     "source": "Discogs",
+     "release": 37222
+    },
+    {
+     "id": "GFLp9-dBSCY",
+     "title": "Bob Brewthbaker - Afterhour [PLUMP 014]",
+     "source": "Discogs",
+     "release": 37222
+    },
+    {
+     "id": "9MalhfFDZ6U",
+     "title": "Bob Brewthbaker - I Made The Music [PLUMP 014]",
+     "source": "Discogs",
+     "release": 37222
+    },
+    {
+     "id": "IkKlOPVl2YU",
+     "title": "1. The Dagger of Xian - Side A - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs",
+     "release": 57451
+    },
+    {
+     "id": "38gPHsNw8IQ",
+     "title": "3. Willitis Point - Side B - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs",
+     "release": 57451
+    },
+    {
+     "id": "1uc2Rsfugak",
+     "title": "2. The Sight of Juarios - Side A - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs",
+     "release": 57451
+    },
+    {
+     "id": "1wRZbORN6vQ",
+     "title": "Bob Brewthbaker & Eddie Chanoogah  -  The Dagger Of Xian",
+     "source": "Discogs",
+     "release": 57451
+    },
+    {
+     "id": "lcilfPJ5jAA",
+     "title": "Bob Brewthbaker - 'Always Something'",
+     "source": "Discogs",
+     "release": 37391
+    },
+    {
+     "id": "UOMUDThJ9tY",
+     "title": "Bob Brewthbaker - 'Asymetric Funk'",
+     "source": "Discogs",
+     "release": 37391
+    },
+    {
+     "id": "FJw7oSI1UAA",
+     "title": "Bob Brewthbaker - I Need This",
+     "source": "Discogs",
+     "release": 37391
+    },
+    {
+     "id": "3IpaTQo5Nt8",
+     "title": "Bob Brewthbaker - 'When The Time Comes'",
+     "source": "Discogs",
+     "release": 37391
+    }
+   ],
    "discogs": "https://www.discogs.com/artist/28855"
   },
   {
@@ -9654,12 +12878,136 @@
      "release": 194084,
      "role": "Track artist",
      "track": "6"
+    },
+    {
+     "release": 57277,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 57277,
+     "role": "Producer, Mixed By",
+     "track": null
+    },
+    {
+     "release": 15539,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 15539,
+     "role": "Producer, Mixed By",
+     "track": null
+    },
+    {
+     "release": 15538,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 37220,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 37220,
+     "role": "Producer, Mixed By",
+     "track": null
     }
    ],
    "releases": [
+    15538,
+    15539,
+    37220,
+    57277,
     194084
    ],
-   "videos": [],
+   "videos": [
+    {
+     "id": "pI6LpWIzNSI",
+     "title": "Bobby Forester  -  I Got Pressure Control",
+     "source": "Discogs",
+     "release": 57277
+    },
+    {
+     "id": "4tF6qzcCPaQ",
+     "title": "Bobby Forester  -  The Day The World Stood Still",
+     "source": "Discogs",
+     "release": 57277
+    },
+    {
+     "id": "tMzFWkPBytY",
+     "title": "Bobby Forester  -  Juk 2 My Rooz",
+     "source": "Discogs",
+     "release": 57277
+    },
+    {
+     "id": "P53dz2C-18k",
+     "title": "Bobby Forester  -  I Know I Shouldn't",
+     "source": "Discogs",
+     "release": 15539
+    },
+    {
+     "id": "SF2-pOfK8ZY",
+     "title": "Bobby Forester - Nites Of Iguana [Plumpcd 102]",
+     "source": "Discogs",
+     "release": 15539
+    },
+    {
+     "id": "Q63ISeNVMFo",
+     "title": "Bobby Forester - West Side Girls (Plumphouse Records 1998)",
+     "source": "Discogs",
+     "release": 15539
+    },
+    {
+     "id": "xkwvsDJvezk",
+     "title": "Bobby Forester -  She Loox Different (Plumphouse Records)",
+     "source": "Discogs",
+     "release": 15539
+    },
+    {
+     "id": "XpvoKmNmL5Y",
+     "title": "Bobby Forester - The Day The World Stood Still (Forester Speed Karate Mix)",
+     "source": "Discogs",
+     "release": 15538
+    },
+    {
+     "id": "sjYpJ26pFE4",
+     "title": "Bobby Forester - Pressure Control (J. Dahlbäck Mix) (1998)",
+     "source": "Discogs",
+     "release": 15538
+    },
+    {
+     "id": "Cn2fr7nrH3M",
+     "title": "Bobby Forester -  Pressure Control (A. Blender Mix)",
+     "source": "Discogs",
+     "release": 15538
+    },
+    {
+     "id": "k2zO2bmcM7o",
+     "title": "Bobby Forester - (I Got) Pressure Control",
+     "source": "Discogs",
+     "release": 37220
+    },
+    {
+     "id": "rx1rJdOhH-U",
+     "title": "Bobby Forester - Ceep Kumming [Plumphouse Records / 1998]",
+     "source": "Discogs",
+     "release": 37220
+    },
+    {
+     "id": "t9o_iLeqbmg",
+     "title": "Bobby Forester - In The Year 2000 [Plumpcd 102]",
+     "source": "Discogs",
+     "release": 37220
+    },
+    {
+     "id": "26Rb8ccqJKs",
+     "title": "Bobby Forester - West Side Girls",
+     "source": "Discogs",
+     "release": 37220
+    }
+   ],
    "discogs": "https://www.discogs.com/artist/14631"
   },
   {
@@ -9987,6 +13335,35 @@
    "discogs": "https://www.discogs.com/artist/10686"
   },
   {
+   "key": "d712736",
+   "discogsId": 712736,
+   "name": "Célia Tarrius",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 192062,
+     "role": "Featuring",
+     "track": null
+    },
+    {
+     "release": 192062,
+     "role": "Vocals",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Vocals",
+     "track": "1"
+    }
+   ],
+   "releases": [
+    192062,
+    872971
+   ],
+   "videos": [],
+   "discogs": "https://www.discogs.com/artist/712736"
+  },
+  {
    "key": "d9603",
    "discogsId": 9603,
    "name": "D'Wachman & HD Substance",
@@ -10080,6 +13457,24 @@
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/48468"
+  },
+  {
+   "key": "d12528913",
+   "discogsId": 12528913,
+   "name": "Dave Williams",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 15538,
+     "role": "Lacquer Cut By",
+     "track": null
+    }
+   ],
+   "releases": [
+    15538
+   ],
+   "videos": [],
+   "discogs": "https://www.discogs.com/artist/12528913"
   },
   {
    "key": "d176841",
@@ -10297,6 +13692,11 @@
      "release": 20356129,
      "role": "Track artist",
      "track": "10"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "7"
     }
    ],
    "releases": [
@@ -10310,6 +13710,7 @@
     136830,
     143050,
     176309,
+    872971,
     20356129
    ],
    "videos": [
@@ -10502,10 +13903,31 @@
      "release": 194084,
      "role": "Written-By, Producer",
      "track": "9"
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "C2"
+    },
+    {
+     "release": 57451,
+     "role": "Songwriter",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "3"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "3"
     }
    ],
    "releases": [
     27200,
+    57451,
     84447,
     93003,
     93010,
@@ -10514,8 +13936,10 @@
     143050,
     194084,
     204200,
+    206267,
     237229,
-    309459
+    309459,
+    872971
    ],
    "videos": [
     {
@@ -10659,6 +14083,55 @@
    "discogs": "https://www.discogs.com/artist/174588"
   },
   {
+   "key": "d150059",
+   "discogsId": 150059,
+   "name": "Dr. Hallu",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "D2"
+    },
+    {
+     "release": 231247,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "6"
+    }
+   ],
+   "releases": [
+    206267,
+    231247,
+    872971
+   ],
+   "videos": [
+    {
+     "id": "T4FjMZkkQ2E",
+     "title": "Dr. Hallu - Pack The Trunk (Cinatory Version) (1998)",
+     "source": "Discogs",
+     "release": 231247
+    },
+    {
+     "id": "X_kF6K3LLEI",
+     "title": "Dr. Hallu - Bring Da Sax (1998)",
+     "source": "Discogs",
+     "release": 231247
+    },
+    {
+     "id": "NLwQZUY6C4k",
+     "title": "Dr. Hallu - Pack The Trunk (Spanky Version)",
+     "source": "Discogs",
+     "release": 231247
+    }
+   ],
+   "discogs": "https://www.discogs.com/artist/150059"
+  },
+  {
    "key": "d2284",
    "discogsId": 2284,
    "name": "Drum Club",
@@ -10691,12 +14164,43 @@
      "release": 194084,
      "role": "Track artist",
      "track": "1"
+    },
+    {
+     "release": 57451,
+     "role": "Main artist",
+     "track": null
     }
    ],
    "releases": [
+    57451,
     194084
    ],
-   "videos": [],
+   "videos": [
+    {
+     "id": "IkKlOPVl2YU",
+     "title": "1. The Dagger of Xian - Side A - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs",
+     "release": 57451
+    },
+    {
+     "id": "38gPHsNw8IQ",
+     "title": "3. Willitis Point - Side B - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs",
+     "release": 57451
+    },
+    {
+     "id": "1uc2Rsfugak",
+     "title": "2. The Sight of Juarios - Side A - Enchantment under the Sea - Plumphouse Records 1998",
+     "source": "Discogs",
+     "release": 57451
+    },
+    {
+     "id": "1wRZbORN6vQ",
+     "title": "Bob Brewthbaker & Eddie Chanoogah  -  The Dagger Of Xian",
+     "source": "Discogs",
+     "release": 57451
+    }
+   ],
    "discogs": "https://www.discogs.com/artist/798568"
   },
   {
@@ -10716,11 +14220,34 @@
      "release": 194084,
      "role": "Written-By",
      "track": "4"
+    },
+    {
+     "release": 190584,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 192062,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "1"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "10"
     }
    ],
    "releases": [
     184246,
-    194084
+    190584,
+    192062,
+    194084,
+    872971
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/340054"
@@ -10765,10 +14292,28 @@
      "release": 194084,
      "role": "Written-By, Producer",
      "track": "5"
+    },
+    {
+     "release": 65343,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 470207,
+     "role": "Producer",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "2"
     }
    ],
    "releases": [
-    194084
+    65343,
+    194084,
+    470207,
+    872971
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/92"
@@ -10944,10 +14489,28 @@
      "release": 20356129,
      "role": "Track artist",
      "track": "13"
+    },
+    {
+     "release": 190582,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "B1"
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "7"
     }
    ],
    "releases": [
     176309,
+    190582,
+    206267,
+    872971,
     20356129
    ],
    "videos": [
@@ -11328,6 +14891,24 @@
    "discogs": "https://www.discogs.com/artist/69101"
   },
   {
+   "key": "d2249586",
+   "discogsId": 2249586,
+   "name": "Håkan Lindell",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 37220,
+     "role": "Photography By",
+     "track": null
+    }
+   ],
+   "releases": [
+    37220
+   ],
+   "videos": [],
+   "discogs": "https://www.discogs.com/artist/2249586"
+  },
+  {
    "key": "d15184040",
    "discogsId": 15184040,
    "name": "Hü",
@@ -11403,10 +14984,22 @@
      "release": 237229,
      "role": "Written-By, Producer",
      "track": "B2"
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "C2"
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "3"
     }
    ],
    "releases": [
-    237229
+    206267,
+    237229,
+    872971
    ],
    "videos": [
     {
@@ -11543,11 +15136,40 @@
      "release": 161657,
      "role": "Written-By, Producer",
      "track": null
+    },
+    {
+     "release": 52126,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 17596,
+     "role": "Written-by, Producer [All Pumping Grooves]",
+     "track": null
+    },
+    {
+     "release": 57273,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "4"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "8"
     }
    ],
    "releases": [
+    17596,
+    52126,
+    57273,
     161657,
-    176252
+    176252,
+    872971
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/602492"
@@ -11626,9 +15248,15 @@
      "release": 194084,
      "role": "Remix",
      "track": "4"
+    },
+    {
+     "release": 15538,
+     "role": "Remix",
+     "track": "A1"
     }
    ],
    "releases": [
+    15538,
     56587,
     194084
    ],
@@ -11680,11 +15308,17 @@
      "release": 430576,
      "role": "Written-By, Producer [Produced By]",
      "track": "10"
+    },
+    {
+     "release": 38673,
+     "role": "Main artist",
+     "track": null
     }
    ],
    "releases": [
     25239,
     27200,
+    38673,
     56587,
     82698,
     430576
@@ -11730,6 +15364,18 @@
      "title": "Joel Mull - Elastica [Techno 1997] [LOOP037]",
      "source": "Discogs",
      "release": 25239
+    },
+    {
+     "id": "cf9o4rs0IGE",
+     "title": "Joel Mull – Bärry Hart (1997) [Vibe 001]",
+     "source": "Discogs",
+     "release": 38673
+    },
+    {
+     "id": "NodZOgkNlWg",
+     "title": "Joel Mull - Backoldman - 1997 [Demo Track] Techno",
+     "source": "Discogs",
+     "release": 38673
     }
    ],
    "discogs": "https://www.discogs.com/artist/1356"
@@ -11850,9 +15496,15 @@
      "release": 194084,
      "role": "Written-By, Producer",
      "track": "6"
+    },
+    {
+     "release": 15538,
+     "role": "Remix",
+     "track": "B"
     }
    ],
    "releases": [
+    15538,
     194084
    ],
    "videos": [],
@@ -11931,16 +15583,24 @@
    "key": "d425843",
    "discogsId": 425843,
    "name": "L.S. Lindgren",
-   "aliases": [],
+   "aliases": [
+    "LS Lindgren"
+   ],
    "credits": [
     {
      "release": 184246,
      "role": "Guitar",
      "track": "A1"
+    },
+    {
+     "release": 190584,
+     "role": "Guitar [Screwed]",
+     "track": "B2"
     }
    ],
    "releases": [
-    184246
+    184246,
+    190584
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/425843"
@@ -12161,9 +15821,15 @@
      "release": 93010,
      "role": "Written-By [Made By]",
      "track": null
+    },
+    {
+     "release": 22119,
+     "role": "Written-By",
+     "track": null
     }
    ],
    "releases": [
+    22119,
     27200,
     38211,
     84447,
@@ -12322,6 +15988,73 @@
    "discogs": "https://www.discogs.com/artist/8193869"
   },
   {
+   "key": "d42240",
+   "discogsId": 42240,
+   "name": "Microbonze",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 192062,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "C1"
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "1"
+    }
+   ],
+   "releases": [
+    192062,
+    206267,
+    872971
+   ],
+   "videos": [
+    {
+     "id": "yl0_s9bSBD0",
+     "title": "Microbonze   La musica que me gusta (original Vers) - 1996 - House",
+     "source": "Discogs",
+     "release": 192062
+    },
+    {
+     "id": "Ok6PbF_wqgY",
+     "title": "Microbonze   La musica que me gusta (Bend Over Remix) - 1996 - House",
+     "source": "Discogs",
+     "release": 192062
+    },
+    {
+     "id": "1NyLzW0QQr8",
+     "title": "(1996) Microbonze feat. Célia - La Musica Que Me Gusta [Original Version Mix]",
+     "source": "Discogs",
+     "release": 192062
+    },
+    {
+     "id": "Di1LlZu6Cq0",
+     "title": "Microbonze – La musica que me gusta",
+     "source": "Discogs",
+     "release": 192062
+    },
+    {
+     "id": "nphuPsh6sFU",
+     "title": "Microbonze - La Musica Que Me Gusta",
+     "source": "Discogs",
+     "release": 192062
+    },
+    {
+     "id": "gWgspImHPoo",
+     "title": "Microbonze feat. Célia - La Musica Que Me Gusta (Bend Over Remix)",
+     "source": "Discogs",
+     "release": 192062
+    }
+   ],
+   "discogs": "https://www.discogs.com/artist/42240"
+  },
+  {
    "key": "d19539",
    "discogsId": 19539,
    "name": "Microman",
@@ -12351,12 +16084,36 @@
      "release": 20356129,
      "role": "Track artist",
      "track": "7"
+    },
+    {
+     "release": 190584,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 190577,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "A1"
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "10"
     }
    ],
    "releases": [
     176309,
     184246,
+    190577,
+    190584,
     194084,
+    206267,
+    872971,
     20356129
    ],
    "videos": [
@@ -12380,6 +16137,24 @@
      "title": "Microman - Microhouse (more than 14 min mix)",
      "source": "Discogs",
      "release": 184246
+    },
+    {
+     "id": "d1EuS4od0tM",
+     "title": "Microman - Rhythm Two",
+     "source": "Discogs",
+     "release": 190584
+    },
+    {
+     "id": "myWOx86ga94",
+     "title": "Microman - Rhythm Three",
+     "source": "Discogs",
+     "release": 190584
+    },
+    {
+     "id": "7faFA-e7Lzo",
+     "title": "Microman - Coolgate Cowboy (Cowboy Heaven Mix) (1996)",
+     "source": "Discogs",
+     "release": 190577
     }
    ],
    "discogs": "https://www.discogs.com/artist/19539"
@@ -12641,14 +16416,43 @@
      "release": 20356129,
      "role": "Track artist",
      "track": "4"
+    },
+    {
+     "release": 34448,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 190587,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "A2"
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "5"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "5"
     }
    ],
    "releases": [
+    34448,
     42643,
     47295,
     107032,
+    190587,
     194084,
+    206267,
     237229,
+    872971,
     20356129
    ],
    "videos": [
@@ -12721,6 +16525,30 @@
      "title": "Mr. James Barth - Together (We Are Strong) (My Old Blues Suits, 1996)",
      "source": "Discogs",
      "release": 42643
+    },
+    {
+     "id": "WMJgnE_eJiI",
+     "title": "Mr. Barth vs. Bob Brewthbaker - Knock 'Em Out (Old School Mix)",
+     "source": "Discogs",
+     "release": 34448
+    },
+    {
+     "id": "W3zQHm7YYc8",
+     "title": "Knock'em Out (Oldschool Mix) (2019 Remastered)",
+     "source": "Discogs",
+     "release": 34448
+    },
+    {
+     "id": "DJLPPujm6dI",
+     "title": "Mr. Barth vs. Bob Brewthbaker - Knock 'Em Out (In The Last Round)",
+     "source": "Discogs",
+     "release": 34448
+    },
+    {
+     "id": "PZWxpBd0CVU",
+     "title": "Mr. Barth - Step A Side (Original Version)",
+     "source": "Discogs",
+     "release": 190587
     }
    ],
    "discogs": "https://www.discogs.com/artist/89"
@@ -12742,6 +16570,24 @@
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/13932"
+  },
+  {
+   "key": "d2101142",
+   "discogsId": 2101142,
+   "name": "Muffe",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 37220,
+     "role": "Design",
+     "track": null
+    }
+   ],
+   "releases": [
+    37220
+   ],
+   "videos": [],
+   "discogs": "https://www.discogs.com/artist/2101142"
   },
   {
    "key": "d9569",
@@ -13124,12 +16970,79 @@
      "release": 194084,
      "role": "Track artist",
      "track": "5"
+    },
+    {
+     "release": 65343,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 206267,
+     "role": "Track artist",
+     "track": "B2"
+    },
+    {
+     "release": 144692,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Track artist",
+     "track": "2"
     }
    ],
    "releases": [
-    194084
+    65343,
+    144692,
+    194084,
+    206267,
+    872971
    ],
-   "videos": [],
+   "videos": [
+    {
+     "id": "XZmfIe6_RrE",
+     "title": "Popeye - Get Up [PLUMP 017]",
+     "source": "Discogs",
+     "release": 65343
+    },
+    {
+     "id": "pGd2d4EC7gg",
+     "title": "Popeye - boogie 2000 - plumphouse",
+     "source": "Discogs",
+     "release": 65343
+    },
+    {
+     "id": "IwwWHIg_URI",
+     "title": "Popeye - Rise Up",
+     "source": "Discogs",
+     "release": 65343
+    },
+    {
+     "id": "8ZNvO1RWyUc",
+     "title": "Popeye - Club Lounge Vol. 2 - Bit's N Snippets",
+     "source": "Discogs",
+     "release": 144692
+    },
+    {
+     "id": "GKru5TforWk",
+     "title": "Popeye - Club Lounge Vol. 2 - Tunnel Vision",
+     "source": "Discogs",
+     "release": 144692
+    },
+    {
+     "id": "4FiWX8qrme0",
+     "title": "Popeye - Revelation - Club Lounge vol 2",
+     "source": "Discogs",
+     "release": 144692
+    },
+    {
+     "id": "eAnWQLmk8b8",
+     "title": "Popeye - Track Nouveau - Club Lounge Vol 2",
+     "source": "Discogs",
+     "release": 144692
+    }
+   ],
    "discogs": "https://www.discogs.com/artist/53977"
   },
   {
@@ -13668,6 +17581,31 @@
    "discogs": "https://www.discogs.com/artist/55874"
   },
   {
+   "key": "d18590",
+   "discogsId": 18590,
+   "name": "Soul Kitchen Orchestra",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 22119,
+     "role": "Main artist",
+     "track": null
+    }
+   ],
+   "releases": [
+    22119
+   ],
+   "videos": [
+    {
+     "id": "F0U-G__9kpk",
+     "title": "Soul Kitchen Orchestra , Chocolate Dreams",
+     "source": "Discogs",
+     "release": 22119
+    }
+   ],
+   "discogs": "https://www.discogs.com/artist/18590"
+  },
+  {
    "key": "d4549",
    "discogsId": 4549,
    "name": "Spanky",
@@ -13709,6 +17647,42 @@
    "discogs": "https://www.discogs.com/artist/122328"
   },
   {
+   "key": "d661689",
+   "discogsId": 661689,
+   "name": "Stefan Andreasson",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "3"
+    }
+   ],
+   "releases": [
+    872971
+   ],
+   "videos": [],
+   "discogs": "https://www.discogs.com/artist/661689"
+  },
+  {
+   "key": "n-stefan-holm",
+   "discogsId": 0,
+   "name": "Stefan Holm",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 872971,
+     "role": "Artwork By [Cover], Photography",
+     "track": null
+    }
+   ],
+   "releases": [
+    872971
+   ],
+   "videos": [],
+   "discogs": null
+  },
+  {
    "key": "d30532",
    "discogsId": 30532,
    "name": "Strong Accents",
@@ -13718,9 +17692,15 @@
      "release": 93010,
      "role": "Main artist",
      "track": null
+    },
+    {
+     "release": 57596,
+     "role": "Main artist",
+     "track": null
     }
    ],
    "releases": [
+    57596,
     93010
    ],
    "videos": [
@@ -13756,6 +17736,30 @@
      "title": "Strong Accents - Long Enough",
      "source": "Discogs",
      "release": 93010
+    },
+    {
+     "id": "3bH7p6HBCPQ",
+     "title": "Strong Accents - Let's Take Off (Version)  [1996]",
+     "source": "Discogs",
+     "release": 57596
+    },
+    {
+     "id": "l68WAWJ1Xmo",
+     "title": "Strong Accents ‎- Have a nice journey version",
+     "source": "Discogs",
+     "release": 57596
+    },
+    {
+     "id": "7mhJ7LDO_6Q",
+     "title": "Strong Accents - Original Destination (Version)  [1996]",
+     "source": "Discogs",
+     "release": 57596
+    },
+    {
+     "id": "NJ9Rp4XiN6M",
+     "title": "Strong Accents - Oops! We've Lost A Wing (Version)  [1996]",
+     "source": "Discogs",
+     "release": 57596
     }
    ],
    "discogs": "https://www.discogs.com/artist/30532"
@@ -13906,6 +17910,30 @@
    "discogs": "https://www.discogs.com/artist/1609"
   },
   {
+   "key": "d476659",
+   "discogsId": 476659,
+   "name": "Thierry Tarrius",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 192062,
+     "role": "Written-By, Producer",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "1"
+    }
+   ],
+   "releases": [
+    192062,
+    872971
+   ],
+   "videos": [],
+   "discogs": "https://www.discogs.com/artist/476659"
+  },
+  {
    "key": "d1090925",
    "discogsId": 1090925,
    "name": "Thomas Gustavsson",
@@ -13915,10 +17943,16 @@
      "release": 430576,
      "role": "Written-By, Producer [Produced By]",
      "track": "7"
+    },
+    {
+     "release": 872971,
+     "role": "Producer, Written-By",
+     "track": "6"
     }
    ],
    "releases": [
-    430576
+    430576,
+    872971
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/1090925"
@@ -14036,11 +18070,22 @@
      "release": 430576,
      "role": "Track artist",
      "track": "7"
+    },
+    {
+     "release": 22119,
+     "role": "Written-By",
+     "track": null
+    },
+    {
+     "release": 231247,
+     "role": "Written-By, Producer",
+     "track": null
     }
    ],
    "releases": [
     950,
     2429,
+    22119,
     27200,
     30410,
     38238,
@@ -14049,6 +18094,7 @@
     66272,
     87426,
     143050,
+    231247,
     430576
    ],
    "videos": [
@@ -14254,7 +18300,9 @@
    "key": "d394355",
    "discogsId": 394355,
    "name": "Tim D.",
-   "aliases": [],
+   "aliases": [
+    "Tim Dennen"
+   ],
    "credits": [
     {
      "release": 30410,
@@ -14275,9 +18323,15 @@
      "release": 2430,
      "role": "Mastered By",
      "track": null
+    },
+    {
+     "release": 963,
+     "role": "Lacquer Cut By",
+     "track": null
     }
    ],
    "releases": [
+    963,
     2429,
     2430,
     30410,
@@ -14285,6 +18339,60 @@
    ],
    "videos": [],
    "discogs": "https://www.discogs.com/artist/394355"
+  },
+  {
+   "key": "d325960",
+   "discogsId": 325960,
+   "name": "Tommy Tee",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 470207,
+     "role": "Main artist",
+     "track": null
+    }
+   ],
+   "releases": [
+    470207
+   ],
+   "videos": [
+    {
+     "id": "8kad9iRf17o",
+     "title": "Tommy Tee - Golden Whoop (1996)",
+     "source": "Discogs",
+     "release": 470207
+    },
+    {
+     "id": "891ovE-D1J8",
+     "title": "Tommy Tee - D-Inferno",
+     "source": "Discogs",
+     "release": 470207
+    }
+   ],
+   "discogs": "https://www.discogs.com/artist/325960"
+  },
+  {
+   "key": "d325961",
+   "discogsId": 325961,
+   "name": "Tommy Wallin",
+   "aliases": [],
+   "credits": [
+    {
+     "release": 470207,
+     "role": "Producer",
+     "track": null
+    },
+    {
+     "release": 470207,
+     "role": "Written-By",
+     "track": null
+    }
+   ],
+   "releases": [
+    470207
+   ],
+   "videos": [],
+   "discogs": "https://www.discogs.com/artist/325961"
   },
   {
    "key": "d1861902",
@@ -14457,6 +18565,16 @@
      "release": 430576,
      "role": "Main artist",
      "track": null
+    },
+    {
+     "release": 206267,
+     "role": "Main artist",
+     "track": null
+    },
+    {
+     "release": 872971,
+     "role": "Main artist",
+     "track": null
     }
    ],
    "releases": [
@@ -14464,9 +18582,11 @@
     56587,
     143050,
     194084,
+    206267,
     259370,
     309459,
     430576,
+    872971,
     2264437
    ],
    "videos": [
@@ -14733,6 +18853,42 @@
      "title": "Phuture – Your Only Friend (Thee Aphrohead Mix)",
      "source": "Discogs",
      "release": 430576
+    },
+    {
+     "id": "HjT4jr-Ws9g",
+     "title": "Microman - Microhouse [more than 14 min mix] VINYL",
+     "source": "Discogs",
+     "release": 206267
+    },
+    {
+     "id": "DQNpTsU70n4",
+     "title": "Mr. Barth - Lonely Blues [PLUMP 017]",
+     "source": "Discogs",
+     "release": 206267
+    },
+    {
+     "id": "nDkaKGgoYt0",
+     "title": "GROOVE MACHINE   rainbow fungus",
+     "source": "Discogs",
+     "release": 206267
+    },
+    {
+     "id": "XZmfIe6_RrE",
+     "title": "Popeye - Get Up [PLUMP 017]",
+     "source": "Discogs",
+     "release": 206267
+    },
+    {
+     "id": "1NyLzW0QQr8",
+     "title": "(1996) Microbonze feat. Célia - La Musica Que Me Gusta [Original Version Mix]",
+     "source": "Discogs",
+     "release": 206267
+    },
+    {
+     "id": "vWY-O0PMn5g",
+     "title": "IL Stefano & Alexi Delano - Keep On Coming (Original Mix)",
+     "source": "Discogs",
+     "release": 206267
     }
    ],
    "discogs": "https://www.discogs.com/artist/194"
@@ -14765,9 +18921,15 @@
      "release": 194084,
      "role": "Co-producer",
      "track": "1"
+    },
+    {
+     "release": 57451,
+     "role": "Songwriter, Co-producer",
+     "track": null
     }
    ],
    "releases": [
+    57451,
     194084
    ],
    "videos": [],
@@ -14788,10 +18950,16 @@
      "release": 194084,
      "role": "Sleeve",
      "track": null
+    },
+    {
+     "release": 101063,
+     "role": "Design",
+     "track": null
     }
    ],
    "releases": [
     950,
+    101063,
     194084
    ],
    "videos": [],
