@@ -232,6 +232,8 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 .tpled i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to right,var(--loop) 0 calc(100%/40 - 2px),transparent calc(100%/40 - 2px) calc(100%/40));clip-path:inset(0 calc((1 - var(--v,0)) * 100%) 0 0)}
 .tpmeters canvas{width:100%;height:90px;border-radius:8px;background:var(--surface)}
 .tlink{color:inherit;text-decoration:none}.tlink:hover{text-decoration:underline}
+/* Links that stand on their own in lists get a finger-sized tap area (at least 44px tall, 24px wide). */
+.tlink,.people li a,.credits a{display:inline-flex;align-items:center;min-height:44px;min-width:24px}
 #partyDlg{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:20px;max-width:min(440px,calc(100vw - 32px))}
 #partyDlg::backdrop{background:var(--scrim)}
 #partyDlg h2{font-size:24px;margin:0 0 10px;text-transform:none}
@@ -280,7 +282,7 @@ body.docked{padding-bottom:calc(var(--dockh,84px) + 12px)}
 #dock .dmeta{grid-area:meta;min-width:0;display:flex;flex-direction:column;gap:1px;text-decoration:none;color:var(--ink)}
 #dock .dmeta b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #dock .dmeta small{font:12px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#dock .dctl{grid-area:ctl;display:flex;align-items:center;gap:2px}
+#dock .dctl{grid-area:ctl;display:flex;align-items:center;gap:4px;min-height:48px}
 #dock .dctl .dplay{background:var(--ink);color:var(--bg);width:44px;height:44px}
 #dock .dwave{grid-area:wave;position:relative;height:40px;min-width:0;border-radius:4px}
 #dock .dwave canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -414,6 +416,9 @@ header.top{transition:transform .25s ease}
 .sleeve.multi{position:relative}
 .track{display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .track::-webkit-scrollbar{display:none}
+/* Card slideshows sit inside a link: they don't scroll on their own (so there is no unreachable scroll area
+   for keyboards and screen readers); a sideways swipe moves to the next picture instead. */
+a .track{overflow-x:hidden;touch-action:pan-y}
 .track img{flex:0 0 100%;width:100%;height:100%;object-fit:contain;background:var(--surface);scroll-snap-align:start;scroll-snap-stop:always;user-select:none;-webkit-user-drag:none}
 .badge{position:absolute;right:8px;bottom:8px;font:600 11px/1 var(--mono);padding:4px 7px;border-radius:999px;background:var(--scrim);color:var(--scrim-ink);pointer-events:none}
 .fade{position:relative;display:block;width:100%;height:100%;perspective:700px}
@@ -577,7 +582,7 @@ a.vthumb{text-decoration:none}
       <h2 id="pwTitle" class="watchtitle" tabindex="-1"></h2>
       <div class="watchmeta" id="pwMeta"></div>
       <div id="pwTracks"></div></div>
-    <aside class="upnext" aria-labelledby="pwUpH"><div class="uphead"><h2 id="pwUpH">Up next</h2></div><ol id="pwUp"></ol></aside>
+    <div class="upnext" role="group" aria-labelledby="pwUpH"><div class="uphead"><h2 id="pwUpH">Up next</h2></div><ol id="pwUp"></ol></div>
   </div>
 </section>
 <dialog id="partyDlg" aria-labelledby="partyTitle"><div id="partyBody"></div><p class="staffmsg" id="partyMsg" role="status" aria-live="polite"></p></dialog>
@@ -713,6 +718,14 @@ document.addEventListener("scroll", e=>{ const t=e.target; if(!t.classList||!t.c
   const k=Math.round(t.scrollLeft/Math.max(1,t.clientWidth));
   if(t.id==="slTrack"){ const r=byId.get(location.hash.slice(9)); if(r) setSlide(r,k); return; }
   const b=t.parentNode.querySelector(".badge"); if(b) b.textContent=(k+1)+"/"+t.children.length; }, true);
+(function(){ let sw=null, swallow=false;
+  document.addEventListener("pointerdown",e=>{ const t=e.target.closest&&e.target.closest("a .track"); sw=t?{t,x:e.clientX,y:e.clientY}:null; },true);
+  document.addEventListener("pointerup",e=>{ if(!sw) return; const {t,x,y}=sw; sw=null; const dx=e.clientX-x, dy=e.clientY-y;
+    if(Math.abs(dx)<30||Math.abs(dx)<Math.abs(dy)) return;
+    const n=t.children.length, k=Math.round(t.scrollLeft/Math.max(1,t.clientWidth)), to=(k+(dx<0?1:-1)+n)%n;
+    t.scrollTo({left:to*t.clientWidth,behavior:reducedMotion.matches?"auto":"smooth"}); swallow=true; setTimeout(()=>swallow=false,400); },true);
+  document.addEventListener("click",e=>{ if(swallow && e.target.closest&&e.target.closest("a .track")){ e.preventDefault(); e.stopPropagation(); swallow=false; } },true);
+})();
 function setNav(v){ for(const [id,val] of [["navReleases","releases"],["navVideos","videos"],["navPeople","people"],["navAbout","about"],["navAdmin","admin"]]){ const a=document.getElementById(id); v===val?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current"); } }
 function announce(t){ live.textContent=""; setTimeout(()=>live.textContent=t,30); }
 let quiet=false;
@@ -1560,8 +1573,8 @@ function renderSlides(r){
   const k=Math.min(slideAt[r.id]||0, Math.max(0,n-1)); slideAt[r.id]=k;
   box.onclick = e => { if(e.target.closest("img")||e.target.closest("[data-full]")) openViewer(r, slideAt[r.id]||0); };
   if(n<=1){ box.innerHTML=sleeve(r)+(n?`<div class="slidectl"><button type="button" class="btn small" data-full>Full screen</button></div>`:""); renderSlideCtl(r); return; }
-  box.innerHTML=`<section class="slideshow" aria-roledescription="carousel" aria-label="Artwork for ${esc(r.title)}, ${n} images" tabindex="0">
-    <div class="sleeve multi"><div class="track" id="slTrack">${imgs.map((x,i)=>`<img src="${esc(x.url)}" alt="${i===0?"Main cover":"Image "+(i+1)} of ${esc(r.title)}" draggable="false">`).join("")}</div></div>
+  box.innerHTML=`<section class="slideshow" aria-roledescription="carousel" aria-label="Artwork for ${esc(r.title)}, ${n} images">
+    <div class="sleeve multi"><div class="track" id="slTrack" tabindex="0" role="group" aria-label="Pictures, use the arrow keys to move">${imgs.map((x,i)=>`<img src="${esc(x.url)}" alt="${i===0?"Main cover":"Image "+(i+1)} of ${esc(r.title)}" draggable="false">`).join("")}</div></div>
     <div class="slidectl">
       <button type="button" class="navbtn prev" id="slPrev" aria-label="Previous image"></button>
       <span class="slcount" id="slCount" aria-live="polite">Image ${k+1} of ${n}</span>
