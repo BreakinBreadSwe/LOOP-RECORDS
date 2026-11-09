@@ -140,16 +140,17 @@ body.relpage .detail{height:calc(100dvh - var(--hdrh,80px) - var(--dockh,0px) - 
 body.relpage .detail > div{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 body.relpage .detail .relside{position:static;max-height:none}
 body.relpage .detail > div:last-child{padding-right:4px;padding-bottom:24px}
-/* Phones too: two columns, the artwork and All releases stay put, the text scrolls beside them. */
-@media (max-width:760px){.detail{grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:14px}
-  .detail > div:last-child{min-width:0;overflow-wrap:anywhere}
-  .detail h1{font-size:clamp(24px,7vw,34px)}
-  .detail .relside .back{margin-bottom:10px;padding:7px 10px 7px 8px;font-size:13px}
-  .detail .relside .btnrow{gap:6px}
-  .detail .relside .slidectl{flex-wrap:wrap;gap:6px;justify-content:center}
-  .detail .relside .slcount{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .detail .relside .navbtn{width:32px;height:32px}
-  .detail .relside [data-full]{flex:1 1 auto;padding-inline:8px}}
+/* Phones (Gordon 9 Nov 2026): one column. All releases, the cover full width with its arrows, dots and
+   Full screen, then all the text underneath. The page scrolls normally: no inner panes, nothing sticky. */
+@media (max-width:760px){body.relpage{overflow:visible;overscroll-behavior:auto}
+  body.relpage > footer{display:block}
+  body.relpage main{padding-bottom:64px}
+  .detail,body.relpage .detail{grid-template-columns:minmax(0,1fr);gap:20px;height:auto;align-items:start}
+  .detail > div,body.relpage .detail > div{min-height:auto;overflow:visible}
+  .detail .relside,body.relpage .detail .relside{position:static;top:auto;max-height:none;overflow:visible;padding:0}
+  .detail > div:last-child,body.relpage .detail > div:last-child{min-width:0;padding:0;overflow-wrap:anywhere}
+  body:has(header.top.away) .detail .relside{top:auto;max-height:none}
+  .detail h1{font-size:clamp(30px,9vw,44px)}}
 .detail .sleeve{box-shadow:0 1px 0 var(--line),0 24px 40px -24px rgba(0,0,0,.6)}
 .facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:16px 0 0}
 .facts dt{font:500 12px/1.9 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
