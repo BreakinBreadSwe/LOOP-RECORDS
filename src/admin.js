@@ -688,7 +688,8 @@ LIVE.impdesk = () => {
   const ds = IMP.discs || [];
   return `<h2 class="sect">CD drive</h2>` + (ds.length
     ? `<ul class="plain">${ds.map((d,i)=>`<li><button type="button" class="btn" data-act="readdisc" data-i="${i}">Read ${esc(d.name)}</button> ${d.kind==="audio-cd"?"Music CD":"Disc with files"}</li>`).join("")}</ul>`
-    : `<p class="note">No CD in the drive. Put one in and it is read straight away.</p>`);
+    : `<p class="note">No CD in the drive. Put one in and it is read straight away.</p>`)
+    + `<div class="btnrow"><button type="button" class="btn" data-act="deskfolder">Choose a folder on this Mac</button></div>`;
 };
 LIVE.impres = () => {
   if(!IMP.files.length) return IMP.disc ? `<p class="note">No sound files found there.</p>` : "";
@@ -698,7 +699,7 @@ LIVE.impres = () => {
   if(!IMP.rel){ h += `<p class="note">No release looks like this disc. Choose one above if you know which it is.</p>`; return h; }
   const r = IMP.rel, opts = cur => `<option value="">Skip this file</option>`+r.tracks.map(t=>`<option value="${esc(t.pos)}"${t.pos===cur?" selected":""}>${esc(t.pos)} ${esc(t.title)}${t.dur?` (${esc(t.dur)})`:""}${SOUND[soundKey(r,t.pos)]?", has a sound file":""}</option>`).join("");
   h += `<ol class="impl">${IMP.files.map((f,i)=>{ const id="impf-"+i;
-    return `<li><label for="${id}">${esc(f.title||f.name)}${f.duration?`, ${CDMATCH.fmtDur(f.duration)}`:""}</label> <select id="${id}" data-impf="${i}">${opts(IMP.map[i])}</select></li>`; }).join("")}</ol>`;
+    return `<li><label for="${id}">${esc(f.title||(f.num?"Track "+f.num:f.name))}${f.duration?`, ${CDMATCH.fmtDur(f.duration)}`:""}</label> <select id="${id}" data-impf="${i}">${opts(IMP.map[i])}</select></li>`; }).join("")}</ol>`;
   const n = IMP.map.filter(Boolean).length, rep = IMP.map.filter(p=>p && SOUND[soundKey(r,p)]).length;
   h += `<p class="note">${n} of ${IMP.files.length} files will be added to ${esc(r.catno)} ${esc(r.title)}.${rep?` ${rep} of those tracks already have a sound file, which will be replaced.`:""}${DESK?" Music CD tracks are converted to AAC at 256 kbit/s first.":""}</p>
   <div class="btnrow"><button type="button" class="btn primary" data-act="impgo"${n&&!IMP.busy?"":" disabled"}>Add ${n} sound ${n===1?"file":"files"}</button></div>`;
@@ -708,8 +709,8 @@ SECTIONS["admin-import"] = el => {
   el.innerHTML = `<h1>Import from CD</h1><p class="lede">Read a CD or a folder of sound files. The back office finds the release and the tracks they belong to, you check the list, and every track gets its sound file in one go.</p>
   ${DESK?"":`<p class="note">A browser can read a CD that has sound files on it, or any folder. Ordinary music CDs need the Loop Records app for Mac, which reads them directly, or copy the CD to a folder first, for example with the Music app.</p>`}
   <div data-live="impdesk"></div>
-  <h2 class="sect">${DESK?"Or choose a folder":"Choose the CD or a folder"}</h2>
-  <div class="btnrow"><span class="up"><label for="impDir">Choose a CD or folder</label><input type="file" id="impDir" webkitdirectory multiple></span>
+  ${DESK?"":`<h2 class="sect">Choose the CD or a folder</h2>`}
+  <div class="btnrow"${DESK?" hidden":""}><span class="up"><label for="impDir">Choose a CD or folder</label><input type="file" id="impDir" webkitdirectory multiple></span>
   <span class="up"><label for="impFiles">Or choose sound files</label><input type="file" id="impFiles" multiple accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.aif,.aiff,.ogg"></span></div>
   <div data-live="impres"></div>`;
   el.onchange = async e => {
@@ -721,6 +722,7 @@ SECTIONS["admin-import"] = el => {
   el.onclick = async e => { const b=e.target.closest("[data-act]"); if(!b) return;
     if(b.dataset.act==="readdisc") return impReadDisc(IMP.discs[+b.dataset.i]);
     if(b.dataset.act==="impgo") return impGo();
+    if(b.dataset.act==="deskfolder"){ const p = await DESK.chooseFolder(); if(p) impReadDisc({path:p, name:p.split("/").pop()}); }
   };
   if(DESK) impWatch();
 };
@@ -754,7 +756,7 @@ async function impGo(){
     try{
       setStatus(`${k+1} of ${jobs.length}: ${j.f.path&&DESK?"converting and ":""}uploading ${t.pos} ${t.title}…`);
       let file = j.f.file;
-      if(!file && DESK){ const got = await DESK.fileFor(j.f.path); file = new File([got.bytes], got.name, {type:got.type}); }
+      if(!file && DESK){ const got = await DESK.fileFor(j.f.path); file = new File([got.bytes], `${t.pos} ${t.title}`.replace(/[\\/:*?"<>|]+/g," ")+"."+got.name.split(".").pop(), {type:got.type}); }
       await saveSound(r, t, file, {source: IMP.disc && IMP.disc.mb ? "cd:"+IMP.disc.mb.discId : (DESK?"cd":"import")});
       ok++;
     }catch(err){ failed.push(`${t.pos} ${t.title} (${err&&err.message||err})`); }

@@ -1,0 +1,48 @@
+{
+  "name": "loop-records-desktop",
+  "productName": "Loop Records",
+  "version": "1.0.0",
+  "description": "Loop Records back office for Mac, with reading CDs straight into the catalog.",
+  "private": true,
+  "main": "main.js",
+  "author": "Loop Records",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/disc.test.cjs",
+    "prepack": "node -e \"require('fs').copyFileSync('../lib/cdmatch.cjs','cdmatch.cjs')\"",
+    "dist": "npm run prepack && electron-builder --mac zip --arm64 --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.9.3",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "se.looprecords.backoffice",
+    "productName": "Loop Records",
+    "copyright": "Loop Records, Stockholm",
+    "files": [
+      "main.js",
+      "preload.js",
+      "disc.js",
+      "cdmatch.cjs",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "build/icon.png",
+      "identity": null,
+      "target": [
+        "zip"
+      ],
+      "artifactName": "Loop-Records-${version}-${arch}.${ext}",
+      "extendInfo": {
+        "NSAppleEventsUsageDescription": "Loop Records opens links in your browser."
+      }
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "publish": [],
+    "afterPack": "build/adhoc.cjs"
+  }
+}
