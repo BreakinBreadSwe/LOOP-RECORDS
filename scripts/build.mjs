@@ -13,7 +13,7 @@ const SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/d
 
 const template = read("src/app.template.html");
 const catalog = loadSiteCatalog(root, { checkFiles: true });
-const admin = read("src/admin.js");
+const admin = read("lib/cdmatch.cjs") + "\n" + read("src/admin.js");
 
 for (const marker of ["__CATALOG__", "/*__ADMIN__*/"]) {
   if (!template.includes(marker)) throw new Error(`template is missing ${marker}`);

@@ -1479,6 +1479,17 @@ function renderAudio(r, onlyPos){
     if(hadFocus || soundFocus === pos){ const el = slot.querySelector(".trackplay") || slot.querySelector("input"); if(el){ el.focus(); if(soundFocus === pos && el.classList.contains("trackplay")) soundFocus = null; } }
   });
 }
+// Upload one sound file for a track and record it (used by the release page and by Import from CD).
+// Replaces the track's earlier file, if any.
+async function saveSound(r, t, file, extra){
+  const key = soundKey(r, t.pos), old = SOUND[key];
+  const up = await window.LoopBackend.audio.upload(file, r.id, t.pos);
+  const data = {release: r.id, catno: r.catno, pos: t.pos, title: t.title, url: up.url, path: up.path, name: file.name, size: file.size, type: file.type || "", at: new Date().toISOString(), ...(extra||{})};
+  await dbNS.doc("audio/" + key).set(data);
+  SOUND[key] = data;
+  if(old && old.path && old.path !== up.path) window.LoopBackend.audio.remove(old.path).catch(()=>{});
+  return data;
+}
 document.addEventListener("change", async e => {
   const inp = e.target.closest && e.target.closest("input[data-up]"); if(!inp || !inp.files || !inp.files[0]) return;
   const r = location.hash.startsWith("#release-") && byId.get(location.hash.slice(9)); if(!r) return;
@@ -1486,11 +1497,8 @@ document.addEventListener("change", async e => {
   const mb = (file.size/1048576).toFixed(1);
   inp.disabled = true; setArtMsg(r, `Uploading ${file.name} (${mb} MB) for ${trackLabel(r,t)}. This can take a minute for big files.`);
   try{
-    const up = await window.LoopBackend.audio.upload(file, r.id, pos);
-    const data = {release: r.id, catno: r.catno, pos, title: t.title, url: up.url, path: up.path, name: file.name, size: file.size, type: file.type || "", at: new Date().toISOString()};
-    await dbNS.doc("audio/" + key).set(data);
-    soundFocus = pos; SOUND[key] = data; renderAudio(r, pos);
-    if(old && old.path) window.LoopBackend.audio.remove(old.path).catch(()=>{});
+    await saveSound(r, t, file);
+    soundFocus = pos; renderAudio(r, pos);
     const msg = `Sound file added to ${trackLabel(r,t)}. It plays on the release page now.`; setArtMsg(r, msg);
   }catch(err){
     const m = String(err && (err.message || err.error) || err);

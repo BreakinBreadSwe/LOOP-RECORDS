@@ -1,7 +1,7 @@
 // ===================== Back office =====================
 const S = {products:{}, orders:{}, events:{}, sync:{}, rights:{}, settings:{}};
 let staff = false, dlNS = null, loaded = {}, adminChecked = false, adminEmail = "";
-const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-look","Look and feel"],["admin-export","Export"]];
+const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-import","Import from CD"],["admin-look","Look and feel"],["admin-export","Export"]];
 // The back office (staff only) may name Breakin Bread; the public site never does.
 // Switched off for now (Gordon, 7 Nov 2026): Loop fixes everything first, and the section comes back
 // when Loop agrees to sync with Breakin Bread. Set this to true to show it again.
@@ -654,3 +654,111 @@ SECTIONS["admin-bb"] = el => {
     finally{ btns.forEach(x=>x.disabled=false); }
   };
 };
+
+
+// ---------- Import from CD ----------
+// Read a CD (or any folder of sound files), find which release it is, and add every track's sound file
+// in one go. In a browser this takes a CD with files on it, or a folder. The Loop Records Mac app
+// (desktop/, window.loopDesktop) also reads ordinary music CDs: it sees the disc go in, looks it up
+// in MusicBrainz and converts each track to AAC before it is uploaded.
+const IMP = {disc:null, files:[], ranked:[], rel:null, map:[], busy:false};
+const DESK = window.loopDesktop && window.loopDesktop.isLoopDesktop ? window.loopDesktop : null;
+function durationOf(file){
+  return new Promise(res=>{ const a=new Audio(), u=URL.createObjectURL(file); let done=false;
+    const fin=v=>{ if(done) return; done=true; URL.revokeObjectURL(u); res(Number.isFinite(v)?v:null); };
+    a.preload="metadata"; a.onloadedmetadata=()=>fin(a.duration); a.onerror=()=>fin(null); setTimeout(()=>fin(null),5000); a.src=u; });
+}
+async function readLocalFiles(list){
+  const files = Array.from(list).filter(f=>CDMATCH.AUDIO_EXT.test(f.name) && !/^\._/.test(f.name));
+  const out=[];
+  for(const f of files){
+    let tags={}; try{ tags = CDMATCH.readId3(new Uint8Array(await f.slice(0, 262144).arrayBuffer())); }catch(e){}
+    const d = CDMATCH.describe(f.name, tags, await durationOf(f)); d.file=f; d.size=f.size; out.push(d);
+  }
+  const first = files[0], folder = first && first.webkitRelativePath ? first.webkitRelativePath.split("/")[0] : "";
+  return {disc:{name:folder, album:(out.find(x=>x.album)||{}).album||"", artist:(out.find(x=>x.artist)||{}).artist||""}, files:CDMATCH.orderFiles(out)};
+}
+function impMatch(){
+  IMP.ranked = CDMATCH.rankReleases(R, IMP.disc, IMP.files);
+  IMP.rel = IMP.ranked[0] ? IMP.ranked[0].release : null;
+  IMP.map = IMP.rel ? CDMATCH.assignTracks(IMP.rel, IMP.files) : IMP.files.map(()=>null);
+}
+LIVE.impdesk = () => {
+  if(!DESK) return "";
+  const ds = IMP.discs || [];
+  return `<h2 class="sect">CD drive</h2>` + (ds.length
+    ? `<ul class="plain">${ds.map((d,i)=>`<li><button type="button" class="btn" data-act="readdisc" data-i="${i}">Read ${esc(d.name)}</button> ${d.kind==="audio-cd"?"Music CD":"Disc with files"}</li>`).join("")}</ul>`
+    : `<p class="note">No CD in the drive. Put one in and it is read straight away.</p>`);
+};
+LIVE.impres = () => {
+  if(!IMP.files.length) return IMP.disc ? `<p class="note">No sound files found there.</p>` : "";
+  const d = IMP.disc, mb = d.mb;
+  let h = `<h2 class="sect">What's on it</h2><p>${esc(d.name||"Selected files")}: ${IMP.files.length} ${IMP.files.length===1?"track":"tracks"}${mb?`. MusicBrainz knows this disc as ${esc(mb.artist||"")}${mb.artist?", ":""}${esc(mb.title||"")}${(mb.catnos||[]).length?`, ${esc(mb.catnos.join(", "))}`:""}.`:"."}</p>`;
+  h += field("Release", "imprel", `<S>${`<option value="">Not in the catalog</option>`}${IMP.ranked.map(x=>`<option value="${x.release.id}"${IMP.rel===x.release?" selected":""}>${esc(relLabel(x.release))} (matches on ${esc(x.why.join(", ")||"little")})</option>`).join("")}<optgroup label="All releases">${R.map(r=>`<option value="${r.id}">${esc(relLabel(r))}</option>`).join("")}</optgroup></select>`);
+  if(!IMP.rel){ h += `<p class="note">No release looks like this disc. Choose one above if you know which it is.</p>`; return h; }
+  const r = IMP.rel, opts = cur => `<option value="">Skip this file</option>`+r.tracks.map(t=>`<option value="${esc(t.pos)}"${t.pos===cur?" selected":""}>${esc(t.pos)} ${esc(t.title)}${t.dur?` (${esc(t.dur)})`:""}${SOUND[soundKey(r,t.pos)]?", has a sound file":""}</option>`).join("");
+  h += `<ol class="impl">${IMP.files.map((f,i)=>{ const id="impf-"+i;
+    return `<li><label for="${id}">${esc(f.title||f.name)}${f.duration?`, ${CDMATCH.fmtDur(f.duration)}`:""}</label> <select id="${id}" data-impf="${i}">${opts(IMP.map[i])}</select></li>`; }).join("")}</ol>`;
+  const n = IMP.map.filter(Boolean).length, rep = IMP.map.filter(p=>p && SOUND[soundKey(r,p)]).length;
+  h += `<p class="note">${n} of ${IMP.files.length} files will be added to ${esc(r.catno)} ${esc(r.title)}.${rep?` ${rep} of those tracks already have a sound file, which will be replaced.`:""}${DESK?" Music CD tracks are converted to AAC at 256 kbit/s first.":""}</p>
+  <div class="btnrow"><button type="button" class="btn primary" data-act="impgo"${n&&!IMP.busy?"":" disabled"}>Add ${n} sound ${n===1?"file":"files"}</button></div>`;
+  return h;
+};
+SECTIONS["admin-import"] = el => {
+  el.innerHTML = `<h1>Import from CD</h1><p class="lede">Read a CD or a folder of sound files. The back office finds the release and the tracks they belong to, you check the list, and every track gets its sound file in one go.</p>
+  ${DESK?"":`<p class="note">A browser can read a CD that has sound files on it, or any folder. Ordinary music CDs need the Loop Records app for Mac, which reads them directly, or copy the CD to a folder first, for example with the Music app.</p>`}
+  <div data-live="impdesk"></div>
+  <h2 class="sect">${DESK?"Or choose a folder":"Choose the CD or a folder"}</h2>
+  <div class="btnrow"><span class="up"><label for="impDir">Choose a CD or folder</label><input type="file" id="impDir" webkitdirectory multiple></span>
+  <span class="up"><label for="impFiles">Or choose sound files</label><input type="file" id="impFiles" multiple accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.aif,.aiff,.ogg"></span></div>
+  <div data-live="impres"></div>`;
+  el.onchange = async e => {
+    if(e.target.id==="impDir" || e.target.id==="impFiles"){ if(!e.target.files.length) return;
+      setStatus("Reading the files…"); const got = await readLocalFiles(e.target.files); IMP.disc=got.disc; IMP.files=got.files; impMatch(); refreshAdmin(); impSay(); return; }
+    if(e.target.id==="f-imprel"){ IMP.rel = byId.get(e.target.value) || null; IMP.map = IMP.rel ? CDMATCH.assignTracks(IMP.rel, IMP.files) : IMP.files.map(()=>null); refreshAdmin(); setStatus(IMP.rel?`Matched the files to ${IMP.rel.title}.`:"No release chosen."); return; }
+    const sel = e.target.closest("[data-impf]"); if(sel){ IMP.map[+sel.dataset.impf] = sel.value || null; refreshAdmin(); }
+  };
+  el.onclick = async e => { const b=e.target.closest("[data-act]"); if(!b) return;
+    if(b.dataset.act==="readdisc") return impReadDisc(IMP.discs[+b.dataset.i]);
+    if(b.dataset.act==="impgo") return impGo();
+  };
+  if(DESK) impWatch();
+};
+function impSay(){
+  if(!IMP.files.length) return setStatus("No sound files found.");
+  setStatus(IMP.rel ? `Found ${IMP.files.length} tracks. Looks like ${IMP.rel.catno}, ${artistLine(IMP.rel)}, ${IMP.rel.title}. Check the list, then add the sound files.` : `Found ${IMP.files.length} tracks, but no release looks like them. Choose the release.`);
+}
+let impWatching = false;
+function impWatch(){
+  const refresh = async (auto) => { try{ const before = (IMP.discs||[]).map(d=>d.path).join("|"); IMP.discs = await DESK.discs(); refreshAdmin();
+      const now = IMP.discs.map(d=>d.path).join("|");
+      if(auto && now!==before){ const fresh = IMP.discs.find(d=>!before.split("|").includes(d.path)); if(fresh && location.hash==="#admin-import") impReadDisc(fresh); } }catch(e){} };
+  refresh(false);
+  if(!impWatching){ impWatching = true; DESK.onDiscsChanged(()=>refresh(true)); }
+}
+async function impReadDisc(d){
+  if(!d) return; setStatus(`Reading ${d.name}…`);
+  try{ const got = await DESK.readDisc(d.path);
+    IMP.disc = {name:got.name, album:got.album||"", artist:got.artist||"", mb:got.mb||null, path:d.path};
+    IMP.files = CDMATCH.orderFiles(got.files.map(f=>({...CDMATCH.describe(f.name, f.tags, f.duration), path:f.path, size:f.size})));
+    if(got.mb && got.mb.tracks) IMP.files.forEach((f,i)=>{ if(!f.title && got.mb.tracks[i]) f.title = got.mb.tracks[i].title; });
+    impMatch(); refreshAdmin(); impSay();
+  }catch(err){ setStatus("Couldn't read the CD: "+(err&&err.message||err)); }
+}
+async function impGo(){
+  const r = IMP.rel; if(!r || IMP.busy) return; IMP.busy = true; refreshAdmin();
+  const jobs = IMP.files.map((f,i)=>({f, pos:IMP.map[i]})).filter(j=>j.pos);
+  let ok=0; const failed=[];
+  for(const [k,j] of jobs.entries()){
+    const t = r.tracks.find(x=>x.pos===j.pos);
+    try{
+      setStatus(`${k+1} of ${jobs.length}: ${j.f.path&&DESK?"converting and ":""}uploading ${t.pos} ${t.title}…`);
+      let file = j.f.file;
+      if(!file && DESK){ const got = await DESK.fileFor(j.f.path); file = new File([got.bytes], got.name, {type:got.type}); }
+      await saveSound(r, t, file, {source: IMP.disc && IMP.disc.mb ? "cd:"+IMP.disc.mb.discId : (DESK?"cd":"import")});
+      ok++;
+    }catch(err){ failed.push(`${t.pos} ${t.title} (${err&&err.message||err})`); }
+  }
+  IMP.busy = false; refreshAdmin();
+  setStatus(`Added ${ok} sound ${ok===1?"file":"files"} to ${r.catno} ${r.title}.`+(failed.length?` Not added: ${failed.join("; ")}.`:" They play on the release page now."));
+}
