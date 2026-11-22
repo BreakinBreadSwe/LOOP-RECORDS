@@ -1,7 +1,7 @@
 // ===================== Back office =====================
 const S = {products:{}, orders:{}, events:{}, sync:{}, rights:{}, settings:{}};
 let staff = false, dlNS = null, loaded = {}, adminChecked = false, adminEmail = "";
-const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-import","Import from CD"],["admin-look","Look and feel"],["admin-export","Export"]];
+const ADMIN = [["admin","Overview"],["admin-products","Products"],["admin-orders","Orders"],["admin-events","Events and tickets"],["admin-sync","Sync licensing"],["admin-rights","Rights and splits"],["admin-royalties","Royalties"],["admin-access","People and access"],["admin-import","Import from CD"],["admin-scales","Scales and arpeggios"],["admin-look","Look and feel"],["admin-export","Export"]];
 // The back office (staff only) may name Breakin Bread; the public site never does.
 // Switched off for now (Gordon, 7 Nov 2026): Loop fixes everything first, and the section comes back
 // when Loop agrees to sync with Breakin Bread. Set this to true to show it again.
@@ -764,3 +764,105 @@ async function impGo(){
   IMP.busy = false; refreshAdmin();
   setStatus(`Added ${ok} sound ${ok===1?"file":"files"} to ${r.catno} ${r.title}.`+(failed.length?` Not added: ${failed.join("; ")}.`:" They play on the release page now."));
 }
+
+// ---- Scales and arpeggios: a small synth to hear a scale, with notes you can switch off and on ----
+const SCL = {root:0, startOctave:3, octaves:1, scale:"major", chord:"scale", pattern:"up", wave:"triangle", bpm:120, loop:true,
+  muted:new Set(), ctx:null, gain:null, timer:null, seq:[], step:0, next:0, playing:false, lastNote:null};
+function sclSeq(){ return SCALES.sequence({root:SCL.root, startOctave:SCL.startOctave, octaves:SCL.octaves, scale:SCL.scale, chord:SCL.chord}, SCL.pattern, [...SCL.muted]); }
+function sclSummary(){
+  const seq = sclSeq(), all = SCALES.notes({root:SCL.root, startOctave:SCL.startOctave, octaves:SCL.octaves, scale:SCL.scale, chord:SCL.chord});
+  const want = Math.round(SCL.octaves), have = all.length ? Math.round((all[all.length-1]-all[0])/12) : 0;
+  const cut = have < want ? ` The top ${want-have===1?"octave is":(want-have)+" octaves are"} left out because ${want-have===1?"it is":"they are"} above C9, higher than a speaker plays comfortably.` : "";
+  if(!seq.length) return "Every note is switched off. Switch some on to hear them."+cut;
+  const names = seq.slice(0,16).map(SCALES.midiName).join(", ");
+  return `${seq.length} ${seq.length===1?"note":"notes"} in the pattern, from ${SCALES.midiName(Math.min(...seq))} to ${SCALES.midiName(Math.max(...seq))}. It starts ${names}${seq.length>16?" and goes on":""}.`+cut;
+}
+function sclSwitches(){
+  const pcs = SCALES.pitchClasses(SCL.root, SCL.scale), tonic = SCL.root;
+  return pcs.map(pc=>{ const on=!SCL.muted.has(pc), nm=SCALES.NOTE_NAMES[pc], sp=SCALES.SPOKEN[pc];
+    return `<li><button type="button" class="btn sclnote${on?" on":""}" role="switch" aria-checked="${on}" data-pc="${pc}" aria-label="${sp}${pc===tonic?", the root":""}"><span aria-hidden="true">${nm}</span><span class="sclstate" aria-hidden="true">${on?"On":"Off"}</span></button></li>`; }).join("");
+}
+function sclTone(midi, when, dur){
+  const c=SCL.ctx, o=c.createOscillator(), g=c.createGain();
+  o.type=SCL.wave; o.frequency.value=SCALES.midiHz(midi);
+  // Lower notes are given a little more level and higher ones less, so the whole range sits evenly.
+  const lvl = Math.max(0.25, Math.min(1.2, 1.6 - midi/60));
+  g.gain.setValueAtTime(0.0001, when); g.gain.exponentialRampToValueAtTime(0.5*lvl, when+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, when+dur);
+  o.connect(g); g.connect(SCL.gain); o.start(when); o.stop(when+dur+0.02);
+}
+function sclTick(){
+  const c=SCL.ctx; if(!c||!SCL.playing) return;
+  const beat = 60/SCL.bpm/2;                         // two notes to a beat
+  while(SCL.next < c.currentTime + 0.15){
+    SCL.seq = sclSeq();                              // read fresh, so switching a note takes effect on the very next note
+    if(!SCL.seq.length){ SCL.next = c.currentTime + 0.1; break; }
+    if(SCL.step >= SCL.seq.length){ if(SCL.loop) SCL.step = 0; else return sclStop("Finished."); }
+    const m = SCL.seq[SCL.step++]; sclTone(m, SCL.next, Math.max(0.08, beat*0.9)); SCL.lastNote = m; SCL.next += beat;
+  }
+}
+function sclPlay(){
+  try{ if(typeof dock!=="undefined" && dock.stop) dock.stop(); }catch(e){}
+  if(!SCL.ctx){ const AC = window.AudioContext||window.webkitAudioContext; if(!AC) return setStatus("This browser can't make sound."); SCL.ctx=new AC(); SCL.gain=SCL.ctx.createGain(); SCL.gain.connect(SCL.ctx.destination); }
+  SCL.ctx.resume(); SCL.gain.gain.value = (typeof loopMuted!=="undefined" && loopMuted) ? 0 : 0.35*((typeof loopVol==="number"?loopVol:80)/100);
+  if(!sclSeq().length) return setStatus("Every note is switched off. Switch some on first.");
+  SCL.playing=true; SCL.step=0; SCL.next=SCL.ctx.currentTime+0.05; clearInterval(SCL.timer); SCL.timer=setInterval(sclTick,40); sclTick();
+  sclPaint(); setStatus("Playing. Switch notes on and off while it plays.");
+}
+function sclStop(msg){
+  SCL.playing=false; clearInterval(SCL.timer); SCL.timer=null;
+  if(SCL.ctx && SCL.ctx.state==="running") SCL.ctx.suspend();
+  sclPaint(); if(msg!==false) setStatus(typeof msg==="string"?msg:"Stopped.");
+}
+function sclPaint(){
+  const b=document.getElementById("sclPlay"); if(b){ b.textContent = SCL.playing ? "Stop" : "Play"; b.setAttribute("aria-pressed", SCL.playing); }
+  const s=document.getElementById("sclSum"); if(s) s.textContent = sclSummary();
+}
+SECTIONS["admin-scales"] = el => {
+  const sel = (id,label,html) => `<div class="field"><label for="${id}">${label}</label><select id="${id}">${html}</select></div>`;
+  const list = (L,cur) => L.map(x=>`<option value="${x[0]}"${x[0]===cur?" selected":""}>${esc(x[1])}</option>`).join("");
+  const octs = Array.from({length:SCALES.MAX_OCTAVES},(_,i)=>i+1).map(n=>`<option value="${n}"${n===SCL.octaves?" selected":""}>${n} ${n===1?"octave":"octaves"}</option>`).join("");
+  const starts = Array.from({length:9},(_,i)=>i).map(n=>`<option value="${n}"${n===SCL.startOctave?" selected":""}>Octave ${n}${n===4?" (middle C)":""}</option>`).join("");
+  const roots = SCALES.NOTE_NAMES.map((n,i)=>`<option value="${i}"${i===SCL.root?" selected":""}>${SCALES.SPOKEN[i]}</option>`).join("");
+  const waves = [["triangle","Soft (triangle)"],["sine","Pure (sine)"],["square","Hollow (square)"],["sawtooth","Bright (sawtooth)"]];
+  el.innerHTML = `<h1>Scales and arpeggios</h1>
+  <p class="lede">Pick a scale, how many octaves, and a pattern, then press Play. Every note of the scale has its own switch: turn a note off and it is left out completely, so the pattern carries straight on and you hear how the scale sounds without it. It works while it plays.</p>
+  <div class="btnrow"><button type="button" class="btn primary" id="sclPlay" aria-pressed="false">Play</button></div>
+  <p class="note" id="sclSum"></p>
+  <h2 class="sect" id="sclNotesH">Notes in the scale</h2>
+  <ul class="sclnotes" aria-labelledby="sclNotesH" id="sclNotes">${sclSwitches()}</ul>
+  <div class="btnrow"><button type="button" class="btn" data-sclall="1">Switch all notes on</button><button type="button" class="btn" data-sclall="0">Switch all notes off</button></div>
+  <h2 class="sect">Scale</h2>
+  <div class="sclgrid">${sel("sclRoot","Key",roots)}${sel("sclScale","Scale",list(SCALES.SCALE_LIST,SCL.scale))}${sel("sclStart","Starting at",starts)}${sel("sclOct","Length",octs)}</div>
+  <p class="note">Up to ten octaves, which is the whole range of hearing. Notes above C9 are left out because a speaker only hisses up there.</p>
+  <h2 class="sect">Arpeggio</h2>
+  <div class="sclgrid">${sel("sclChord","Notes used",list(SCALES.CHORDS,SCL.chord))}${sel("sclPat","Pattern",list(SCALES.PATTERN_LIST,SCL.pattern))}</div>
+  <h2 class="sect">Sound</h2>
+  <div class="sclgrid">${sel("sclWave","Tone",waves.map(w=>`<option value="${w[0]}"${w[0]===SCL.wave?" selected":""}>${w[1]}</option>`).join(""))}
+    <div class="field"><label for="sclBpm">Speed, beats a minute</label><input id="sclBpm" type="number" inputmode="numeric" min="30" max="300" step="1" value="${SCL.bpm}"></div>
+    <div class="field"><label for="sclLoop">Repeat</label><select id="sclLoop"><option value="1"${SCL.loop?" selected":""}>Keep going</option><option value="0"${SCL.loop?"":" selected"}>Play once</option></select></div></div>
+  <p class="note">The volume follows the footer's volume button.</p>`;
+  sclPaint();
+  const note = (t) => announce(t);
+  el.onclick = e => {
+    if(e.target.closest("#sclPlay")) return SCL.playing ? sclStop() : sclPlay();
+    const sw = e.target.closest("[data-pc]");
+    if(sw){ const pc=+sw.dataset.pc, on=SCL.muted.has(pc); on?SCL.muted.delete(pc):SCL.muted.add(pc);
+      sw.setAttribute("aria-checked", on); sw.classList.toggle("on", on); sw.querySelector(".sclstate").textContent = on?"On":"Off";
+      sclPaint(); const rest = SCALES.pitchClasses(SCL.root,SCL.scale).filter(p=>!SCL.muted.has(p)).length;
+      return note(`${SCALES.SPOKEN[pc]} ${on?"on":"off"}. ${rest} ${rest===1?"note":"notes"} on.`); }
+    const all = e.target.closest("[data-sclall]");
+    if(all){ SCL.muted.clear(); if(all.dataset.sclall==="0") SCALES.pitchClasses(SCL.root,SCL.scale).forEach(p=>SCL.muted.add(p));
+      document.getElementById("sclNotes").innerHTML = sclSwitches(); sclPaint(); note(all.dataset.sclall==="1"?"All notes on.":"All notes off."); }
+  };
+  el.onchange = el.oninput = e => {
+    const id=e.target.id, v=e.target.value;
+    if(id==="sclBpm"){ const n=Math.max(30,Math.min(300,parseInt(v,10)||120)); SCL.bpm=n; return; }
+    if(id==="sclRoot") SCL.root=+v; else if(id==="sclScale") SCL.scale=v; else if(id==="sclStart") SCL.startOctave=+v;
+    else if(id==="sclOct") SCL.octaves=+v; else if(id==="sclChord") SCL.chord=v; else if(id==="sclPat") SCL.pattern=v;
+    else if(id==="sclWave") SCL.wave=v; else if(id==="sclLoop") SCL.loop=v==="1"; else return;
+    if(id==="sclRoot"||id==="sclScale"){ SCL.muted.clear(); document.getElementById("sclNotes").innerHTML = sclSwitches(); }
+    if(id==="sclStart"||id==="sclOct"||id==="sclChord"||id==="sclPat"){ SCL.step=0; }
+    sclPaint(); };
+};
+addEventListener("hashchange", () => { if(SCL.playing && location.hash!=="#admin-scales") sclStop(false); });
