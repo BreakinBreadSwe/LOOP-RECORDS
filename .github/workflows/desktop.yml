@@ -1,0 +1,22 @@
+# Builds the Loop Records Mac app (desktop/) on a Mac, with an ad-hoc signature, for Apple Silicon and Intel.
+# Run it from the Actions tab (Run workflow) or by pushing a change under desktop/.
+name: Mac app
+on:
+  workflow_dispatch:
+  push:
+    paths: ["desktop/**", "lib/cdmatch.cjs", ".github/workflows/desktop.yml"]
+jobs:
+  mac:
+    runs-on: macos-14
+    defaults: { run: { working-directory: desktop } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npm test
+      - run: npm run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: loop-records-mac
+          path: desktop/dist/*.zip

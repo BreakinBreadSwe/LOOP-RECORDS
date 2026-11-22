@@ -3,6 +3,8 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
+import { readFileSync } from "node:fs";
+const CATALOG = JSON.parse(readFileSync(new URL("../data/catalog.json", import.meta.url), "utf8"));
 
 let server, base, received = [], logged = [], settings = null;
 const docs = [
@@ -53,7 +55,7 @@ test("dry run builds the bundle without sending", async () => {
   const r = await call("good", { dryRun: true });
   assert.equal(r.status, 200);
   assert.equal(r.body.counts.releases, 1);
-  assert.equal(r.body.counts.heldBackWithoutAudio.releases, 61);
+  assert.equal(r.body.counts.heldBackWithoutAudio.releases, CATALOG.releases.length - 1);
   assert.equal(r.body.counts.products, 1);
   assert.equal(received.length, 0);
   assert.equal(settings.data.lastStatus, "dry");
@@ -67,7 +69,7 @@ test("one click sends everything to Breakin Bread and logs it", async () => {
   assert.equal(b.schema, "loop-records.breakinbread/v1");
   assert.equal(b.releases.length, 1);
   assert.equal(b.releases[0].tracks.length, 1);
-  assert.ok(b.artists.length > 0 && b.artists.length < 156);
+  assert.ok(b.artists.length > 0 && b.artists.length < CATALOG.people.length);
   assert.equal(b.commerce.products[0].sku, "LOOP001-DIG");
   assert.ok(b.releases[0].coverArtUrl.startsWith("https://"));
   assert.equal(settings.data.lastStatus, "ok");
